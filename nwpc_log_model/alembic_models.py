@@ -14,7 +14,7 @@ from nwpc_log_model import Model, RecordBase
 
 
 class RecordNwpXpNwpcOp(RecordBase, Model):
-    __tablename__ = "repo.nwp_xp.nwpc_op"
+    __tablename__ = "record.nwp_xp.nwpc_op"
 
     def __init__(self):
         pass
@@ -33,7 +33,7 @@ class RecordNwpXpNwpcOp(RecordBase, Model):
 
 
 class RecordNwpXpNwpcQu(RecordBase, Model):
-    __tablename__ = "repo.nwp_xp.nwpc_qu"
+    __tablename__ = "record.nwp_xp.nwpc_qu"
 
     def __init__(self):
         pass
@@ -52,7 +52,7 @@ class RecordNwpXpNwpcQu(RecordBase, Model):
 
 
 class RecordNwpXpEpsNwpcQu(RecordBase, Model):
-    __tablename__ = "repo.nwp_xp.eps_nwpc_op"
+    __tablename__ = "record.nwp_xp.eps_nwpc_op"
 
     def __init__(self):
         pass

@@ -1,9 +1,8 @@
 # coding=utf-8
 from datetime import datetime
-import time
 
-from sqlalchemy import Column, Integer, String, Text, Date, Time
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Text, Date, Time, Index
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
 Model = declarative_base()
@@ -13,7 +12,7 @@ class User(Model):
     __tablename__ = "user"
 
     user_id = Column(Integer(), primary_key=True)
-    user_name = Column(String(45))
+    user_name = Column(String(45), unique=True)
 
     def __init__(self):
         pass
@@ -38,6 +37,8 @@ class Repo(Model):
     #   sms
     #   phy
     repo_type = Column(String(45))
+
+    user_repo_index = Index('user_repo', user_id, repo_name, unique=True)
 
     def __init__(self):
         pass
@@ -91,6 +92,8 @@ class RepoVersion(Model):
     head_line = Column(Text())
     collector_id = Column(Text())
 
+    repo_version_index = Index('repo_version_index', repo_id, version_id, unique=True)
+
     def columns(self):
         return [c.name for c in self.__table__.columns]
 
@@ -126,6 +129,16 @@ class RecordBase(object):
     record_fullname = Column(String(200))
     record_additional_information = Column(Text())
     record_string = Column(Text())
+
+    @declared_attr
+    def __table_args__(cls):
+        return (
+            Index("record_line_no_index", 'repo_id', 'version_id', 'line_no', unique=True),
+            Index('date_time_index', 'repo_id', 'version_id', 'line_no', 'record_date', 'record_time', unique=False),
+            Index('record_type', 'record_type'),
+            Index('command_index', 'record_command'),
+            Index('fullname_index', 'record_fullname')
+        )
 
     def parse(self, line):
         self.record_string = line
@@ -262,7 +275,8 @@ class Record(RecordBase, Model):
     """
     SMS日志记录类的派生类，用于代表特定的表，见__tablename__。
     """
-    __tablename__ = "record"
+
+    __tablename__ = 'record'
 
     def __init__(self):
         pass
