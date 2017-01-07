@@ -56,7 +56,7 @@ class SmsRepo(Model):
     # 仅该表中使用，其它表中使用 repo_id
     sms_repo_id = Column(Integer(), primary_key=True)
     repo_id = Column(Integer())
-    user_id = Column(Integer)
+    user_id = Column(Integer())
     repo_name = Column(String(45))
     repo_location = Column(String(100))
     current_version_id = Column(Integer())
