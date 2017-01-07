@@ -29,10 +29,12 @@ def upgrade():
     session = Session(bind=bind)
     init_data.initial_users(session)
     init_data.init_repos(session)
+    init_data.init_sms_repos(session)
 
 
 def downgrade():
     bind = op.get_bind()
     session = Session(bind=bind)
+    init_data.remove_sms_repos(session)
     init_data.remove_repos(session)
     init_data.remove_users(session)

@@ -1,62 +1,61 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../../")
-from nwpc_log_model.model import User, Repo
+from nwpc_log_model.model import User, Repo, SmsRepo
 
 from .data import repo_list
-from .init_user import get_user
+from .init_repo import get_repo_by_name
 
 
-def create_repo(user_id, repo_name, repo_type):
-    repo = Repo()
+def create_sms_repo(user_id, repo_id, repo_name):
+    repo = SmsRepo()
     repo.user_id = user_id
+    repo.repo_id = repo_id
     repo.repo_name = repo_name
-    repo.repo_type = repo_type
     return repo
 
 
-def init_repos(session):
+def init_sms_repos(session):
     repos = []
     for a_record in repo_list:
         user_name = a_record["user_name"]
         repo_name = a_record["repo_name"]
         repo_type = a_record["repo_type"]
 
-        user = get_user(user_name, session)
-        if user is None:
+        if repo_type is not 'sms':
             continue
 
-        repos.append(create_repo(user.user_id, repo_name, repo_type))
+        repo = get_repo_by_name(user_name, repo_name, session)
+        if repo is None:
+            continue
+
+        repos.append(create_sms_repo(repo.user_id, repo.repo_id, repo_name))
 
     for repo in repos:
         session.add(repo)
     session.commit()
 
 
-def get_repo(user_id, repo_name, session):
-    query = session.query(Repo).filter(Repo.user_id == user_id).filter(Repo.repo_name==repo_name)
-    repo = query.first()
-    return repo
-
-
-def get_repo_by_name(user_name, repo_name, session):
-    query = session.query(Repo).filter(Repo.user_id == Repo.user_id)\
+def get_sms_repo(user_name, repo_name, session):
+    query = session.query(Repo) \
+        .filter(Repo.user_id == User.user_id) \
         .filter(Repo.repo_name == repo_name) \
         .filter(User.user_name == user_name)
     repo = query.first()
     return repo
 
 
-def remove_repos(session):
+def remove_sms_repos(session):
     repos = []
     for a_record in repo_list:
         user_name = a_record["user_name"]
         repo_name = a_record["repo_name"]
+        repo_type = a_record["repo_type"]
 
-        user = get_user(user_name, session)
-        if user is None:
+        if repo_type is not 'sms':
             continue
-        repo  = get_repo(user.user_id, repo_name, session)
+
+        repo  = get_sms_repo(user_name, repo_name, session)
         if repo is None:
             continue
         repos.append(repo)
