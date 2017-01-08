@@ -53,7 +53,7 @@ def get_bunch(owner_name, repo_name, query_date):
 
 
 def load_schema(owner, repo):
-    config_file_name = "{owner}-{repo}.schema.json".format(
+    config_file_name = "{owner}.{repo}.schema.json".format(
         owner=owner, repo=repo
     )
     config_file_dir = os.path.join(os.path.dirname(__file__), 'conf')
@@ -143,8 +143,8 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
         'class': run_time_line_schema['class'],
     }
 
-    start_time = calculate_run_time(owner, repo, query_date, run_time_line_schema['start_time'], bunch)
-    end_time = calculate_run_time(owner, repo, query_date, run_time_line_schema['end_time'], bunch)
+    start_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['start_time'], bunch)
+    end_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['end_time'], bunch)
 
     if start_time is None or end_time is None:
         print("[calculate_run_time_line] some time is None:")
@@ -246,7 +246,7 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
         return None
 
 
-def calculate_run_time(owner, repo, query_date, run_time_schema, bunch):
+def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch):
     """
     计算单个时间，用于以下两项：
         start_time
@@ -397,6 +397,34 @@ def calculate_run_time(owner, repo, query_date, run_time_schema, bunch):
     return None
 
 
+def process_time_line(owner_name, repo_name, query_date):
+    bunch = get_bunch(owner_name, repo_name, query_date)
+
+    schema = load_schema(owner_name, repo_name)
+    if schema is None:
+        print("Fatal Error: load schema failed.")
+        return None
+
+    result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch)
+    return result
+
+
+def save_time_line_to_db(time_line_result):
+    key = {
+        'owner': time_line_result['owner'],
+        'repo': time_line_result['repo'],
+        'query_date': time_line_result['query_date']
+    }
+    value = time_line_result
+    daily_repo_time_line_collection.replace_one(key, value, upsert=True)
+
+
+def save_time_line_to_file(time_line_result, output_file_path):
+    output_file_content = json.dumps(time_line_result, indent=2)
+    with open(output_file_path, 'w') as output_file:
+        output_file.write(output_file_content)
+
+
 def main():
     start_time = datetime.datetime.now()
 
@@ -407,67 +435,46 @@ def main():
 DESCRIPTION
     Calculate time line for owner/repo on query date according to config file.""")
 
-    parser.add_argument("-o", "--owner", help="owner name")
-    parser.add_argument("-r", "--repo", help="repo name")
-    parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)")
+    parser.add_argument("-o", "--owner", help="owner name", required=True)
+    parser.add_argument("-r", "--repo", help="repo name", required=True)
+    parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)", required=True)
     parser.add_argument("--output-file", help="output file path")
     parser.add_argument("--save-to-db", help="save result to database", action='store_true')
     parser.add_argument("-p", "--print", dest='print_flag', help="print result to console.", action='store_true')
 
+    # parser section
+
     args = parser.parse_args()
 
-    owner_name = 'nwp_xp'
-    repo_name = 'nwp_cma20n03'
-    query_date = datetime.datetime.strptime('2016-08-12', "%Y-%m-%d")
+    owner_name = args.owner
+    print('owner name: {owner_name}'.format(owner_name=owner_name))
 
-    if args.owner:
-        owner_name = args.owner
-        print('user name: {owner_name}'.format(owner_name=owner_name))
-    else:
-        print("Use default user: {owner_name}".format(owner_name=owner_name))
+    repo_name = args.repo
+    print('repo name: {repo_name}'.format(repo_name=repo_name))
 
-    if args.repo:
-        repo_name = args.repo
-        print('repo name: {repo_name}'.format(repo_name=repo_name))
-    else:
-        print("Use default repo name: {repo_name}".format(repo_name=repo_name))
+    query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    print('query date: {query_date}'.format(query_date=query_date))
 
-    if args.date:
-        query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
-        print('query date: {query_date}'.format(query_date=query_date))
-    else:
-        print("Use default query date: {query_date}".format(query_date=query_date))
+    # calculate section
 
-    # 获取树形结构
-    bunch = get_bunch(owner_name, repo_name, query_date)
-
-    schema = load_schema(owner_name, repo_name)
-    if schema is None:
-        print("Fatal Error: load schema failed.")
+    result = process_time_line(owner_name, repo_name, query_date)
+    if result is None:
         return
 
-    result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch)
+    # output section
 
     if args.print_flag:
         print(json.dumps(result, indent=4))
 
     # 保存到 MongoDB
     if args.save_to_db:
-        key = {
-            'owner': owner_name,
-            'repo': repo_name,
-            'date': query_date
-        }
-        value = result
-        daily_repo_time_line_collection.replace_one(key, value, upsert=True)
+        print("Save results to database")
+        save_time_line_to_db(result)
 
     # 保存到文件
     if args.output_file:
-        output_file_path = args.output_file
-        print("Write results to output file: {output_file_path}".format(output_file_path=output_file_path))
-        output_file_content = json.dumps(result, indent=2)
-        with open(output_file_path, 'w') as output_file:
-            output_file.write(output_file_content)
+        print("Write results to output file: {output_file_path}".format(output_file_path=args.output_file))
+        save_time_line_to_file(result, args.output_file)
 
     # 时间统计
     end_time = datetime.datetime.now()
