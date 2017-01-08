@@ -5,7 +5,9 @@ import datetime
 import csv
 from pymongo import MongoClient
 
-from nwpc_log_processor.config import MONGODB_HOST, MONGODB_PORT
+from nwpc_log_processor.run_time_line.conf.config import MONGODB_HOST, MONGODB_PORT
+
+from nwpc_log_processor.run_time_line.time_line_chart_data_generator import load_schema
 
 mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
 smslog_mongodb = mongodb_client.smslog
@@ -41,12 +43,19 @@ def calculate_cpu_for_repo(owner, repo, query_date):
         if 'times' not in a_suite:
             continue
         suite_run_times = a_suite['times']
+
+        # find cpu count
+        # NOTE: this is only a temporary solution.
+        cpu_count = 0
+        for a_run_time in suite_run_times:
+            if 'label' in a_run_time and len(a_run_time['label']) > 0:
+                cpu_count = int(a_run_time['label']) / 32
+                break
+
         for a_run_time in suite_run_times:
             label = a_run_time['label']
-            if len(label) == 0:
-                cpu_count = 0
-            else:
-                cpu_count = int(label) / 32
+            if len(label) > 0:
+                continue
 
             record_start_time = a_run_time['start_time']
             record_end_time = a_run_time['end_time']
@@ -70,27 +79,14 @@ def calculate_cpu_for_repo(owner, repo, query_date):
 
 
 def repo_handler(args):
-    owner_name = 'nwp_xp'
-    repo_name = 'nwp_cma20n03'
-    query_date = datetime.datetime.strptime('2016-08-12', "%Y-%m-%d")
+    owner_name = args.owner
+    print('user name: {owner_name}'.format(owner_name=owner_name))
 
-    if args.owner:
-        owner_name = args.owner
-        print('user name: {owner_name}'.format(owner_name=owner_name))
-    else:
-        print("Use default user: {owner_name}".format(owner_name=owner_name))
+    repo_name = args.repo
+    print('repo name: {repo_name}'.format(repo_name=repo_name))
 
-    if args.repo:
-        repo_name = args.repo
-        print('repo name: {repo_name}'.format(repo_name=repo_name))
-    else:
-        print("Use default repo name: {repo_name}".format(repo_name=repo_name))
-
-    if args.date:
-        query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
-        print('query date: {query_date}'.format(query_date=query_date))
-    else:
-        print("Use default query date: {query_date}".format(query_date=query_date))
+    query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    print('query date: {query_date}'.format(query_date=query_date))
 
     suite_rows = calculate_cpu_for_repo(owner_name, repo_name, query_date)
     if suite_rows is None:
@@ -101,16 +97,50 @@ def repo_handler(args):
     title_row = ["suite"]
     title_row.extend(time_array)
 
-    print(time_array)
+    print(title_row)
     for a_suite in suite_rows:
         print(a_suite)
 
-    with open('output/' + owner_name + '_' + repo_name + '.csv', 'wb') as csv_file:
+    with open('output/' + owner_name + '.' + repo_name + '.' + args.date + '.' + '.csv', 'w') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(title_row)
         for a_row in suite_rows:
             csv_writer.writerow(a_row)
     return
+
+
+def system_handler(args):
+    schema_file_path = args.schema
+    print('schema file path:', schema_file_path)
+    query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    print('query date: {query_date}'.format(query_date=query_date))
+
+    schema = load_schema(schema_file_path)
+    if schema is None:
+        print('Fatal error: load schema file failed')
+
+    system_cpu_usage_rows = []
+
+    for a_server in schema['series']:
+        owner_name = a_server['owner']
+        repo_name = a_server['repo']
+        server_suite_cpu_usage = calculate_cpu_for_repo(owner_name, repo_name, query_date)
+        system_cpu_usage_rows.extend(server_suite_cpu_usage)
+
+    time_array = [(query_date + datetime.timedelta(minutes=i)).strftime("%H:%M") for i in range(0, 60 * 24)]
+    title_row = ["suite"]
+    title_row.extend(time_array)
+
+    print(title_row)
+    for a_suite in system_cpu_usage_rows:
+        print(a_suite)
+
+    if args.output_file:
+        with open(args.output_file, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writerow(title_row)
+            for a_row in system_cpu_usage_rows:
+                csv_writer.writerow(a_row)
 
 
 def main():
@@ -126,28 +156,25 @@ DESCRIPTION
     sub_parsers = parser.add_subparsers(title="sub commands", dest="sub_command")
 
     suite_parser = sub_parsers.add_parser('suite', description="collect sms status from sms server.")
-    suite_parser.add_argument("-o", "--owner", help="owner name")
-    suite_parser.add_argument("-r", "--repo", help="repo name")
-    suite_parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)")
+    suite_parser.add_argument("-o", "--owner", help="owner name", required=True)
+    suite_parser.add_argument("-r", "--repo", help="repo name", required=True)
+    suite_parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)", required=True)
     suite_parser.add_argument("--output-file", help="output file path")
-    suite_parser.add_argument("--save-to-db", help="save result to database", action='store_true')
     suite_parser.add_argument("-p", "--print", dest='print_flag', help="print result to console.", action='store_true')
 
-    server_parser = sub_parsers.add_parser('server_parser', description="collect sms status from sms server.")
-    server_parser.add_argument("-o", "--owner", help="owner name")
-    server_parser.add_argument("-r", "--repo", help="repo name")
-    server_parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)")
+    server_parser = sub_parsers.add_parser('system', description="collect sms status from sms server.")
+    server_parser.add_argument("-s", "--schema", help="schema file path", required=True)
+    server_parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)", required=True)
     server_parser.add_argument("--output-file", help="output file path")
-    server_parser.add_argument("--save-to-db", help="save result to database", action='store_true')
     server_parser.add_argument("-p", "--print", dest='print_flag', help="print result to console.", action='store_true')
 
     args = parser.parse_args()
 
-    if args.sub_command == "repo":
+    if args.sub_command == "suite":
         repo_handler(args)
+    elif args.sub_command == "system":
+        system_handler(args)
 
-
-    # 时间统计
     end_time = datetime.datetime.now()
     print(end_time - start_time)
     return
