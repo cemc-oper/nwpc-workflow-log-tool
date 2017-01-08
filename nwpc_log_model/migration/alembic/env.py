@@ -13,7 +13,7 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
+# add your rdbms_model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
@@ -21,7 +21,7 @@ fileConfig(config.config_file_name)
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../../")
-from nwpc_log_model.model import Model
+from nwpc_log_model.rdbms_model import Model
 target_metadata = Model.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../../")
-from nwpc_log_model.model import User, Repo
+from nwpc_log_model.rdbms_model import User, Repo
 
 from .data import repo_list
 from .init_user import get_user

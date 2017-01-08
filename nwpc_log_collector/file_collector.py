@@ -1,4 +1,4 @@
-from nwpc_log_model.model import Record
+from nwpc_log_model.rdbms_model import Record
 from nwpc_log_model.util.version_util import get_version, session
 
 committed_count = 1000
