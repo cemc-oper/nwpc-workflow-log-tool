@@ -9,7 +9,7 @@ import os
 from pymongo import MongoClient
 
 # settings
-from nwpc_log_processor.config import MONGODB_HOST, MONGODB_PORT
+from nwpc_log_processor.run_time_line.conf.config import MONGODB_HOST, MONGODB_PORT
 
 # mongodb collections
 mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
