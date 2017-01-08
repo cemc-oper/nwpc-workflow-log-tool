@@ -1,0 +1,1371 @@
+{
+    "owner": "nwp_xp",
+    "repo": "nwp_qu_cma20n03",
+    "suites": [
+        {
+            "name": "obs_rafs",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00A",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/00A"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/00A"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "03",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/03"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/03"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "09",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/09"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/09"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "15",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/15"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/15"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "21",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/21"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_rafs/21"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "rafs",
+            "times":[
+                {
+                    "name": "03",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/03"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/03"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "03",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/03/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/03/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/06/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/06/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "09",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/09"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/09"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "09",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/09/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/09/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "15",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/15"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/15"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "15",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/15/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/15/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/18/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/18/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "21",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/21"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/21"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "21",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/21/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/rafs/warm/21/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "grapes_tym",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/00/grapes"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/00/grapes"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/06/grapes"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/06/grapes"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/12/grapes"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/12/grapes"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/18/grapes"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_tym/grapes_15km/18/grapes"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "mosaic_v1",
+            "times":[
+                {
+                    "name": "meso/00",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/grapes_meso/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/grapes_meso/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "meso/12",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/grapes_meso/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/grapes_meso/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/00",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/03",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/03"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/03"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/06",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/09",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/09"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/09"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/12",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/15",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/15"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/15"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/18",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "rafs/21",
+                    "label": "",
+                    "class": "serial",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/21"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/mosaic_v1/rafs/21"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "grapes_meso_3km",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "1024",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/00/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "1024",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/12/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_3km/cold/12/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "haze_v3_1",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation1",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/00/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation1",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/12/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/haze_v3_1/12/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ocean/wavewatch",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "128",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/00/model/ww_model"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/00/model/ww_model"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "128",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/12/model/ww_model"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/wavewatch/12/model/ww_model"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ocean/seafog",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/seafog/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/seafog/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/seafog/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ocean/seafog/12"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

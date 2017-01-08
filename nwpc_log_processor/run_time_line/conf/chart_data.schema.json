@@ -1,0 +1,21 @@
+{
+    "type": "timeline",
+    "series": [
+        {
+            "owner": "nwp_xp",
+            "repo": "nwp_cma20n03"
+        },
+        {
+            "owner": "nwp_xp",
+            "repo": "nwp_qu_cma20n03"
+        },
+        {
+            "owner": "nwp_xp",
+            "repo": "nwp_qu_cma18n03"
+        },
+        {
+            "owner": "nwp_xp",
+            "repo": "nwp_pd_cma20n03"
+        }
+    ]
+}

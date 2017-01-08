@@ -1,0 +1,1301 @@
+{
+    "owner": "nwp_xp",
+    "repo": "nwp_cma20n03",
+    "suites": [
+        {
+            "name": "gda_gsi_v1r5",
+            "times": [
+                {
+                    "name": "00",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/00"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/00/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/00/model/forecast"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/06"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "operation",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/06/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/06/model/forecast"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/12"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/12/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/12/model/forecast"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/18"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "operation",
+                    "start_time": {
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/18/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time": {
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_gsi_v1r5/T639/18/model/forecast"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gmf_gsi_v1r5",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/00/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/00/model/forecast_10d"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/06/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/06/model/forecast_10d"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/12/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/12/model/forecast_10d"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "640",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/18/model/mod_gf"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_gsi_v1r5/T639/18/model/forecast_10d"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "obs_reg",
+            "times":[
+                {
+                    "name": "00E",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/00E"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/00E"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12E",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/12E"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/12E"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/obs_reg/aob/18"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "grapes_meso_v4_1",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/00/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/12/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/grapes_meso_v4_1/cold/12/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "extend_v2_1",
+            "times":[
+                {
+                    "name": "fire",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/extend_v2_1/subsys/fire/12/fire"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/extend_v2_1/subsys/fire/12/fire"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "ver_data",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/extend_v2_1/subsys/ver_data"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/extend_v2_1/subsys/ver_data"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "ssfs_v4_0",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "48",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/00/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "48",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/12/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/ssfs_v_4_0/CUACE_Dust/12/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gda_grapes_gfs_v2_0",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/00/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/06/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/06/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/12/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/12/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "512",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/18"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/18/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0/grapes_global/18/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gda_grapes_gfs_v2_0_diag",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "06",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/06"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/06"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "18",
+                    "label": "",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/18"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gda_grapes_gfs_v2_0_diag/grapes_global/18"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "gmf_grapes_gfs_v2_0",
+            "times":[
+                {
+                    "name": "00",
+                    "label": "2048",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00/dfilter/df_xa"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "00",
+                    "label": "",
+                    "class": "operation1",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/00/model/fcst"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "2048",
+                    "class": "serial_op",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12/an/mvar_h1"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12/dfilter/df_xa"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "12",
+                    "label": "",
+                    "class": "operation1",
+                    "start_time":{
+                        "operator": "start",
+                        "command": "submitted",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12/model/fcst"
+                            }
+                        ]
+                    },
+                    "end_time":{
+                        "operator": "end",
+                        "command": "complete",
+                        "paths": [
+                            {
+                                "operator": "equal",
+                                "node_path": "/gmf_grapes_gfs_v2_0/grapes_global/12/model/fcst"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
