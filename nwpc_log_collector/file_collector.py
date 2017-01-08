@@ -1,8 +1,5 @@
-from nwpc_log_util.version_util import get_version, session
 from nwpc_log_model.model import Record
-
-import os
-import sys
+from nwpc_log_model.util.version_util import get_version, session
 
 committed_count = 1000
 

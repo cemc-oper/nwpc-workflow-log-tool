@@ -1,6 +1,4 @@
-import sys
-import os
-from nwpc_log_util.version_util import get_version
+from nwpc_log_model.util.version_util import get_version
 
 if __name__ == "__main__":
     file_path = "/vagrant_data/sms-log-sample/nwp/cma20n03.sms.log"

@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+
 from nwpc_log_model.model import User, Repo, RepoVersion, RecordBase
 
 engine = create_engine(
