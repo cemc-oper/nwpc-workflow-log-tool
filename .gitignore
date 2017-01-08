@@ -76,4 +76,4 @@ celerybeat-schedule
 celerybeat.pid
 
 # project
-/nwpc_log_processor/rmdb_processor/run_time_line_processor/output/
+/nwpc_log_processor/run_time_line/output/
