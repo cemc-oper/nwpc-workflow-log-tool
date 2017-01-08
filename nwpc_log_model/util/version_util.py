@@ -32,7 +32,7 @@ def add_new_repo_version(repo, head_line):
     version.repo_id = repo.repo_id
     r = RecordBase()
     r.parse(head_line)
-    version_date = r.record_date.strftime("%Y%M%d")
+    version_date = r.record_date.strftime("%Y%m%d")
     query = session.query(RepoVersion).filter(RepoVersion.repo_id == repo.repo_id) \
         .filter(func.substr(RepoVersion.version_id, 0, 8)).order_by(RepoVersion.version_id.desc())
 
@@ -44,7 +44,7 @@ def add_new_repo_version(repo, head_line):
         version_id = latest_version.version_id + 1
         sub_version = latest_version.version_id % 100 + 1
     version.version_id = version_id
-    version.version_name = "version." + r.record_date.strftime("%Y-%M-%d") + "." + str(sub_version)
+    version.version_name = "version." + r.record_date.strftime("%Y-%m-%d") + "." + str(sub_version)
     version.head_line = head_line
     session.add(version)
     session.commit()

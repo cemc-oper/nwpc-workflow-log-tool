@@ -10,10 +10,10 @@ Alembic 中使用的 Model，models.py 中仅定义通用的记录表 Record，�
 2. 在 Alembic 中使用单一类表示所有结构相同的表
 """
 
-from nwpc_log_model import rdbms_model, RecordBase
+from nwpc_log_model.rdbms_model import Model, RecordBase
 
 
-class RecordNwpXpNwpcOp(RecordBase, rdbms_model):
+class RecordNwpXpNwpcOp(RecordBase, Model):
     __tablename__ = "record.nwp_xp.nwpc_op"
 
     def __init__(self):
@@ -32,7 +32,7 @@ class RecordNwpXpNwpcOp(RecordBase, rdbms_model):
         return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
-class RecordNwpXpNwpcQu(RecordBase, rdbms_model):
+class RecordNwpXpNwpcQu(RecordBase, Model):
     __tablename__ = "record.nwp_xp.nwpc_qu"
 
     def __init__(self):
@@ -51,8 +51,8 @@ class RecordNwpXpNwpcQu(RecordBase, rdbms_model):
         return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
-class RecordNwpXpEpsNwpcQu(RecordBase, rdbms_model):
-    __tablename__ = "record.nwp_xp.eps_nwpc_op"
+class RecordNwpXpEpsNwpcQu(RecordBase, Model):
+    __tablename__ = "record.nwp_xp.eps_nwpc_qu"
 
     def __init__(self):
         pass
@@ -70,7 +70,7 @@ class RecordNwpXpEpsNwpcQu(RecordBase, rdbms_model):
         return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
-class RecordNwpXPNwpcPd(RecordBase, rdbms_model):
+class RecordNwpXPNwpcPd(RecordBase, Model):
     __tablename__ = "record.nwp_xp.nwpc_pd"
 
     def __init__(self):
@@ -89,7 +89,7 @@ class RecordNwpXPNwpcPd(RecordBase, rdbms_model):
         return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
-class RecordNwpPosNwpcSp(RecordBase, rdbms_model):
+class RecordNwpPosNwpcSp(RecordBase, Model):
     __tablename__ = "record.nwp_pos.nwpc_sp"
 
     def __init__(self):
@@ -108,7 +108,7 @@ class RecordNwpPosNwpcSp(RecordBase, rdbms_model):
         return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
-class RecordNwpVfyNwpcVfy(RecordBase, rdbms_model):
+class RecordNwpVfyNwpcVfy(RecordBase, Model):
     __tablename__ = "record.nwp_vfy.nwpc_vfy"
 
     def __init__(self):
