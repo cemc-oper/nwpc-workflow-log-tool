@@ -3,19 +3,19 @@
     "series": [
         {
             "owner": "nwp_xp",
-            "repo": "nwp_cma20n03"
+            "repo": "nwpc_op"
         },
         {
             "owner": "nwp_xp",
-            "repo": "nwp_qu_cma20n03"
+            "repo": "nwpc_qu"
         },
         {
             "owner": "nwp_xp",
-            "repo": "nwp_qu_cma18n03"
+            "repo": "eps_nwpc_qu"
         },
         {
             "owner": "nwp_xp",
-            "repo": "nwp_pd_cma20n03"
+            "repo": "nwpc_pd"
         }
     ]
 }
