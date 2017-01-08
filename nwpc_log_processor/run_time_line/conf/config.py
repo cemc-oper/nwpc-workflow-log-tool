@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # mysql sqlalchemy
-SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://" + \
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://" + \
                           "windroc" + \
                           ":" + "shenyang" + \
                           "@" + "192.168.2.10" + \
