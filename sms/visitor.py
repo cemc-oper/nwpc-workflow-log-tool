@@ -1,6 +1,3 @@
-# coding=utf-8
-
-
 class NodeVisitor(object):
     def __init__(self):
         pass
@@ -42,10 +39,6 @@ class ErrorStatusTaskVisitor(NodeVisitor):
     def visit(self, node):
         if node.status == 'abo' and node.is_leaf():
             self.error_task_list.append(node)
-        #print "{place_holder}|-{node_name}".format(
-        #    place_holder=" "*self.level,
-        #    node_name=node.name
-        #)
 
     def before_visit_child(self):
         self.level += 1

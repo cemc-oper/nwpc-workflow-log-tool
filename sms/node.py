@@ -1,6 +1,3 @@
-# coding=utf-8
-
-
 class NodeType(object):
     Unknown = 1
     Root = 2
@@ -32,25 +29,28 @@ class NodeType(object):
 
     @staticmethod
     def get_node_type_string(node_type):
-        return NodeType.node_type_mapper[node_type]
+        if node_type in NodeType.node_type_mapper:
+            return NodeType.node_type_mapper[node_type]
+        else:
+            return None
 
 
-"""
-Node:
-
-    status:
-        first three characters of the status word.
-        unk: unknown
-        sus: suspended
-        com: complete
-        que: queued
-        sub: submitted
-        act: active
-        abo: aborted
-        shu: shutdown
-        hal: halted
-"""
 class Node(object):
+    """
+    Node:
+        status:
+            first three characters of the status word.
+            unk: unknown
+            sus: suspended
+            com: complete
+            que: queued
+            sub: submitted
+            act: active
+            abo: aborted
+            shu: shutdown
+            hal: halted
+    """
+
     def __init__(self):
         self.parent = None
         self.children = list()
@@ -60,8 +60,22 @@ class Node(object):
     def __str__(self):
         return self.get_node_path()
 
-    """
-        node:
+    def to_dict(self):
+        """
+        :return: a dict represented Node.
+            {
+                'name': str, node name,
+                'node_type': str, node type,
+                'node_path': str, node path,
+                'children': array, [
+                    node dict,
+                    node dict,
+                    ...
+                ]
+
+            }
+
+        node dict schema:
             {
                 "name": "node",
                 "type": "record",
@@ -75,22 +89,6 @@ class Node(object):
                         "items": {"type":"node"}
                     }
                 ]
-            }
-    """
-    def to_dict(self):
-        """
-
-        :return:
-            {
-                'name': str, node name,
-                'node_type': str, node type,
-                'node_path': str, node path,
-                'children': array, [
-                    node dict,
-                    node dict,
-                    ...
-                ]
-
             }
         """
         ret = dict()
