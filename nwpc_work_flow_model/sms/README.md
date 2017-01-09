@@ -1,19 +1,23 @@
-# nwpc-work-flow-model/sms
+# An NWPC work flow model for SMS
 
-SMS 项目的通用模型类，包括树、节点、节点状态、访问函数等。
+A general model for NWPC's SMS projects, including tree, node, node status, visitor functions and so on.
 
 ## node
 
-节点
+A node is a task or a container which contains other nodes.
 
-## node_status
+## node status
 
-节点状态
+Each node has a status at certain time to indicate what is going on. For example:
+
+* an `active` task means there is a task running.
+* an `aborted` task means that some task has an error.
 
 ## bunch
 
-任务树
+A bunch represents a tree of nodes. 
+In our operation system, one bunch is managed by one server program.
 
 ## visitor
 
-访问函数
+This model also provides some access traversing functions which ars useful for dealing with bunches.

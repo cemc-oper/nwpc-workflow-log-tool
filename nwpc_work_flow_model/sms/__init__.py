@@ -1,4 +1,3 @@
-# coding=utf-8
 from .node import Node, NodeType
 from .bunch import Bunch
 from .node_status import NodeStatus
