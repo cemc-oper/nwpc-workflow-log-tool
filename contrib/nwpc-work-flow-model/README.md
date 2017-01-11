@@ -13,7 +13,7 @@ Only SMS is supported at this moment. Please see `nwpc_work_flow_model/sms/READM
 
 ## Tests
 
-See `tests` directory.
+Use `pytest` to run tests.
 
 ## License
 
