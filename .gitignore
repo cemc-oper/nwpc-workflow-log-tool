@@ -77,3 +77,5 @@ celerybeat.pid
 
 # project
 /nwpc_log_processor/run_time_line/output/
+
+build
