@@ -15,7 +15,7 @@ setup(
     description='A work flow model using in operation systems at NWPC.',
     long_description=long_description,
 
-    url='https://https://github.com/perillaroc/nwpc-work-flow-model',
+    url='https://github.com/perillaroc/nwpc-work-flow-model',
 
     author='perillaroc',
     author_email='perillaroc@gmail.com',
@@ -35,7 +35,7 @@ setup(
 
     install_requires=[],
 
-    extra_require={
+    extras_require={
         'test': ['pytest'],
     },
 
