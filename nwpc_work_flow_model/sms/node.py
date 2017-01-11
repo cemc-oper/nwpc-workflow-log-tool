@@ -51,11 +51,11 @@ class Node(object):
             hal: halted
     """
 
-    def __init__(self):
+    def __init__(self, name='', status='unk'):
         self.parent = None
         self.children = list()
-        self.name = ''
-        self.status = 'unk'
+        self.name = name
+        self.status = status
 
     def __str__(self):
         return self.get_node_path()
@@ -120,6 +120,7 @@ class Node(object):
 
     def add_child(self, node):
         self.children.append(node)
+        node.parent = self
 
     def get_node_path(self):
         cur_node = self
@@ -140,12 +141,18 @@ class Node(object):
             return NodeType.Suite
 
         if len(self.children) > 0:
-            return NodeType.Family
+            if self.children[0].is_alias():
+                return NodeType.Task
+            else:
+                return NodeType.Family
         else:
             if self.name.find(":") != -1:
                 return NodeType.NonTaskNode
             else:
-                return NodeType.Task
+                if self.is_alias():
+                    return NodeType.Alias
+                else:
+                    return NodeType.Task
 
     def get_node_type_string(self):
         return NodeType.get_node_type_string(self.get_node_type())
