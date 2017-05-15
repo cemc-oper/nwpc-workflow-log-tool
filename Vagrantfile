@@ -79,9 +79,9 @@ Vagrant.configure("2") do |config|
     cd /home/vagrant
     mkdir app
     cd app
-    wget -q https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
-    tar -xvf Python-3.6.0.tgz
-    cd Python-3.6.0
+    wget -q https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz
+    tar -xvf Python-3.6.1.tgz
+    cd Python-3.6.1
     ./configure --enable-unicode=ucs4
     make
     make install
