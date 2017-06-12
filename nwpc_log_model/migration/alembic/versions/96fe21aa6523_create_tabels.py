@@ -75,7 +75,7 @@ def upgrade():
     op.create_index('fullname_index', 'record.nwp_vfy.nwpc_vfy', ['record_fullname'], unique=False)
     op.create_index('record_line_no_index', 'record.nwp_vfy.nwpc_vfy', ['repo_id', 'version_id', 'line_no'], unique=True)
     op.create_index('record_type', 'record.nwp_vfy.nwpc_vfy', ['record_type'], unique=False)
-    op.create_table('record.nwp_xp.eps_nwpc_op',
+    op.create_table('record.nwp_xp.eps_nwpc_qu',
     sa.Column('record_id', sa.Integer(), nullable=False),
     sa.Column('repo_id', sa.Integer(), nullable=True),
     sa.Column('version_id', sa.Integer(), nullable=True),
@@ -89,11 +89,11 @@ def upgrade():
     sa.Column('record_string', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('record_id')
     )
-    op.create_index('command_index', 'record.nwp_xp.eps_nwpc_op', ['record_command'], unique=False)
-    op.create_index('date_time_index', 'record.nwp_xp.eps_nwpc_op', ['repo_id', 'version_id', 'line_no', 'record_date', 'record_time'], unique=False)
-    op.create_index('fullname_index', 'record.nwp_xp.eps_nwpc_op', ['record_fullname'], unique=False)
-    op.create_index('record_line_no_index', 'record.nwp_xp.eps_nwpc_op', ['repo_id', 'version_id', 'line_no'], unique=True)
-    op.create_index('record_type', 'record.nwp_xp.eps_nwpc_op', ['record_type'], unique=False)
+    op.create_index('command_index', 'record.nwp_xp.eps_nwpc_qu', ['record_command'], unique=False)
+    op.create_index('date_time_index', 'record.nwp_xp.eps_nwpc_qu', ['repo_id', 'version_id', 'line_no', 'record_date', 'record_time'], unique=False)
+    op.create_index('fullname_index', 'record.nwp_xp.eps_nwpc_qu', ['record_fullname'], unique=False)
+    op.create_index('record_line_no_index', 'record.nwp_xp.eps_nwpc_qu', ['repo_id', 'version_id', 'line_no'], unique=True)
+    op.create_index('record_type', 'record.nwp_xp.eps_nwpc_qu', ['record_type'], unique=False)
     op.create_table('record.nwp_xp.nwpc_op',
     sa.Column('record_id', sa.Integer(), nullable=False),
     sa.Column('repo_id', sa.Integer(), nullable=True),
@@ -215,12 +215,12 @@ def downgrade():
     op.drop_index('date_time_index', table_name='record.nwp_xp.nwpc_op')
     op.drop_index('command_index', table_name='record.nwp_xp.nwpc_op')
     op.drop_table('record.nwp_xp.nwpc_op')
-    op.drop_index('record_type', table_name='record.nwp_xp.eps_nwpc_op')
-    op.drop_index('record_line_no_index', table_name='record.nwp_xp.eps_nwpc_op')
-    op.drop_index('fullname_index', table_name='record.nwp_xp.eps_nwpc_op')
-    op.drop_index('date_time_index', table_name='record.nwp_xp.eps_nwpc_op')
-    op.drop_index('command_index', table_name='record.nwp_xp.eps_nwpc_op')
-    op.drop_table('record.nwp_xp.eps_nwpc_op')
+    op.drop_index('record_type', table_name='record.nwp_xp.eps_nwpc_qu')
+    op.drop_index('record_line_no_index', table_name='record.nwp_xp.eps_nwpc_qu')
+    op.drop_index('fullname_index', table_name='record.nwp_xp.eps_nwpc_qu')
+    op.drop_index('date_time_index', table_name='record.nwp_xp.eps_nwpc_qu')
+    op.drop_index('command_index', table_name='record.nwp_xp.eps_nwpc_qu')
+    op.drop_table('record.nwp_xp.eps_nwpc_qu')
     op.drop_index('record_type', table_name='record.nwp_vfy.nwpc_vfy')
     op.drop_index('record_line_no_index', table_name='record.nwp_vfy.nwpc_vfy')
     op.drop_index('fullname_index', table_name='record.nwp_vfy.nwpc_vfy')

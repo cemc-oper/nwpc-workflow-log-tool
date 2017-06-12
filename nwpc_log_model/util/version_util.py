@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from nwpc_log_model.rdbms_model import User, Repo, RepoVersion, RecordBase
 
 engine = create_engine(
-    'mysql+mysqlconnector://windroc:shenyang@192.168.2.10/system-time-line',
+    'mysql+mysqlconnector://windroc:shenyang@10.28.32.175/system-time-line',
     # echo=True
 )
 Session = sessionmaker(bind=engine)
