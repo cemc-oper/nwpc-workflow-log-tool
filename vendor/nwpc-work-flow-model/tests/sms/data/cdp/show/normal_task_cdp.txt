@@ -1,0 +1,29 @@
+Welcome to cdp version 4.4.5 compiled on Tue Oct  8 09:23:20 GMT 2013
+# MSG:IOI-ACTION-C-BREAK:Interrupt handler loaded
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/ioi.log (append).
+/-CDP> # MSG:SMS-CLIENT-LOGIN:nwp logged into nwpc_op with password [20260479]
+/{act}   ssfs_v_4_0              [act]
+         grapes_meso_v4_1        [act]
+         gmf_gsi_v1r5            [que]
+         gda_gsi_v1r5            [que]
+         gda_grapes_gfs_v2_0     [que]
+         gmf_grapes_gfs_v2_0     [act]
+         gda_grapes_gfs_v2_0_diag[que]
+         extend_v2_1             [que]
+         obs_reg                 [que]
+
+task archiving # currently queued (Fri Jan 20 02:34:53 2017)
+  # genvar SMSRID '0'
+  # genvar SMSTRYNO '0'
+  # genvar TASK 'archiving'
+  # genvar SMSNAME '/grapes_meso_v4_1/cold/00/archive/archiving'
+  # genvar SMSSCRIPT '/cma/g1/nwp/SMSOUT/grapes_meso_v4_1/cold/00/archive/archiving.sms'
+  # genvar SMSJOB '/cma/g1/nwp/SMSOUT/grapes_meso_v4_1/cold/00/archive/archiving.job0'
+  # genvar SMSJOBOUT '/cma/g1/nwp/SMSOUT/grapes_meso_v4_1/cold/00/archive/archiving.0'
+  trigger ../prods/micaps eq complete and ../prods/grib2 eq complete and ../prods/post4vfy eq complete
+    # currenlty normal
+  edit SMSCMD 'lsubmit %SMSJOB% %SMSJOBOUT%'
+  edit SMSKILL 'kill -15 %SMSRID%'
+# MSG:SMS-CLIENT-LOGOUT:logout from nwpc_op
+Goodbye nwp
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/cdp.log (append).

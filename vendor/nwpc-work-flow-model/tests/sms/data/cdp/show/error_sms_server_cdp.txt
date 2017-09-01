@@ -1,0 +1,9 @@
+Welcome to cdp version 4.4.5 compiled on Tue Oct  8 09:23:20 GMT 2013
+# MSG:IOI-ACTION-C-BREAK:Interrupt handler loaded
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/wangdp/cdplog/ioi.log (append).
+/-CDP> # ERR:RPC:nwpc_wangdp: RPC: 1832-016 Unknown host
+
+# ERR:SMS-CLIENT-LOGIN:Client creation failed for host nwpc_wangdp.
+# WAR:match:not logged on
+Goodbye wangdp
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/wangdp/cdplog/cdp.log (append).

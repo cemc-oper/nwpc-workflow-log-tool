@@ -1,0 +1,19 @@
+Welcome to cdp version 4.4.5 compiled on Tue Oct  8 09:23:20 GMT 2013
+# MSG:IOI-ACTION-C-BREAK:Interrupt handler loaded
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/ioi.log (append).
+# MSG:SMS-CLIENT-LOGIN:nwp logged into nwpc_op with password [20092432]
+/{act}   ssfs_v_4_0              [que]
+         grapes_meso_v4_1        [que]
+         gmf_gsi_v1r5            [que]
+         gda_gsi_v1r5            [que]
+         gda_grapes_gfs_v2_0     [que]
+         gmf_grapes_gfs_v2_0     [que]
+         gda_grapes_gfs_v2_0_diag[act]
+         extend_v2_1             [que]
+         obs_reg                 [que]
+
+#============================================================
+#============================================================
+# MSG:SMS-CLIENT-LOGOUT:logout from nwpc_op
+Goodbye nwp
+# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/cdp.log (append).
