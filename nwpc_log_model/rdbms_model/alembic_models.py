@@ -10,7 +10,7 @@ Alembic 中使用的 Model，models.py 中仅定义通用的记录表 Record，�
 2. 在 Alembic 中使用单一类表示所有结构相同的表
 """
 
-from nwpc_log_model.rdbms_model import Model, RecordBase
+from nwpc_log_model.rdbms_model.models import Model, RecordBase
 
 
 class RecordNwpXpNwpcOp(RecordBase, Model):
@@ -19,36 +19,12 @@ class RecordNwpXpNwpcOp(RecordBase, Model):
     def __init__(self):
         pass
 
-    def __repr__(self):
-        return "<RecordNwpXpNwpcOp(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
-
 
 class RecordNwpXpNwpcQu(RecordBase, Model):
     __tablename__ = "record.nwp_xp.nwpc_qu"
 
     def __init__(self):
         pass
-
-    def __repr__(self):
-        return "<RecordNwpQuCma18n03(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
 class RecordNwpXpEpsNwpcQu(RecordBase, Model):
@@ -57,36 +33,12 @@ class RecordNwpXpEpsNwpcQu(RecordBase, Model):
     def __init__(self):
         pass
 
-    def __repr__(self):
-        return "<RecordNwpXpEpsNwpcQu(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
-
 
 class RecordNwpXPNwpcPd(RecordBase, Model):
     __tablename__ = "record.nwp_xp.nwpc_pd"
 
     def __init__(self):
         pass
-
-    def __repr__(self):
-        return "<RecordNwpXPNwpcPd(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
 class RecordNwpPosNwpcSp(RecordBase, Model):
@@ -95,33 +47,9 @@ class RecordNwpPosNwpcSp(RecordBase, Model):
     def __init__(self):
         pass
 
-    def __repr__(self):
-        return "<RecordNwpPosNwpcSp(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
-
 
 class RecordNwpVfyNwpcVfy(RecordBase, Model):
     __tablename__ = "record.nwp_vfy.nwpc_vfy"
 
     def __init__(self):
         pass
-
-    def __repr__(self):
-        return "<RecordNwpVfyNwpcVfy(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])

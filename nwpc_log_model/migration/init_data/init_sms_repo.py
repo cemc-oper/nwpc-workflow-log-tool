@@ -1,6 +1,3 @@
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../../")
 from nwpc_log_model.rdbms_model import User, Repo, SmsRepo
 
 from .data import repo_list

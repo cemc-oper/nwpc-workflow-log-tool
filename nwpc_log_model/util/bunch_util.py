@@ -1,7 +1,8 @@
 # coding=utf-8
+from sqlalchemy import distinct
+
 from nwpc_log_model.rdbms_model.models import Record
 from nwpc_work_flow_model.sms import Bunch
-from sqlalchemy import distinct
 
 
 class BunchUtil(object):

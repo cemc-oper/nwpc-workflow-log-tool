@@ -1,27 +1,30 @@
 # coding=utf-8
 from datetime import datetime
+import time
 
-from sqlalchemy import Column, Integer, String, Text, Date, Time, Index
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy import Column, Integer, String, Text, Date, Time
+from sqlalchemy.ext.declarative import declarative_base
 
 
-Model = declarative_base()
+class Base(object):
+    def columns(self):
+        return [c.name for c in self.__table__.columns]
+
+    def to_dict(self):
+        return dict([(c, getattr(self, c)) for c in self.columns()])
+
+
+Model = declarative_base(cls=Base)
 
 
 class User(Model):
     __tablename__ = "user"
 
     user_id = Column(Integer(), primary_key=True)
-    user_name = Column(String(45), unique=True)
+    user_name = Column(String(45))
 
     def __init__(self):
         pass
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
 class Repo(Model):
@@ -38,16 +41,8 @@ class Repo(Model):
     #   phy
     repo_type = Column(String(45))
 
-    user_repo_index = Index('user_repo', user_id, repo_name, unique=True)
-
     def __init__(self):
         pass
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
 
 class SmsRepo(Model):
@@ -56,7 +51,7 @@ class SmsRepo(Model):
     # 仅该表中使用，其它表中使用 repo_id
     sms_repo_id = Column(Integer(), primary_key=True)
     repo_id = Column(Integer())
-    user_id = Column(Integer())
+    user_id = Column(Integer)
     repo_name = Column(String(45))
     repo_location = Column(String(100))
     current_version_id = Column(Integer())
@@ -64,12 +59,6 @@ class SmsRepo(Model):
 
     def __init__(self):
         pass
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
     def update_from_dict(self, repo_dict):
         if self.repo_id != repo_dict['repo_id']:
@@ -86,19 +75,11 @@ class RepoVersion(Model):
 
     repo_version_id = Column(Integer, primary_key=True)
     repo_id = Column(Integer())
-    version_id = Column(Integer())
+    version_id = Column(String(20))
     version_name = Column(String(100))
     version_location = Column(String(200))
     head_line = Column(Text())
     collector_id = Column(Text())
-
-    repo_version_index = Index('repo_version_index', repo_id, version_id, unique=True)
-
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
 
     @staticmethod
     def create_from_dict(repo_version_dict):
@@ -130,14 +111,11 @@ class RecordBase(object):
     record_additional_information = Column(Text())
     record_string = Column(Text())
 
-    @declared_attr
-    def __table_args__(cls):
-        return (
-            Index("record_line_no_index", 'repo_id', 'version_id', 'line_no', unique=True),
-            Index('date_time_index', 'repo_id', 'version_id', 'line_no', 'record_date', 'record_time', unique=False),
-            Index('record_type', 'record_type'),
-            Index('command_index', 'record_command'),
-            Index('fullname_index', 'record_fullname')
+    def __repr__(self):
+        return "<{class_name}(id={record_id}, string='{record_string}'".format(
+            class_name=self.__class__.__name__,
+            record_id=self.record_id,
+            record_string=self.record_string.strip()
         )
 
     def parse(self, line):
@@ -275,8 +253,7 @@ class Record(RecordBase, Model):
     """
     SMS日志记录类的派生类，用于代表特定的表，见__tablename__。
     """
-
-    __tablename__ = 'record'
+    __tablename__ = "record"
 
     def __init__(self):
         pass
@@ -298,8 +275,6 @@ class Record(RecordBase, Model):
         table_name = 'record.{owner}.{repo}'.format(owner=owner, repo=repo)
         Record.__table__.name = table_name
 
-    def columns(self):
-        return [c.name for c in self.__table__.columns]
-
-    def to_dict(self):
-        return dict([(c, getattr(self, c)) for c in self.columns()])
+    @staticmethod
+    def init():
+        Record.__table__.name = 'record'
