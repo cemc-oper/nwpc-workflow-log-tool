@@ -1,14 +1,20 @@
+# coding: utf-8
+import click
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from nwpc_log_model.rdbms_model import Record
-from nwpc_log_model.util.version_util import get_version, session
+from nwpc_log_model.util.version_util import VersionUtil
 
-committed_count = 1000
+committed_count = 5000
 
 
-def collect_log_from_local_file(user_name, repo_name, file_path):
+def collect_log_from_local_file(user_name, repo_name, file_path, session):
     version = None
     with open(file_path) as f:
         first_line = f.readline().strip()
-        version = get_version(user_name, repo_name, first_line)
+        version = VersionUtil.get_version(user_name, repo_name, file_path, first_line, session)
         Record.prepare(user_name, repo_name)
 
         query = session.query(Record).filter(Record.repo_id == version.repo_id) \
@@ -59,6 +65,21 @@ def collect_log_from_local_file(user_name, repo_name, file_path):
             print('commit session')
 
 
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.option('-o', '--owner', help='owner name')
+@click.option('-r', '--repo', help='repo name')
+@click.option('-f', '--file-path', help='log file path')
+def load(owner, repo, file_path):
+    engine = create_engine('mysql+mysqlconnector://windroc:shenyang@10.28.32.175/system-time-line')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    collect_log_from_local_file(owner, repo, file_path, session)
+
+
 if __name__ == "__main__":
-    file_path = "/vagrant_data/sms-log-sample/nwp/cma20n03.sms.log"
-    collect_log_from_local_file('nwp_xp', 'nwpc_op', file_path)
+    cli()
