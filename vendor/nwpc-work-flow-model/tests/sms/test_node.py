@@ -201,7 +201,7 @@ class TestNode(unittest.TestCase):
             root_dict,
             {
                 'name': '',
-                'node_type': NodeType.Root,
+                'node_type': NodeType.Root.value,
                 'node_path': '/',
                 'path': '/',
                 'status': 'unk'
@@ -215,7 +215,7 @@ class TestNode(unittest.TestCase):
             family1_dict,
             {
                 'name': 'family1',
-                'node_type': NodeType.Family,
+                'node_type': NodeType.Family.value,
                 'node_path': '/suite1/family1',
                 'path': '/suite1/family1',
                 'status': 'unk'
@@ -225,7 +225,7 @@ class TestNode(unittest.TestCase):
         task1_dict_required = {
             'name': 'task1',
             'children': [],
-            'node_type': NodeType.Task,
+            'node_type': NodeType.Task.value,
             'node_path': '/suite1/family1/task1',
             'path': '/suite1/family1/task1',
             'status': 'unk'
@@ -235,7 +235,7 @@ class TestNode(unittest.TestCase):
         alias_dict_required = {
             'name': 'alias0',
             'children': [],
-            'node_type': NodeType.Alias,
+            'node_type': NodeType.Alias.value,
             'node_path': '/suite4/task12/alias0',
             'path': '/suite4/task12/alias0',
             'status': 'unk'
@@ -255,25 +255,25 @@ class TestNode(unittest.TestCase):
                                 {
                                     "name": "task1",
                                     "children": [],
-                                    "node_type": 5,
+                                    "node_type": NodeType.Task.value,
                                     "node_path": "/suite1/family1/task1",
                                     "path": "/suite1/family1/task1",
                                     "status": "act"
                                 }
                             ],
-                            "node_type": 4,
+                            "node_type": NodeType.Family.value,
                             "node_path": "/suite1/family1",
                             "path": "/suite1/family1",
                             "status": "act"
                         }
                     ],
-                    "node_type": 3,
+                    "node_type": NodeType.Suite.value,
                     "node_path": "/suite1",
                     "path": "/suite1",
                     "status": "act"
                 }
             ],
-            "node_type": 2,
+            "node_type": NodeType.Root.value,
             "node_path": "/",
             "path": "/",
             "status": "act"
