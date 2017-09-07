@@ -5,13 +5,13 @@ from sqlalchemy.orm import sessionmaker
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://" + \
                           "windroc" + \
                           ":" + "shenyang" + \
-                          "@" + "192.168.2.10" + \
+                          "@" + "10.28.32.175" + \
                           ":" + "3306" + \
                           "/" + "system-time-line" + \
                           "?" + "charset=utf8"
 
 # mongodb
-MONGODB_HOST = '192.168.2.10'
+MONGODB_HOST = '10.28.32.175'
 MONGODB_PORT = 27017
 
 # mysql engine
