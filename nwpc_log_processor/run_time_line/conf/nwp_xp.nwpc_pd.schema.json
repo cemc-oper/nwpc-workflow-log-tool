@@ -490,7 +490,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/00"
+                "node_path": "/downscl/t639_downscale/00"
               }
             ]
           },
@@ -500,7 +500,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/00"
+                "node_path": "/downscl/t639_downscale/00"
               }
             ]
           }
@@ -515,7 +515,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/06"
+                "node_path": "/downscl/t639_downscale/06"
               }
             ]
           },
@@ -525,7 +525,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/06"
+                "node_path": "/downscl/t639_downscale/06"
               }
             ]
           }
@@ -540,7 +540,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/12"
+                "node_path": "/downscl/t639_downscale/12"
               }
             ]
           },
@@ -550,7 +550,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/12"
+                "node_path": "/downscl/t639_downscale/12"
               }
             ]
           }
@@ -565,7 +565,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/18"
+                "node_path": "/downscl/t639_downscale/18"
               }
             ]
           },
@@ -575,7 +575,7 @@
             "paths": [
               {
                 "operator": "equal",
-                "node_path": "/downscl/t639/downscale/18"
+                "node_path": "/downscl/t639_downscale/18"
               }
             ]
           }
