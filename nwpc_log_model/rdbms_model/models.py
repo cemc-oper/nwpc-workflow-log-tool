@@ -54,7 +54,7 @@ class SmsRepo(Model):
     user_id = Column(Integer)
     repo_name = Column(String(45))
     repo_location = Column(String(100))
-    current_version_id = Column(Integer())
+    current_version_id = Column(String(20))
     repo_description = Column(Text())
 
     def __init__(self):
