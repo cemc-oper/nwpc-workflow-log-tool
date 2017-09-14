@@ -1,0 +1,7 @@
+smslog_local_collector:
+  sms:
+    post:
+      max_count: 1000
+
+  rdbms:
+    database_uri: sqlalchemy database uri

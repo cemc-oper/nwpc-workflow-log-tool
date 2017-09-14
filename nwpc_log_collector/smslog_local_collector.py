@@ -1,5 +1,6 @@
 # coding: utf-8
 import click
+import yaml
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -7,11 +8,21 @@ from sqlalchemy.orm import sessionmaker
 from nwpc_log_model.rdbms_model import Record
 from nwpc_log_model.util.version_util import VersionUtil
 
-committed_count = 5000
+
+def load_config(config_file_path):
+    f = open(config_file_path, 'r')
+    config = yaml.load(f)
+    f.close()
+    return config
 
 
-def collect_log_from_local_file(user_name, repo_name, file_path, session):
+def collect_log_from_local_file(config, user_name, repo_name, file_path):
     version = None
+
+    engine = create_engine(config['smslog_local_collector']['rdbms']['database_uri'])
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
     with open(file_path) as f:
         first_line = f.readline().strip()
         version = VersionUtil.get_version(user_name, repo_name, file_path, first_line, session)
@@ -55,7 +66,7 @@ def collect_log_from_local_file(user_name, repo_name, file_path, session):
             cur_line_no += 1
 
             session_count_to_be_committed += 1
-            if session_count_to_be_committed >= committed_count:
+            if session_count_to_be_committed >= config['smslog_local_collector']['sms']['post']['max_count']:
                 session.commit()
                 print('commit session')
                 session_count_to_be_committed = 0
@@ -71,14 +82,13 @@ def cli():
 
 
 @cli.command()
+@click.option('-c', '--config', help='config file path')
 @click.option('-o', '--owner', help='owner name')
 @click.option('-r', '--repo', help='repo name')
-@click.option('-f', '--file-path', help='log file path')
-def load(owner, repo, file_path):
-    engine = create_engine('mysql+mysqlconnector://windroc:shenyang@10.28.32.175/system-time-line')
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    collect_log_from_local_file(owner, repo, file_path, session)
+@click.option('-l', '--log-file', help='log file path')
+def load(config, owner, repo, log_file):
+    config_object = load_config(config)
+    collect_log_from_local_file(config_object, owner, repo, log_file)
 
 
 if __name__ == "__main__":
