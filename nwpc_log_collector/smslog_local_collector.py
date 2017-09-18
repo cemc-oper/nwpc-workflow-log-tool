@@ -104,7 +104,7 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
 
         session_count_to_be_committed = 0
         max_count = config['smslog_local_collector']['sms']['post']['max_count']
-        max_count = 1
+        # max_count = 1
 
         cur_line_no = begin_line_no
         for i in range(begin_line_no, end_line_no):
