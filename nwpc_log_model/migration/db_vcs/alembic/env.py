@@ -1,9 +1,7 @@
 from __future__ import with_statement
-
-from logging.config import fileConfig
-
 from alembic import context
-from sqlalchemy import engine_from_config, pool, create_engine
+from sqlalchemy import engine_from_config, pool
+from logging.config import fileConfig
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -13,15 +11,17 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-# add your rdbms_model's MetaData object here
+# add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+# target_metadata = None
+
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../../../")
-from nwpc_log_model.rdbms_model.models import Model
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../../"))
+from nwpc_log_model.rdbms_model.alembic_models import Model
 target_metadata = Model.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -57,20 +57,10 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    # connectable = engine_from_config(
-    #     config.get_section(config.config_ini_section),
-    #     prefix='sqlalchemy.',
-    #     poolclass=pool.NullPool)
-
-    cmd_line_url = context.get_x_argument(
-        as_dictionary=True).get('dbname')
-    if cmd_line_url:
-        connectable = create_engine(cmd_line_url)
-    else:
-        connectable = engine_from_config(
-            config.get_section(config.config_ini_section),
-            prefix='sqlalchemy.',
-            poolclass=pool.NullPool)
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section),
+        prefix='sqlalchemy.',
+        poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(

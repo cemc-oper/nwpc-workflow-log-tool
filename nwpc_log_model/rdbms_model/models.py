@@ -2,8 +2,8 @@
 from datetime import datetime
 import time
 
-from sqlalchemy import Column, Integer, String, Text, Date, Time
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, Text, Date, Time, Index
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
 class Base(object):
@@ -20,7 +20,7 @@ Model = declarative_base(cls=Base)
 class User(Model):
     __tablename__ = "user"
 
-    user_id = Column(Integer(), primary_key=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
     user_name = Column(String(45))
 
     def __init__(self):
@@ -30,8 +30,8 @@ class User(Model):
 class Repo(Model):
     __tablename__ = "repo"
 
-    repo_id = Column(Integer(), primary_key=True)
-    user_id = Column(Integer())
+    repo_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer)
 
     # 与 SmsRepo 中的 repo_name 重复，需要修改
     repo_name = Column(String(45))
@@ -49,11 +49,10 @@ class SmsRepo(Model):
     __tablename__ = "sms_repo"
 
     # 仅该表中使用，其它表中使用 repo_id
-    sms_repo_id = Column(Integer(), primary_key=True)
-    repo_id = Column(Integer())
-    user_id = Column(Integer)
+    repo_id = Column(Integer, primary_key=True, autoincrement=False)
+    user_id = Column(Integer, nullable=False)
     repo_name = Column(String(45))
-    repo_location = Column(String(100))
+    repo_location = Column(String(200))
     current_version_id = Column(String(20))
     repo_description = Column(Text())
 
@@ -73,9 +72,8 @@ class SmsRepo(Model):
 class RepoVersion(Model):
     __tablename__ = 'repo_version'
 
-    repo_version_id = Column(Integer, primary_key=True)
-    repo_id = Column(Integer())
-    version_id = Column(String(20))
+    repo_id = Column(Integer, primary_key=True)
+    version_id = Column(String(20), primary_key=True)
     version_name = Column(String(100))
     version_location = Column(String(200))
     head_line = Column(Text())
@@ -84,7 +82,6 @@ class RepoVersion(Model):
     @staticmethod
     def create_from_dict(repo_version_dict):
         new_version = RepoVersion()
-        new_version.repo_version_id = None
         new_version.repo_id = repo_version_dict['repo_id']
         new_version.version_id = repo_version_dict['version_id']
         new_version.version_name = repo_version_dict['version_name']
@@ -99,10 +96,9 @@ class RecordBase(object):
     SMS日志的基类，表述日志格式。
     使用多个结构相同的表记录SMS日志条目，通过继承该类并修改__tablename__属性实现。
     """
-    record_id = Column(Integer(), primary_key=True)
-    repo_id = Column(Integer())
-    version_id = Column(Integer())
-    line_no = Column(Integer())
+    repo_id = Column(Integer, primary_key=True)
+    version_id = Column(Integer, primary_key=True)
+    line_no = Column(Integer, primary_key=True)
     record_type = Column(String(100))
     record_date = Column(Date())
     record_time = Column(Time())
@@ -111,10 +107,9 @@ class RecordBase(object):
     record_additional_information = Column(Text())
     record_string = Column(Text())
 
-    def __repr__(self):
-        return "<{class_name}(id={record_id}, string='{record_string}'".format(
+    def __str__(self):
+        return "<{class_name}(string='{record_string}')>".format(
             class_name=self.__class__.__name__,
-            record_id=self.record_id,
             record_string=self.record_string.strip()
         )
 
@@ -249,23 +244,31 @@ class RecordBase(object):
                     self.record_fullname = line[start_pos:]
 
 
+class RecordMixin(object):
+    @declared_attr
+    def __table_args__(cls):
+        return (
+            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'record_date', 'record_time'),
+            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'record_command'),
+            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'record_fullname'),
+            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'record_type')
+        )
+
+
 class Record(RecordBase, Model):
     """
     SMS日志记录类的派生类，用于代表特定的表，见__tablename__。
     """
     __tablename__ = "record"
 
+    owner = 'owner'
+    repo = 'repo'
+
     def __init__(self):
         pass
 
-    def __repr__(self):
-        return "<Record(id={record_id}, string='{record_string}'".format(
-            record_id=self.record_id,
-            record_string=self.record_string.strip()
-        )
-
-    @staticmethod
-    def prepare(owner, repo):
+    @classmethod
+    def prepare(cls, owner, repo):
         """
         为 owner/repo 准备 Record 对象。当前需要修改 __tablename__ 为特定的表名。
         :param owner:
@@ -273,8 +276,27 @@ class Record(RecordBase, Model):
         :return:
         """
         table_name = 'record.{owner}.{repo}'.format(owner=owner, repo=repo)
-        Record.__table__.name = table_name
+        cls.__table__.name = table_name
+        cls.owner = owner
+        cls.repo = repo
 
-    @staticmethod
-    def init():
-        Record.__table__.name = 'record'
+        cls.__table_args__ = (
+            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'record_date', 'record_time'),
+            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'record_command'),
+            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'record_fullname'),
+            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'record_type')
+        )
+
+    @classmethod
+    def init(cls):
+        cls.__table__.name = 'record'
+
+        cls.owner = "owner"
+        cls.repo = "repo"
+
+        cls.__table_args__ = (
+            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'record_date', 'record_time'),
+            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'record_command'),
+            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'record_fullname'),
+            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'record_type')
+        )

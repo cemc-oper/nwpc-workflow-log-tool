@@ -10,46 +10,64 @@ Alembic 中使用的 Model，models.py 中仅定义通用的记录表 Record，�
 2. 在 Alembic 中使用单一类表示所有结构相同的表
 """
 
-from nwpc_log_model.rdbms_model.models import Model, RecordBase
+from nwpc_log_model.rdbms_model.models import Model, RecordBase, RecordMixin
 
 
-class RecordNwpXpNwpcOp(RecordBase, Model):
+class RecordNwpXpNwpcOp(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_xp.nwpc_op"
 
+    owner = 'nwp_xp'
+    repo = 'nwpc_op'
+
     def __init__(self):
         pass
 
 
-class RecordNwpXpNwpcQu(RecordBase, Model):
+class RecordNwpXpNwpcQu(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_xp.nwpc_qu"
 
+    owner = 'nwp_xp'
+    repo = 'nwpc_qu'
+
     def __init__(self):
         pass
 
 
-class RecordNwpXpEpsNwpcQu(RecordBase, Model):
+class RecordNwpXpEpsNwpcQu(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_xp.eps_nwpc_qu"
 
+    owner = 'nwp_xp'
+    repo = 'eps_nwpc_qu'
+
     def __init__(self):
         pass
 
 
-class RecordNwpXPNwpcPd(RecordBase, Model):
+class RecordNwpXPNwpcPd(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_xp.nwpc_pd"
 
+    owner = 'nwp_xp'
+    repo = 'nwpc_pd'
+
     def __init__(self):
         pass
 
 
-class RecordNwpPosNwpcSp(RecordBase, Model):
+class RecordNwpPosNwpcSp(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_pos.nwpc_sp"
 
+    owner = 'nwp_pos'
+    repo = 'nwpc_sp'
+
     def __init__(self):
         pass
 
 
-class RecordNwpVfyNwpcVfy(RecordBase, Model):
+class RecordNwpVfyNwpcVfy(RecordBase, RecordMixin, Model):
     __tablename__ = "record.nwp_vfy.nwpc_vfy"
+
+    owner = 'nwp_vfy'
+    repo = 'nwpc_vfy'
 
     def __init__(self):
         pass
