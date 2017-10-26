@@ -1,32 +1,41 @@
 # coding=utf-8
-from __future__ import absolute_import
-
-import argparse
 import datetime
 import json
-import os
+import pathlib
 
+import click
+import yaml
 from pymongo import MongoClient
 
-# settings
-from nwpc_log_processor.run_time_line.conf.config import MONGODB_HOST, MONGODB_PORT
 
-# mongodb collections
-mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
-smslog_mongodb = mongodb_client.smslog
-daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+def load_processor_config(config_file_path):
+    with open(config_file_path, 'r') as f:
+        config = yaml.load(f)
+        f.close()
+        config['_file_path'] = config_file_path
+        return config
 
 
-def load_schema(config_file_path):
-    if not os.path.exists(config_file_path):
-        print("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
+def load_schema(config):
+    schema_path = config['time_line_processor']['chart_schema']['path']
+    if schema_path.startswith('.'):
+        schema_path = pathlib.Path(pathlib.Path(config['_file_path']).parent, schema_path)
+
+    if not schema_path.exists():
+        print("{config_file_path} doesn't exist".format(config_file_path=schema_path))
         return None
-    with open(config_file_path, 'r') as config_file:
+    with open(schema_path, 'r') as config_file:
         schema = json.load(config_file)
         return schema
 
 
-def load_data(schema, query_date):
+def load_data(config, schema, query_date):
+    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
+    mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
+    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
+
+    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+
     series = schema['series']
     chart_data = []
     for a_record in series:
@@ -51,41 +60,35 @@ def load_data(schema, query_date):
     return result
 
 
-def main():
+@click.command()
+@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
+@click.option("-d", "--date", help="query date (%Y-%m-%d)", required=True)
+@click.option("--output-file", help="output file path")
+@click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
+@click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
+def cli(config_file_path, date, output_file, save_to_db, print_flag):
+    """\
+DESCRIPTION
+    Generate time line chart data."""
     start_time = datetime.datetime.now()
 
-    # argument parser
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description="""\
-DESCRIPTION
-    Generate time line chart data.""")
-
-    parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)", required=True)
-    parser.add_argument("-c", "--config", help="config file path")
-    parser.add_argument("--output-file", help="output file path")
-    parser.add_argument("-p", "--print", dest='print_flag', help="print result to console.", action='store_true')
-
-    args = parser.parse_args()
-
-    query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    query_date = datetime.datetime.strptime(date, "%Y-%m-%d")
     print('query date: {query_date}'.format(query_date=query_date))
 
-    config_file_path = args.config
-
-    schema = load_schema(config_file_path)
+    config = load_processor_config(config_file_path)
+    schema = load_schema(config)
     if schema is None:
         print("Fatal Error: load schema failed.")
         return
 
-    result = load_data(schema, query_date)
+    result = load_data(config, schema, query_date)
 
-    # if args.print_flag:
-    #     print(json.dumps(result, indent=4))
+    if print_flag:
+        print(json.dumps(result, indent=4))
 
     # save to file
-    if args.output_file:
-        output_file_path = args.output_file
+    if output_file:
+        output_file_path = output_file
         print("Write results to output file: {output_file_path}".format(output_file_path=output_file_path))
         output_file_content = json.dumps(result['data']['chart_data'], indent=2)
         with open(output_file_path, 'w') as output_file:
@@ -98,4 +101,4 @@ DESCRIPTION
 
 
 if __name__ == "__main__":
-    main()
+    cli()
