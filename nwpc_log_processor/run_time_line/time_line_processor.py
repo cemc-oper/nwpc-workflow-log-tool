@@ -1,35 +1,28 @@
 # coding=utf-8
-import argparse
 import datetime
 import json
-import os
+import pathlib
 
+import click
+import yaml
 from pymongo import MongoClient
-from sqlalchemy import asc, or_
+from sqlalchemy import create_engine, asc, or_
+from sqlalchemy.orm import sessionmaker
 
-# settings
-from nwpc_log_processor.run_time_line.conf.config import session, MONGODB_HOST, MONGODB_PORT
 
-# mysql tables
 from nwpc_log_model.rdbms_model import Record
 from nwpc_log_model.util.bunch_util import BunchUtil
 
-# mongodb collections
-mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
-smslog_mongodb = mongodb_client.smslog
 
-daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
-daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-
-
-def get_bunch(owner_name, repo_name, query_date):
+def get_bunch(owner_name, repo_name, query_date, session, daily_tree_status_collection):
     """
     从 MySQL 中生成某个项目的树形结构，保存到 MongoDB 中。
 
     :param owner_name:
     :param repo_name:
     :param query_date:
+    :param session:
+    :param daily_tree_status_collection:
     :return: Bunch
     """
 
@@ -52,14 +45,25 @@ def get_bunch(owner_name, repo_name, query_date):
     return tree
 
 
-def load_schema(owner, repo):
+def load_processor_config(config_file_path):
+    with open(config_file_path, 'r') as f:
+        config = yaml.load(f)
+        f.close()
+        config['_file_path'] = config_file_path
+        return config
+
+
+def load_schema(config, owner, repo):
+    schema_dir = config['time_line_processor']['system_schema']['dir']
+    if schema_dir.startswith('.'):
+        schema_dir = pathlib.Path(pathlib.Path(config['_file_path']).parent, schema_dir)
+
     config_file_name = "{owner}.{repo}.schema.json".format(
         owner=owner, repo=repo
     )
-    config_file_dir = os.path.join(os.path.dirname(__file__), 'conf')
 
-    config_file_path = os.path.join(config_file_dir, config_file_name)
-    if not os.path.exists(config_file_path):
+    config_file_path = pathlib.Path(schema_dir, config_file_name)
+    if not config_file_path.exists():
         print("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
         return None
     with open(config_file_path, 'r') as config_file:
@@ -67,7 +71,7 @@ def load_schema(owner, repo):
         return schema
 
 
-def calculate_time_line(owner, repo, query_date, schema, bunch):
+def calculate_time_line(owner, repo, query_date, schema, bunch, session):
     """
     sms服务器
     :param owner:
@@ -75,6 +79,7 @@ def calculate_time_line(owner, repo, query_date, schema, bunch):
     :param query_date:
     :param schema:
     :param bunch:
+    :param session:
     :return:
     """
     suites = schema["suites"]
@@ -87,13 +92,13 @@ def calculate_time_line(owner, repo, query_date, schema, bunch):
     }
 
     for a_suite in suites:
-        suite_time_line = calculate_suite_time_line(owner, repo, query_date, a_suite, bunch)
+        suite_time_line = calculate_suite_time_line(owner, repo, query_date, a_suite, bunch, session)
         result["suites"].append(suite_time_line)
 
     return result
 
 
-def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch):
+def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch, session):
     """
     每个suite
     :param owner:
@@ -101,6 +106,7 @@ def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch):
     :param query_date:
     :param suite_schema:
     :param bunch:
+    :param session:
     :return:
     """
     result = {
@@ -115,14 +121,14 @@ def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch):
     ))
 
     for a_run_time in suite_schema["times"]:
-        run_time_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch)
+        run_time_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
         if run_time_result is not None:
             result["times"].extend(run_time_result)
 
     return result
 
 
-def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch):
+def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch, session):
     """
     每个 run_time 项目，用在两个地方：
         每个时次
@@ -133,6 +139,7 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
     :param query_date:
     :param run_time_line_schema:
     :param bunch:
+    :param session:
     :return:
     """
     result = {
@@ -143,8 +150,8 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
         'class': run_time_line_schema['class'],
     }
 
-    start_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['start_time'], bunch)
-    end_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['end_time'], bunch)
+    start_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['start_time'], bunch, session)
+    end_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['end_time'], bunch, session)
 
     if start_time is None or end_time is None:
         print("[calculate_run_time_line] some time is None:")
@@ -158,7 +165,7 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
         if 'times' in run_time_line_schema:
             run_times_result = []
             for a_run_time in run_time_line_schema['times']:
-                run_times_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch)
+                run_times_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
             result["times"] = run_times_result
 
         return [result]
@@ -179,13 +186,14 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
             run_times_result = []
             run_times_result_pre_day = []
             for a_run_time in run_time_line_schema['times']:
-                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch)
+                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
 
                 if len(children_run_time_line) == 1:
                     child_run_time_line = children_run_time_line[0]
                     if result["start_time"] <= child_run_time_line["start_time"] <= result["end_time"]:
                         run_times_result.append(child_run_time_line)
-                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] <= result_pre_day["end_time"]:
+                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] \
+                            <= result_pre_day["end_time"]:
                         run_times_result_pre_day.append(child_run_time_line)
                     else:
                         print("Fatal Error: children_run_time_line error")
@@ -218,13 +226,14 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
             run_times_result = []
             run_times_result_pre_day = []
             for a_run_time in run_time_line_schema['times']:
-                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch)
+                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
 
                 if len(children_run_time_line) == 1:
                     child_run_time_line = children_run_time_line[0]
                     if result["start_time"] <= child_run_time_line["start_time"] <= result["end_time"]:
                         run_times_result.append(child_run_time_line)
-                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] <= result_pre_day["end_time"]:
+                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] \
+                            <= result_pre_day["end_time"]:
                         run_times_result_pre_day.append(child_run_time_line)
                     else:
                         print("Fatal Error: children_run_time_line error")
@@ -242,11 +251,11 @@ def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch
         return [result_pre_day, result]
     else:
         print('Fatal Error: start time and end time not fit')
-        print('\trun_time_line_schema:',run_time_line_schema)
+        print('\trun_time_line_schema:', run_time_line_schema)
         return None
 
 
-def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch):
+def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch, session):
     """
     计算单个时间，用于以下两项：
         start_time
@@ -268,6 +277,7 @@ def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch):
             ]
         }
     :param bunch:
+    :param session:
     :return:
     """
     Record.prepare(owner, repo)
@@ -397,84 +407,97 @@ def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch):
     return None
 
 
-def process_time_line(owner_name, repo_name, query_date):
-    bunch = get_bunch(owner_name, repo_name, query_date)
+def process_time_line(config, owner_name, repo_name, query_date):
 
-    schema = load_schema(owner_name, repo_name)
+    engine = create_engine(config['time_line_processor']['log_dbms']['database_uri'])
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
+    mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
+    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
+
+    daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
+    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+    repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+
+    bunch = get_bunch(owner_name, repo_name, query_date, session, daily_tree_status_collection)
+
+    schema = load_schema(config, owner_name, repo_name)
     if schema is None:
         print("Fatal Error: load schema failed.")
         return None
 
-    result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch)
+    result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch, session)
     return result
 
 
-def save_time_line_to_db(time_line_result):
+def save_time_line_to_db(config, time_line_result):
     key = {
         'owner': time_line_result['owner'],
         'repo': time_line_result['repo'],
         'query_date': time_line_result['query_date']
     }
     value = time_line_result
+
+    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
+    mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
+    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
+
+    daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
+    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+    repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+
     daily_repo_time_line_collection.replace_one(key, value, upsert=True)
 
 
-def save_time_line_to_file(time_line_result, output_file_path):
+def save_time_line_to_file(config, time_line_result, output_file_path):
     output_file_content = json.dumps(time_line_result, indent=2)
     with open(output_file_path, 'w') as output_file:
         output_file.write(output_file_content)
 
 
-def main():
+@click.command()
+@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
+@click.option("-o", "--owner", help="owner name", required=True)
+@click.option("-r", "--repo", help="repo name", required=True)
+@click.option("-d", "--date", help="query date (%Y-%m-%d)", required=True)
+@click.option("--output-file", help="output file path")
+@click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
+@click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
+def cli(config_file_path, owner, repo, date, output_file, save_to_db, print_flag):
+    """\
+DESCRIPTION
+    Calculate time line for owner/repo on query date according to config file."""
+
     start_time = datetime.datetime.now()
 
-    # argument parser
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description="""\
-DESCRIPTION
-    Calculate time line for owner/repo on query date according to config file.""")
+    query_date = datetime.datetime.strptime(date, "%Y-%m-%d")
 
-    parser.add_argument("-o", "--owner", help="owner name", required=True)
-    parser.add_argument("-r", "--repo", help="repo name", required=True)
-    parser.add_argument("-d", "--date", help="query date (%Y-%m-%d)", required=True)
-    parser.add_argument("--output-file", help="output file path")
-    parser.add_argument("--save-to-db", help="save result to database", action='store_true')
-    parser.add_argument("-p", "--print", dest='print_flag', help="print result to console.", action='store_true')
-
-    # parser section
-
-    args = parser.parse_args()
-
-    owner_name = args.owner
-    print('owner name: {owner_name}'.format(owner_name=owner_name))
-
-    repo_name = args.repo
-    print('repo name: {repo_name}'.format(repo_name=repo_name))
-
-    query_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    print('owner name: {owner}'.format(owner=owner))
+    print('repo name: {repo}'.format(repo=repo))
     print('query date: {query_date}'.format(query_date=query_date))
 
     # calculate section
+    config = load_processor_config(config_file_path)
 
-    result = process_time_line(owner_name, repo_name, query_date)
+    result = process_time_line(config, owner, repo, query_date)
     if result is None:
         return
 
     # output section
-
-    if args.print_flag:
+    if print_flag:
         print(json.dumps(result, indent=4))
 
     # 保存到 MongoDB
-    if args.save_to_db:
+    if save_to_db:
         print("Save results to database")
-        save_time_line_to_db(result)
+        save_time_line_to_db(config, result)
 
     # 保存到文件
-    if args.output_file:
-        print("Write results to output file: {output_file_path}".format(output_file_path=args.output_file))
-        save_time_line_to_file(result, args.output_file)
+    if output_file:
+        print("Write results to output file: {output_file_path}".format(output_file_path=output_file))
+        save_time_line_to_file(config, result, output_file)
 
     # 时间统计
     end_time = datetime.datetime.now()
@@ -483,4 +506,4 @@ DESCRIPTION
 
 
 if __name__ == "__main__":
-    main()
+    cli()
