@@ -1,5 +1,6 @@
 # coding=utf-8
 import pathlib
+import datetime
 
 import click
 import yaml
@@ -10,7 +11,9 @@ from sqlalchemy.orm import sessionmaker
 from nwpc_log_model.rdbms_model.models import Model
 from nwpc_log_model.util.repo_util import RepoUtil
 
-from nwpc_log_collector.smslog_local_collector import collect_log_from_local_file_by_range, load_config as load_collector_config
+from nwpc_log_collector.smslog_local_collector import \
+    collect_log_from_local_file_by_range, load_config as load_collector_config
+from nwpc_log_processor.run_time_line.time_line_processor import load_processor_config, time_line_processor
 
 
 def load_config(config_file_path):
@@ -76,7 +79,19 @@ def load(config, owner, repo, log_file, begin_date, end_date):
 @click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
 @click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
 def process(config, owner, repo, begin_date, end_date):
-    pass
+    config_object = load_config(config)
+    config_file_path = config_object['system_time_line']['processor']['run_time_line']['config']
+    if config_file_path.startswith('.'):
+        config_file_path = pathlib.Path(pathlib.Path(config).parent, config_file_path)
+    processor_config = load_processor_config(str(config_file_path))
+
+    begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    days_count = (end_date-begin_date).days
+    date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
+    for query_date in date_list:
+        print(query_date)
+        time_line_processor(processor_config, owner, repo, query_date, None, True, False)
 
 
 if __name__ == "__main__":
