@@ -60,22 +60,8 @@ def load_data(config, schema, query_date):
     return result
 
 
-@click.command()
-@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
-@click.option("-d", "--date", help="query date (%Y-%m-%d)", required=True)
-@click.option("--output-file", help="output file path")
-@click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
-@click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
-def cli(config_file_path, date, output_file, save_to_db, print_flag):
-    """\
-DESCRIPTION
-    Generate time line chart data."""
-    start_time = datetime.datetime.now()
-
-    query_date = datetime.datetime.strptime(date, "%Y-%m-%d")
+def generate_chart_data(config, query_date, output_file, save_to_db, print_flag):
     print('query date: {query_date}'.format(query_date=query_date))
-
-    config = load_processor_config(config_file_path)
     schema = load_schema(config)
     if schema is None:
         print("Fatal Error: load schema failed.")
@@ -93,6 +79,25 @@ DESCRIPTION
         output_file_content = json.dumps(result['data']['chart_data'], indent=2)
         with open(output_file_path, 'w') as output_file:
             output_file.write(output_file_content)
+
+
+@click.command()
+@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
+@click.option("-d", "--date", help="query date (%Y-%m-%d)", required=True)
+@click.option("--output-file", help="output file path")
+@click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
+@click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
+def cli(config_file_path, date, output_file, save_to_db, print_flag):
+    """\
+DESCRIPTION
+    Generate time line chart data."""
+    start_time = datetime.datetime.now()
+
+    query_date = datetime.datetime.strptime(date, "%Y-%m-%d")
+
+    config = load_processor_config(config_file_path)
+
+    generate_chart_data(config, query_date, output_file, save_to_db, print_flag)
 
     # 时间统计
     end_time = datetime.datetime.now()

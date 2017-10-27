@@ -14,6 +14,7 @@ from nwpc_log_model.util.repo_util import RepoUtil
 from nwpc_log_collector.smslog_local_collector import \
     collect_log_from_local_file_by_range, load_config as load_collector_config
 from nwpc_log_processor.run_time_line.time_line_processor import load_processor_config, time_line_processor
+from nwpc_log_processor.run_time_line.time_line_chart_data_generator import generate_chart_data
 
 
 def load_config(config_file_path):
@@ -92,6 +93,30 @@ def process(config, owner, repo, begin_date, end_date):
     for query_date in date_list:
         print(query_date)
         time_line_processor(processor_config, owner, repo, query_date, None, True, False)
+
+
+@cli.command()
+@click.option('-c', '--config', help='config file path')
+@click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
+@click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
+@click.option("--output-dir", required=True, help="output directory path")
+@click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
+@click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
+def generate(config, begin_date, end_date, output_dir, save_to_db, print_flag):
+    config_object = load_config(config)
+    config_file_path = config_object['system_time_line']['processor']['run_time_line']['config']
+    if config_file_path.startswith('.'):
+        config_file_path = pathlib.Path(pathlib.Path(config).parent, config_file_path)
+    processor_config = load_processor_config(str(config_file_path))
+
+    begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    days_count = (end_date-begin_date).days
+    date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
+    for query_date in date_list:
+        print(query_date)
+        output_file = pathlib.Path(output_dir, query_date.strftime("%Y-%m-%d") + '.json')
+        generate_chart_data(processor_config, query_date, output_file, save_to_db, print_flag)
 
 
 if __name__ == "__main__":
