@@ -19,7 +19,12 @@ let class_styles = [
   {class_name:'largemem', color: '#67000d'}
 ];
 
-const dom = new JSDOM(``);
+const virtualConsole = new jsdom.VirtualConsole();
+virtualConsole.sendTo(console);
+
+const dom = new JSDOM(``,{ virtualConsole });
+
+
 //
 const document = dom.window.document;
 let body = d3_selection.select(document.body);

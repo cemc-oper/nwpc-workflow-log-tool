@@ -14,8 +14,14 @@ let module_config= {
     {
       test: /\.css/,
       use: [
-        "css-loader",
-      ]
+          'isomorphic-style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
+          }
+        ]
     }
   ]
 };
