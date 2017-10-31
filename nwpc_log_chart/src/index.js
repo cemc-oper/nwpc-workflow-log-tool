@@ -3,7 +3,7 @@ import {JSDOM, VirtualConsole} from 'jsdom'
 const d3_selection = require('d3-selection');
 
 const fs = require('fs');
-const gm = require('gm').subClass({imageMagick: true});
+const gm = require('gm')//.subClass({imageMagick: true});
 // const path = require('path');
 
 const ArgumentParser = require('argparse').ArgumentParser;
