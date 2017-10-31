@@ -89,7 +89,12 @@ fs.writeFileSync(output_svg_file_path, svg_content);
 // }
 
 console.log(output_svg_file_path, output_png_file_path);
+
 gm(output_svg_file_path).write(output_png_file_path, function(err){
-  if (!err) console.log('image converted.')
-  else console.log(err);
+  if (!err)
+    console.log('image converted.')
+  else {
+    console.log('gm has some error');
+    console.log(err);
+  }
 })

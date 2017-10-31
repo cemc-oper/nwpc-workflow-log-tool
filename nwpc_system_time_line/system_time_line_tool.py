@@ -1,6 +1,7 @@
 # coding=utf-8
 import pathlib
 import datetime
+import subprocess
 
 import click
 import yaml
@@ -117,6 +118,40 @@ def generate(config, begin_date, end_date, output_dir, save_to_db, print_flag):
         print(query_date)
         output_file = pathlib.Path(output_dir, query_date.strftime("%Y-%m-%d") + '.json')
         generate_chart_data(processor_config, query_date, output_file, save_to_db, print_flag)
+
+
+@cli.command()
+@click.option('-c', '--config', help='config file path')
+@click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
+@click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
+@click.option('--data-dir', help='date dir')
+@click.option("--output-dir", required=True, help="output directory path")
+def plot(config, begin_date, end_date, data_dir, output_dir):
+    config_object = load_config(config)
+    plot_script = config_object['system_time_line']['plotter']['script']
+    if plot_script.startswith('.'):
+        plot_script = pathlib.Path(pathlib.Path(config).parent, plot_script)
+
+    begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    days_count = (end_date-begin_date).days
+    date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
+    for query_date in date_list:
+        print(query_date)
+        data_file = "{date}.json".format(date=query_date.strftime("%Y-%m-%d"))
+        data_file = pathlib.Path(data_dir, data_file)
+        output_svg_file = "{date}.svg".format(date=query_date.strftime("%Y-%m-%d"))
+        output_svg_file = pathlib.Path(output_dir, output_svg_file)
+        output_png_file = "{date}.png".format(date=query_date.strftime("%Y-%m-%d"))
+        output_png_file = pathlib.Path(output_dir, output_png_file)
+
+        subprocess.call([
+            'node',
+            str(plot_script),
+            '--data=' + str(data_file),
+            '--output-svg=' + str(output_svg_file),
+            '--output-png=' + str(output_png_file)
+        ])
 
 
 if __name__ == "__main__":

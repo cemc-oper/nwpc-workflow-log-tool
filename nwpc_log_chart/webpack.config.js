@@ -30,7 +30,7 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: 'time_line_chart_tool.js',
   },
   module: module_config,
   target: 'node'
