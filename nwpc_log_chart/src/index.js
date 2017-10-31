@@ -1,11 +1,9 @@
-const nuwe_timeline = require('nuwe-timeline');
-const {TimeLine} = nuwe_timeline;
-
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
-const fs = require('fs');
+import {TimeLine} from 'nuwe-timeline';
+import {JSDOM, VirtualConsole} from 'jsdom'
 const d3_selection = require('d3-selection');
 
+const fs = require('fs');
+const gm = require('gm').subClass({imageMagick: true});;
 
 let class_styles = [
   {class_name:'unknown', color: '#bdbdbd'},
@@ -19,61 +17,19 @@ let class_styles = [
   {class_name:'largemem', color: '#67000d'}
 ];
 
-const virtualConsole = new jsdom.VirtualConsole();
+const virtualConsole = new VirtualConsole();
 virtualConsole.sendTo(console);
 
 const dom = new JSDOM(``,{ virtualConsole });
 
-
-//
 const document = dom.window.document;
+global.document = document;
+
 let body = d3_selection.select(document.body);
 let container = body.append('div')
   .attr('id', 'container');
-console.log(container);
-
-// const d3_shape = require('d3-shape');
-//
-// var pieData = [12,31];
-// var outputLocation = 'test.svg';
-//
-// var chartWidth = 500, chartHeight = 500;
-//
-// var arc = d3_shape.arc()
-//   .outerRadius(chartWidth/2 - 10)
-//   .innerRadius(0);
-//
-// var colours = ['#F00','#000','#000','#000','#000','#000','#000','#000','#000'];
-//
-// var s = container.append('svg');
-// s.attr('id', '#container_svg')
-//   .attr({
-//     width:chartWidth,
-//     height:chartHeight
-//   });
-// console.log(s);
-// s.append('g')
-//   .attr('transform','translate(' + chartWidth/2 + ',' + chartWidth/2 + ')');
-//
-// s.selectAll('.arc')
-//   .data( d3_shape.pie()(pieData) )
-//   .enter()
-//   .append('path')
-//   .attr({
-//     'class':'arc',
-//     'd':arc,
-//     'fill':function(d,i){
-//       return colours[i];
-//     },
-//     'stroke':'#fff'
-//   });
-//
-// //write out the children of the container div
-// fs.writeFileSync(outputLocation, body.select('#container').html()) //using sync to keep the code simple
-
 
 let data = require("./data.json");
-global.document = document;
 let my_timeline = new TimeLine('#container',{
   type: 'timeline',
   data: {
@@ -82,4 +38,9 @@ let my_timeline = new TimeLine('#container',{
   }
 });
 
-fs.writeFileSync('./output.svg', container.html());
+fs.writeFileSync('./dist/output.svg', container.html());
+
+gm('./dist/output.svg').write('./dist/output.png', function(err){
+  if (!err) console.log('image converted.')
+  else console.log(err);
+})

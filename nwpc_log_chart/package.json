@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "argparse": "^1.0.9",
+    "gm": "^1.23.0",
     "jsdom": "^11.3.0",
     "nuwe-timeline": "^0.1.5"
   },
