@@ -3,7 +3,42 @@ import {JSDOM, VirtualConsole} from 'jsdom'
 const d3_selection = require('d3-selection');
 
 const fs = require('fs');
-const gm = require('gm').subClass({imageMagick: true});;
+const gm = require('gm').subClass({imageMagick: true});
+// const path = require('path');
+
+const ArgumentParser = require('argparse').ArgumentParser;
+
+let parser = new ArgumentParser({
+  addHelp:true,
+  description: 'NWPC operation system run time line chart generator.'
+});
+
+parser.addArgument(
+  ['-d', '--data'],
+  {
+    help: 'chart data'
+  }
+)
+
+parser.addArgument(
+  ['--output-svg'],
+  {
+    help: 'output svg file path'
+  }
+)
+
+parser.addArgument(
+  ['--output-png'],
+  {
+    help: 'output png file path'
+  }
+)
+
+let args = parser.parseArgs();
+
+let data_file_path = args.data;
+let output_svg_file_path = args.output_svg;
+let output_png_file_path = args.output_png;
 
 let class_styles = [
   {class_name:'unknown', color: '#bdbdbd'},
@@ -29,7 +64,8 @@ let body = d3_selection.select(document.body);
 let container = body.append('div')
   .attr('id', 'container');
 
-let data = require("./data.json");
+let data = JSON.parse(fs.readFileSync(data_file_path, 'utf8'))
+
 let my_timeline = new TimeLine('#container',{
   type: 'timeline',
   data: {
@@ -38,9 +74,22 @@ let my_timeline = new TimeLine('#container',{
   }
 });
 
-fs.writeFileSync('./dist/output.svg', container.html());
+let svg_content = container.html();
 
-gm('./dist/output.svg').write('./dist/output.png', function(err){
+// let svg_dir = path.dirname(output_svg_file_path);
+// if(!fs.existsSync(svg_dir)){
+//   fs.mkdirSync(svg_dir);
+// }
+
+fs.writeFileSync(output_svg_file_path, svg_content);
+
+// let png_dir = path.dirname(output_png_file_path);
+// if(!fs.existsSync(png_dir)){
+//   fs.mkdirSync(png_dir);
+// }
+
+console.log(output_svg_file_path, output_png_file_path);
+gm(output_svg_file_path).write(output_png_file_path, function(err){
   if (!err) console.log('image converted.')
   else console.log(err);
 })
