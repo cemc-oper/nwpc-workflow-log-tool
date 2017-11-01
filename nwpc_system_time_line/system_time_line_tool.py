@@ -27,6 +27,9 @@ def load_config(config_file_path):
 
 @click.group()
 def cli():
+    """
+    NWPC's operation system running time line tool.
+    """
     pass
 
 
@@ -35,6 +38,9 @@ def cli():
 @click.option('-o', '--owner', help='owner name')
 @click.option('-r', '--repo', help='repo name')
 def setup(config, owner, repo):
+    """
+    set up database.
+    """
     config = load_config(config)
     engine = create_engine(config['system_time_line']['rdbms']['database_uri'])
     Session = sessionmaker(bind=engine)
@@ -51,6 +57,9 @@ def setup(config, owner, repo):
 @click.option('-o', '--owner', help='owner name')
 @click.option('-r', '--repo', help='repo name')
 def teardown(config, owner, repo):
+    """
+    clean up database.
+    """
     config = load_config(config)
     engine = create_engine(config['system_time_line']['rdbms']['database_uri'])
     Session = sessionmaker(bind=engine)
@@ -66,6 +75,9 @@ def teardown(config, owner, repo):
 @click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
 @click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
 def load(config, owner, repo, log_file, begin_date, end_date):
+    """
+    load records from log file.
+    """
     config_object = load_config(config)
     config_file_path = config_object['system_time_line']['smslog_local_collector']['config']
     if config_file_path.startswith('.'):
@@ -81,6 +93,9 @@ def load(config, owner, repo, log_file, begin_date, end_date):
 @click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
 @click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
 def process(config, owner, repo, begin_date, end_date):
+    """
+    process log records.
+    """
     config_object = load_config(config)
     config_file_path = config_object['system_time_line']['processor']['run_time_line']['config']
     if config_file_path.startswith('.'):
@@ -92,7 +107,7 @@ def process(config, owner, repo, begin_date, end_date):
     days_count = (end_date-begin_date).days
     date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
     for query_date in date_list:
-        print(query_date)
+        print(query_date.strftime("%Y-%m-%d"))
         time_line_processor(processor_config, owner, repo, query_date, None, True, False)
 
 
@@ -104,6 +119,9 @@ def process(config, owner, repo, begin_date, end_date):
 @click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
 @click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
 def generate(config, begin_date, end_date, output_dir, save_to_db, print_flag):
+    """
+    Generate chart data.
+    """
     config_object = load_config(config)
     config_file_path = config_object['system_time_line']['processor']['run_time_line']['config']
     if config_file_path.startswith('.'):
@@ -115,7 +133,7 @@ def generate(config, begin_date, end_date, output_dir, save_to_db, print_flag):
     days_count = (end_date-begin_date).days
     date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
     for query_date in date_list:
-        print(query_date)
+        print(query_date.strftime("%Y-%m-%d"))
         output_file = pathlib.Path(output_dir, query_date.strftime("%Y-%m-%d") + '.json')
         generate_chart_data(processor_config, query_date, output_file, save_to_db, print_flag)
 
@@ -127,6 +145,9 @@ def generate(config, begin_date, end_date, output_dir, save_to_db, print_flag):
 @click.option('--data-dir', help='date dir')
 @click.option("--output-dir", required=True, help="output directory path")
 def plot(config, begin_date, end_date, data_dir, output_dir):
+    """
+    plot chart in svg and png.
+    """
     config_object = load_config(config)
     plot_script = config_object['system_time_line']['plotter']['script']
     if plot_script.startswith('.'):
@@ -137,7 +158,7 @@ def plot(config, begin_date, end_date, data_dir, output_dir):
     days_count = (end_date-begin_date).days
     date_list = [begin_date + datetime.timedelta(days=x) for x in range(0, days_count)]
     for query_date in date_list:
-        print(query_date)
+        print(query_date.strftime("%Y-%m-%d"))
         data_file = "{date}.json".format(date=query_date.strftime("%Y-%m-%d"))
         data_file = pathlib.Path(data_dir, data_file)
         output_svg_file = "{date}.svg".format(date=query_date.strftime("%Y-%m-%d"))
