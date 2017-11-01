@@ -4,7 +4,7 @@ const d3_selection = require('d3-selection');
 
 const fs = require('fs');
 const gm = require('gm')//.subClass({imageMagick: true});
-// const path = require('path');
+const path = require('path');
 
 const ArgumentParser = require('argparse').ArgumentParser;
 
@@ -76,17 +76,17 @@ let my_timeline = new TimeLine('#container',{
 
 let svg_content = container.html();
 
-// let svg_dir = path.dirname(output_svg_file_path);
-// if(!fs.existsSync(svg_dir)){
-//   fs.mkdirSync(svg_dir);
-// }
+let svg_dir = path.dirname(output_svg_file_path);
+if(!fs.existsSync(svg_dir)){
+  fs.mkdirSync(svg_dir);
+}
 
 fs.writeFileSync(output_svg_file_path, svg_content);
 
-// let png_dir = path.dirname(output_png_file_path);
-// if(!fs.existsSync(png_dir)){
-//   fs.mkdirSync(png_dir);
-// }
+let png_dir = path.dirname(output_png_file_path);
+if(!fs.existsSync(png_dir)){
+  fs.mkdirSync(png_dir);
+}
 
 console.log(output_svg_file_path, output_png_file_path);
 
