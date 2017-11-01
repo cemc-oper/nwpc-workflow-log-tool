@@ -33,5 +33,6 @@ module.exports = {
     filename: 'time_line_chart_tool.js',
   },
   module: module_config,
-  target: 'node'
+  target: 'node',
+  devtool: 'source-map'
 };

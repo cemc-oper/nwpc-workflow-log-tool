@@ -3,7 +3,7 @@ import {JSDOM, VirtualConsole} from 'jsdom'
 const d3_selection = require('d3-selection');
 
 const fs = require('fs');
-const gm = require('gm')//.subClass({imageMagick: true});
+const gm = require('gm');
 const path = require('path');
 
 const ArgumentParser = require('argparse').ArgumentParser;
@@ -18,21 +18,21 @@ parser.addArgument(
   {
     help: 'chart data'
   }
-)
+);
 
 parser.addArgument(
   ['--output-svg'],
   {
     help: 'output svg file path'
   }
-)
+);
 
 parser.addArgument(
   ['--output-png'],
   {
     help: 'output png file path'
   }
-)
+);
 
 let args = parser.parseArgs();
 
@@ -64,7 +64,7 @@ let body = d3_selection.select(document.body);
 let container = body.append('div')
   .attr('id', 'container');
 
-let data = JSON.parse(fs.readFileSync(data_file_path, 'utf8'))
+let data = JSON.parse(fs.readFileSync(data_file_path, 'utf8'));
 
 let my_timeline = new TimeLine('#container',{
   type: 'timeline',
@@ -92,9 +92,9 @@ console.log(output_svg_file_path, output_png_file_path);
 
 gm(output_svg_file_path).write(output_png_file_path, function(err){
   if (!err)
-    console.log('image converted.')
+    console.log('image converted.');
   else {
     console.log('gm has some error');
     console.log(err);
   }
-})
+});
