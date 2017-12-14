@@ -1,8 +1,9 @@
 # coding: utf-8
 import datetime
+import json
+
 import click
 import yaml
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -23,6 +24,40 @@ def get_session(database_uri):
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
+
+
+def get_log_info_from_local_file(config_object, owner, repo, log_file, output_type):
+    with open(log_file) as f:
+        first_line = f.readline()
+        if first_line is None:
+            return {
+                'file_path': log_file,
+                'line_count': 0
+            }
+        first_record = Record()
+        first_record.parse(first_line)
+
+        cur_line_no = 1
+        cur_line = first_line
+        for line in f:
+            cur_line = line
+            cur_line_no += 1
+        last_record = Record()
+        last_record.parse(cur_line)
+        return {
+            'file_path': log_file,
+            'line_count': cur_line_no,
+            'range': {
+                'start': {
+                    'date': first_record.record_date.strftime('%Y-%m-%d'),
+                    'time': first_record.record_time.strftime('%H:%M:%S')
+                },
+                'end': {
+                    'date': last_record.record_date.strftime('%Y-%m-%d'),
+                    'time': last_record.record_time.strftime('%H:%M:%S')
+                }
+            }
+        }
 
 
 def collect_log_from_local_file(config, user_name, repo_name, file_path):
@@ -133,6 +168,25 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
 @click.group()
 def cli():
     pass
+
+
+@cli.command()
+@click.option('-c', '--config', help='config file path')
+@click.option('-o', '--owner', help='owner name')
+@click.option('-r', '--repo', help='repo name')
+@click.option('-l', '--log-file', help='log file path')
+@click.option('--output-type', type=click.Choice(['print', 'json']), default='json', help='output type')
+def info(config, owner, repo, log_file, output_type):
+    config_object = load_config(config)
+    log_info = get_log_info_from_local_file(config_object, owner, repo, log_file, output_type)
+    result = {
+        'app': 'sms_local_collector',
+        'timestamp': datetime.datetime.now().timestamp(),
+        'data': {
+            'log_info': log_info
+        }
+    }
+    print(json.dumps(result, indent=2))
 
 
 @cli.command()

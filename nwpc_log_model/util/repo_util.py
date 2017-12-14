@@ -33,6 +33,8 @@ class RepoUtil(object):
         if not result:
             session.add(repo_object)
             session.commit()
+        else:
+            repo_object = result
 
         result = session.query(SmsRepo).filter(SmsRepo.repo_id == repo_object.repo_id).first()
         if not result:

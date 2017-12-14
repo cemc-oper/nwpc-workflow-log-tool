@@ -2,6 +2,7 @@
 import pathlib
 import datetime
 import subprocess
+import json
 
 import click
 import yaml
@@ -12,8 +13,11 @@ from sqlalchemy.orm import sessionmaker
 from nwpc_log_model.rdbms_model.models import Model
 from nwpc_log_model.util.repo_util import RepoUtil
 
-from nwpc_log_collector.smslog_local_collector import \
-    collect_log_from_local_file_by_range, load_config as load_collector_config
+from nwpc_log_collector.smslog_local_collector import (
+    collect_log_from_local_file_by_range,
+    load_config as load_collector_config,
+    get_log_info_from_local_file
+)
 from nwpc_log_processor.run_time_line.time_line_processor import load_processor_config, time_line_processor
 from nwpc_log_processor.run_time_line.time_line_chart_data_generator import generate_chart_data
 
@@ -84,6 +88,38 @@ def load(config, owner, repo, log_file, begin_date, end_date):
         config_file_path = pathlib.Path(pathlib.Path(config).parent, config_file_path)
     collector_config = load_collector_config(str(config_file_path))
     collect_log_from_local_file_by_range(collector_config, owner, repo, log_file, begin_date, end_date)
+
+
+@cli.command()
+@click.option('-c', '--config', required=True, help='config file path')
+@click.option('-o', '--owner', help='owner name')
+@click.option('-r', '--repo', help='repo name')
+@click.option('-l', '--log-file', required=True, help='log file path')
+def log_file_info(config, owner, repo, log_file):
+    """
+    Get info from log file.
+    """
+    config_object = load_config(config)
+    config_file_path = config_object['system_time_line']['smslog_local_collector']['config']
+    if config_file_path.startswith('.'):
+        config_file_path = pathlib.Path(pathlib.Path(config).parent, config_file_path)
+    collector_config = load_collector_config(str(config_file_path))
+    log_info = get_log_info_from_local_file(collector_config, owner, repo, log_file, "json")
+    result = {
+        'app': 'sms_local_collector',
+        'timestamp': datetime.datetime.now().timestamp(),
+        'data': {
+            'request': {
+                'command': 'log_file_info',
+                'config': config,
+                'owner': owner,
+                'repo': repo,
+                'log_file': log_file
+            },
+            'response': log_info
+        }
+    }
+    print(json.dumps(result, indent=2))
 
 
 @cli.command()

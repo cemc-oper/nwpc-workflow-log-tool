@@ -16,6 +16,7 @@ let parser = new ArgumentParser({
 parser.addArgument(
   ['-d', '--data'],
   {
+    required: true,
     help: 'chart data'
   }
 );
@@ -23,6 +24,7 @@ parser.addArgument(
 parser.addArgument(
   ['--output-svg'],
   {
+    required: true,
     help: 'output svg file path'
   }
 );
@@ -30,6 +32,7 @@ parser.addArgument(
 parser.addArgument(
   ['--output-png'],
   {
+    required: true,
     help: 'output png file path'
   }
 );
