@@ -60,7 +60,7 @@ def get_log_info_from_local_file(config_object, owner, repo, log_file, output_ty
         }
 
 
-def collect_log_from_local_file(config, user_name, repo_name, file_path):
+def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose):
     session = get_session(config['smslog_local_collector']['rdbms']['database_uri'])
 
     with open(file_path) as f:
@@ -94,10 +94,15 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path):
         session_count_to_be_committed = 0
 
         cur_line_no = start_line_no
+        commit_begin_line_no = cur_line_no
         for line in f:
             line = line.strip()
+            if line[0] != '#':
+                cur_line_no += 1
+                continue
             record = Record()
-            print(cur_line_no, line)
+            if verbose > 1:
+                print(cur_line_no, line)
             record.parse(line)
             record.repo_id = version.repo_id
             record.version_id = version.version_id
@@ -107,16 +112,21 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path):
 
             session_count_to_be_committed += 1
             if session_count_to_be_committed >= config['smslog_local_collector']['sms']['post']['max_count']:
+                commit_end_line_no = cur_line_no
                 session.commit()
-                print('commit session')
+                click.echo('commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                    begin_line_no=commit_begin_line_no,
+                    end_line_no=commit_end_line_no
+                ))
                 session_count_to_be_committed = 0
+                commit_begin_line_no = cur_line_no + 1
 
         if session_count_to_be_committed > 0:
             session.commit()
-            print('commit session')
+            click.echo('commit session, last lines.')
 
 
-def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path, start_date, end_date):
+def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path, start_date, end_date, verbose):
     session = get_session(config['smslog_local_collector']['rdbms']['database_uri'])
 
     with open(file_path) as f:
@@ -142,11 +152,16 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
         # max_count = 1
 
         cur_line_no = begin_line_no
+        commit_begin_line_no = cur_line_no
         for i in range(begin_line_no, end_line_no):
             line = f.readline()
             line = line.strip()
+            if len(line) == 0 or line[0] != '#':
+                cur_line_no += 1
+                continue
             record = Record()
-            print(cur_line_no, line)
+            if verbose > 1:
+                print(cur_line_no, line)
             record.parse(line)
             record.repo_id = version.repo_id
             record.version_id = version.version_id
@@ -156,13 +171,18 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
 
             session_count_to_be_committed += 1
             if session_count_to_be_committed >= max_count:
+                commit_end_line_no = cur_line_no
                 session.commit()
-                click.echo('commit session')
+                click.echo('commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                    begin_line_no=commit_begin_line_no,
+                    end_line_no=commit_end_line_no
+                ))
                 session_count_to_be_committed = 0
+                commit_begin_line_no = cur_line_no + 1
 
         if session_count_to_be_committed > 0:
             session.commit()
-            click.echo('commit session')
+            click.echo('commit session, last lines.')
 
 
 @click.group()
@@ -194,9 +214,10 @@ def info(config, owner, repo, log_file, output_type):
 @click.option('-o', '--owner', help='owner name')
 @click.option('-r', '--repo', help='repo name')
 @click.option('-l', '--log-file', help='log file path')
-def load(config, owner, repo, log_file):
+@click.option('-v', '--verbose', count=True, help='verbose level')
+def load(config, owner, repo, log_file, verbose):
     config_object = load_config(config)
-    collect_log_from_local_file(config_object, owner, repo, log_file)
+    collect_log_from_local_file(config_object, owner, repo, log_file, verbose)
 
 
 @cli.command()
@@ -206,9 +227,10 @@ def load(config, owner, repo, log_file):
 @click.option('-l', '--log-file', help='log file path')
 @click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
 @click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
-def load_range(config, owner, repo, log_file, begin_date, end_date):
+@click.option('-v', '--verbose', count=True, help='verbose level')
+def load_range(config, owner, repo, log_file, begin_date, end_date, verbose):
     config_object = load_config(config)
-    collect_log_from_local_file_by_range(config_object, owner, repo, log_file, begin_date, end_date)
+    collect_log_from_local_file_by_range(config_object, owner, repo, log_file, begin_date, end_date, verbose)
 
 
 if __name__ == "__main__":

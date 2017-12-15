@@ -78,7 +78,8 @@ def teardown(config, owner, repo):
 @click.option('-l', '--log-file', help='log file path')
 @click.option('--begin-date', help='begin date, [start_date, end_date), YYYY-MM-dd')
 @click.option('--end-date', help='end date, [start_date, end_date), YYYY-MM-dd')
-def load(config, owner, repo, log_file, begin_date, end_date):
+@click.option('-v', '--verbose', count=True, help='verbose level')
+def load(config, owner, repo, log_file, begin_date, end_date, verbose):
     """
     load records from log file.
     """
@@ -87,7 +88,7 @@ def load(config, owner, repo, log_file, begin_date, end_date):
     if config_file_path.startswith('.'):
         config_file_path = pathlib.Path(pathlib.Path(config).parent, config_file_path)
     collector_config = load_collector_config(str(config_file_path))
-    collect_log_from_local_file_by_range(collector_config, owner, repo, log_file, begin_date, end_date)
+    collect_log_from_local_file_by_range(collector_config, owner, repo, log_file, begin_date, end_date, verbose)
 
 
 @cli.command()

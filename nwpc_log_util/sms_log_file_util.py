@@ -68,7 +68,14 @@ class SmsLogFileUtil(object):
                     return begin_line_no, end_line_no
 
                 # if last line less then begin date, skip to next turn.
+                cur_pos = -1
                 cur_last_line = next_n_lines[-1]
+                while (-1 * cur_pos) < len(next_n_lines):
+                    cur_last_line = next_n_lines[cur_pos]
+                    if cur_last_line[0] == '#':
+                        break
+                    cur_pos -= 1
+
                 line_date = get_date_from_line(cur_last_line)
                 if line_date < begin_date:
                     cur_first_line_no = cur_first_line_no + len(next_n_lines)
@@ -77,6 +84,8 @@ class SmsLogFileUtil(object):
                 # find first line greater or equal to begin_date
                 for i in range(0, len(next_n_lines)):
                     cur_line = next_n_lines[i]
+                    if cur_line[0] != '#':
+                        continue
                     line_date = get_date_from_line(cur_line)
                     if line_date >= begin_date:
                         begin_line_no = cur_first_line_no + i
@@ -89,6 +98,8 @@ class SmsLogFileUtil(object):
                 # if begin_line_no == end_line_no, then there is no line returned.
                 for i in range(begin_line_no - 1, len(next_n_lines)):
                     cur_line = next_n_lines[i]
+                    if cur_line[0] != '#':
+                        continue
                     line_date = get_date_from_line(cur_line)
                     if line_date >= end_date:
                         end_line_no = cur_first_line_no + i
@@ -104,7 +115,14 @@ class SmsLogFileUtil(object):
                 next_n_lines = list(islice(log_file, max_line_no))
                 if not next_n_lines:
                     break
+
                 cur_last_line = next_n_lines[-1]
+                cur_pos = -1
+                while (-1 * cur_pos) < len(next_n_lines):
+                    cur_last_line = next_n_lines[cur_pos]
+                    if cur_last_line[0] == '#':
+                        break
+                    cur_pos -= 1
 
                 # if last line less than end_date, skip to next run
                 line_date = get_date_from_line(cur_last_line)
@@ -115,6 +133,8 @@ class SmsLogFileUtil(object):
                 # find end_date
                 for i in range(0, len(next_n_lines)):
                     cur_line = next_n_lines[i]
+                    if cur_line[0] != '#':
+                        continue
                     line_date = get_date_from_line(cur_line)
                     if line_date >= end_date:
                         end_line_no = cur_first_line_no + i
