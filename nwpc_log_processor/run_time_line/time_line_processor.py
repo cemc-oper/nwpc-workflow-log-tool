@@ -64,7 +64,7 @@ def load_schema(config, owner, repo):
 
     config_file_path = pathlib.Path(schema_dir, config_file_name)
     if not config_file_path.exists():
-        print("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
+        click.echo("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
         return None
     with open(config_file_path, 'r') as config_file:
         schema = json.load(config_file)
@@ -114,7 +114,7 @@ def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch, sess
         'label': suite_schema['name'],
         'times': []
     }
-    print("{owner}/{repo}/{suite}".format(
+    click.echo("{owner}/{repo}/{suite}".format(
         owner=owner,
         repo=repo,
         suite=suite_schema['name']
@@ -425,7 +425,7 @@ def process_time_line(config, owner_name, repo_name, query_date):
 
     schema = load_schema(config, owner_name, repo_name)
     if schema is None:
-        print("Fatal Error: load schema failed.")
+        click.echo("Fatal Error: load schema failed.")
         return None
 
     result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch, session)
@@ -458,9 +458,9 @@ def save_time_line_to_file(config, time_line_result, output_file_path):
 
 
 def time_line_processor(config, owner, repo, query_date, output_file, save_to_db, print_flag):
-    print('owner name: {owner}'.format(owner=owner))
-    print('repo name: {repo}'.format(repo=repo))
-    print('query date: {query_date}'.format(query_date=query_date))
+    click.echo('owner name: {owner}'.format(owner=owner))
+    click.echo('repo name: {repo}'.format(repo=repo))
+    click.echo('query date: {query_date}'.format(query_date=query_date))
 
     result = process_time_line(config, owner, repo, query_date)
     if result is None:
@@ -468,16 +468,16 @@ def time_line_processor(config, owner, repo, query_date, output_file, save_to_db
 
     # output section
     if print_flag:
-        print(json.dumps(result, indent=4))
+        click.echo(json.dumps(result, indent=4))
 
     # 保存到 MongoDB
     if save_to_db:
-        print("Save results to database")
+        click.echo("Save results to database")
         save_time_line_to_db(config, result)
 
     # 保存到文件
     if output_file:
-        print("Write results to output file: {output_file_path}".format(output_file_path=output_file))
+        click.echo("Write results to output file: {output_file_path}".format(output_file_path=output_file))
         save_time_line_to_file(config, result, output_file)
     return
 
@@ -504,7 +504,7 @@ DESCRIPTION
 
     # 时间统计
     end_time = datetime.datetime.now()
-    print(end_time - start_time)
+    click.echo(end_time - start_time)
     return
 
 
