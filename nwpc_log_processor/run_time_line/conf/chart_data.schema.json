@@ -1,21 +1,21 @@
 {
-    "type": "timeline",
-    "series": [
-        {
-            "owner": "nwp_xp",
-            "repo": "nwpc_op"
-        },
-        {
-            "owner": "nwp_xp",
-            "repo": "nwpc_qu"
-        },
-        {
-            "owner": "nwp_xp",
-            "repo": "eps_nwpc_qu"
-        },
-        {
-            "owner": "nwp_xp",
-            "repo": "nwpc_pd"
-        }
-    ]
+  "type": "timeline",
+  "series": [
+    {
+      "owner": "nwp_xp",
+      "repo": "nwpc_op"
+    },
+    {
+      "owner": "nwp_xp",
+      "repo": "nwpc_qu"
+    },
+    {
+      "owner": "nwp_xp",
+      "repo": "eps_nwpc_qu"
+    },
+    {
+      "owner": "nwp_xp",
+      "repo": "nwpc_pd"
+    }
+  ]
 }

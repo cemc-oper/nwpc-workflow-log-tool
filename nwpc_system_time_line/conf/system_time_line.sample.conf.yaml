@@ -1,0 +1,21 @@
+system_time_line:
+  rdbms:
+    # database uri, using in sqlalchemy
+    database_uri: mysql+mysqlconnector://user:password@host/dbname
+
+  smslog_local_collector:
+    # smslog_local_collector's config file path, file path type:
+    #   1. relative path: relative to this config file.
+    #   2. absolute path
+    # see nwpc_log_collector/conf
+    config: ./smslog_local_collector.conf.yaml
+
+  processor:
+    run_time_line:
+      # run time line processor's config file path
+      # see nwpc_log_processor/run_time_line/conf
+      config: ./time_line_processor.conf.yaml
+
+  plotter:
+    # plotter's script file path
+    script: ./../bin/time_line_chart_tool.js

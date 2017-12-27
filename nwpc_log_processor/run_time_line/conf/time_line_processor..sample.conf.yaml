@@ -1,0 +1,25 @@
+time_line_processor:
+  log_dbms:
+    # database uri, using in sqlalchemy
+    database_uri: mysql+mysqlconnector://user:password@host/dbname
+
+  statistic_dbms:
+    # db type, currently supported: mongodb
+    type: mongodb
+
+    # db host
+    host: host
+
+    # db port
+    port: port
+
+    # db schema
+    schema: schema name
+
+  system_schema:
+    # dir for system schemas
+    dir: ./system_shcema
+
+  chart_schema:
+    # file path of chart schema
+    path: ./chart_data.schema.json
