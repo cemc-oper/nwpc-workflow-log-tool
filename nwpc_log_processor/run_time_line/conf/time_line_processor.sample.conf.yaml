@@ -22,4 +22,4 @@ time_line_processor:
 
   chart_schema:
     # file path of chart schema
-    path: ./chart_data.schema.json
+    path: ./chart_data.schema.sample.yaml

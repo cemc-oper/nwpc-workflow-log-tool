@@ -25,7 +25,7 @@ def load_schema(config):
         print("{config_file_path} doesn't exist".format(config_file_path=schema_path))
         return None
     with open(schema_path, 'r') as config_file:
-        schema = json.load(config_file)
+        schema = yaml.load(config_file)
         return schema
 
 
