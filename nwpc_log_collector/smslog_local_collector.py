@@ -114,7 +114,8 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose
             if session_count_to_be_committed >= config['smslog_local_collector']['sms']['post']['max_count']:
                 commit_end_line_no = cur_line_no
                 session.commit()
-                click.echo('commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                click.echo('[{time}] commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                    time=datetime.datetime.now(),
                     begin_line_no=commit_begin_line_no,
                     end_line_no=commit_end_line_no
                 ))
@@ -166,14 +167,15 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
             record.repo_id = version.repo_id
             record.version_id = version.version_id
             record.line_no = cur_line_no
-            record = session.merge(record)
+            record = session.add(record)
             cur_line_no += 1
 
             session_count_to_be_committed += 1
             if session_count_to_be_committed >= max_count:
                 commit_end_line_no = cur_line_no
                 session.commit()
-                click.echo('commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                click.echo('[{time}] commit session, line range: [{begin_line_no}, {end_line_no}]'.format(
+                    time=datetime.datetime.now(),
                     begin_line_no=commit_begin_line_no,
                     end_line_no=commit_end_line_no
                 ))
