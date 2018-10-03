@@ -6,7 +6,7 @@ from pyspark import SparkContext, SparkConf
 
 
 from nwpc_workflow_log_processor.spark.node_tree_calculator import calculate_node_tree
-from nwpc_workflow_log_processor.spark.node_status_io import get_from_file
+from nwpc_workflow_log_processor.spark.io.file import get_from_file
 from nwpc_work_flow_model.sms.visitor import SimplePrintVisitor, pre_order_travel
 
 

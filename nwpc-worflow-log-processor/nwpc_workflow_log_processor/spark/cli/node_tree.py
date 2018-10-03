@@ -5,7 +5,6 @@ import click
 import yaml
 import findspark
 from pyspark.sql import SparkSession
-from pyspark import SparkConf
 
 
 from nwpc_workflow_log_processor.spark.node_tree_calculator import calculate_node_tree
@@ -22,23 +21,29 @@ def load_config(config_file):
 def generate_node_tree(config, owner, repo, begin_date, end_date):
     findspark.init(config['engine']['spark']['base'])
 
-    # conf = SparkConf().setAppName("sms.spark.nwpc-workflow-log-processor").setMaster("local")
+    t1 = datetime.datetime.now()
+
     spark = SparkSession \
         .builder \
         .appName("sms.spark.nwpc-workflow-log-processor") \
+        .master("local[4]") \
         .config("spark.driver.extraClassPath", config['datastore']['mysql']['driver']) \
         .config("spark.executor.extraClassPath", config['datastore']['mysql']['driver']) \
         .config("spark.executor.memory", '4g') \
         .config("spark.driver.memory", '4g') \
         .getOrCreate()
-    # sc = SparkContext(conf=conf)
 
     record_rdd = get_from_mysql(config, owner, repo, begin_date, end_date, spark)
 
     bunch_map = calculate_node_tree(None, record_rdd, spark)
 
-    for date, bunch in bunch_map.items():
-        pre_order_travel(bunch, SimplePrintVisitor())
+    t2 = datetime.datetime.now()
+    print(t2 - t1)
+
+    spark.stop()
+
+    # for date, bunch in bunch_map.items():
+    #     pre_order_travel(bunch, SimplePrintVisitor())
 
 
 @click.command()

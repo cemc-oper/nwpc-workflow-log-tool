@@ -13,7 +13,8 @@ import datetime
 import click
 from pyspark import SparkContext, SparkConf
 
-from nwpc_workflow_log_processor.spark.node_status_io import get_from_file, save_to_mongodb, save_to_kafka
+from nwpc_workflow_log_processor.spark.node_status_io import save_to_mongodb, save_to_kafka
+from nwpc_workflow_log_processor.spark.io.file import get_from_file
 from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
 
 

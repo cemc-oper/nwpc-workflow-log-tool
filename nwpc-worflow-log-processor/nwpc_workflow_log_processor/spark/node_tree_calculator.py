@@ -24,7 +24,7 @@ def calculate_node_tree(config, record_rdd, spark):
         for node_path in node_path_list:
             if node_path is not None:
                 bunch.add_node(node_path)
-        print("Done")
+        print("Generated bunch for ", day)
         bunch_map[day] = bunch
 
     return bunch_map
