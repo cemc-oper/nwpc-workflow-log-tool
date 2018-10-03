@@ -4,15 +4,15 @@ import datetime
 from nwpc_log_model import Record
 
 
-def get_from_file(config, owner, repo, begin_date, end_date, log_file, sc):
+def get_from_file(config, owner, repo, begin_date, end_date, log_file, spark):
     Record.prepare(owner, repo)
 
-    log_data = sc.textFile(log_file)
+    log_data = spark.read.text(log_file).rdd
 
     # record line => record object
     def parse_sms_log(line):
         record = Record()
-        record.parse(line)
+        record.parse(line.value)
         return record
 
     log_data = log_data.map(parse_sms_log)
