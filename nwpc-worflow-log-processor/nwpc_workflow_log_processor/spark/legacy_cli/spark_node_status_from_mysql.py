@@ -16,7 +16,8 @@ import click
 import yaml
 from pyspark.sql import SparkSession
 
-from nwpc_workflow_log_processor.spark.node_status_io import get_from_mysql, save_to_mongodb, save_to_kafka
+from nwpc_workflow_log_processor.spark.node_status_io import save_to_mongodb, save_to_kafka
+from nwpc_workflow_log_processor.spark.io.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
 
 

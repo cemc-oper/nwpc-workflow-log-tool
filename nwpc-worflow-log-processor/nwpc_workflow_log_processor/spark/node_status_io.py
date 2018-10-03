@@ -2,13 +2,11 @@
 import json
 import datetime
 import logging
-import yaml
 
 # from kafka import KafkaClient, SimpleProducer
 from pymongo import MongoClient
 
 from nwpc_log_model import Record
-
 
 # mongodb
 MONGODB_HOST = '192.168.99.100'
@@ -73,74 +71,6 @@ def get_from_hive(config, owner, repo, begin_date, end_date, spark):
         record.version_id = row[0]
         record.line_no = row[1]
         record.parse(row[2])
-        return record
-
-    record_rdd = log_data.rdd.map(parse_sms_log)
-
-    return record_rdd
-
-
-def get_from_mysql(config, owner, repo, begin_date, end_date, spark):
-    Record.prepare(owner, repo)
-    table_name = Record.__table__.name
-
-    with open(config, 'r') as config_file:
-        config_dict = yaml.load(config_file)
-        spark_config = config_dict['migrate']['spark']
-        mysql_config = config_dict['migrate']['mysql']
-        REDIS_HOST = config_dict['migrate']['redis']['host']
-        REDIS_PORT = config_dict['migrate']['redis']['port']
-
-    query_datetime = begin_date
-    query_date = begin_date.date()
-
-    # date range [ start_date - 1, end_date ]，这是日志条目收集的范围
-    query_date_list = []
-    i = begin_date - datetime.timedelta(days=1)
-    while i <= end_date:
-        query_date_list.append(i.date())
-        i = i + datetime.timedelta(days=1)
-
-    df = spark.read.format('jdbc') \
-        .option("url", "jdbc:mysql://{host}:{port}/{db}".format(
-        host=mysql_config['host'],
-        port=mysql_config['port'],
-        db=mysql_config['database']
-    )) \
-        .option("dbtable", "`{db}`.`{table_name}`".format(
-        db=mysql_config['database'],
-        table_name=table_name
-    )) \
-        .option("user", "windroc") \
-        .option("password", "shenyang") \
-        .load()
-
-    df.registerTempTable("record")
-
-    sql = ("SELECT repo_id, version_id, line_no, record_date, record_time, record_string "
-           "FROM record "
-           "WHERE record_date>='{start_date}' AND record_date<='{end_date}' ").format(
-        start_date=query_date_list[0].strftime("%Y-%m-%d"),
-        end_date=query_date_list[-1].strftime("%Y-%m-%d")
-    )
-
-    log_data = spark.sql(sql)
-
-    # test
-    # records = log_data.collect()
-    # for i in records[0:10]:
-    #     print(i)
-    # return
-
-    ##############
-    # parse log records. Generate Record object.
-    ##############
-    # record row => record object
-    def parse_sms_log(row):
-        record = Record()
-        record.version_id = row[0]
-        record.line_no = row[1]
-        record.parse(row[5])
         return record
 
     record_rdd = log_data.rdd.map(parse_sms_log)
@@ -332,7 +262,7 @@ def save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_
         message_string = json.dumps(message, default=json_default)
         response = processor_producer.send_messages(kafka_topic, message_string.encode('utf-8'))
     tree_status_t2 = datetime.datetime.now()
-    logging.info("[1/2] Finish to send tree statuses to kafka in {t}".format(t=tree_status_t2-tree_status_t1))
+    logging.info("[1/2] Finish to send tree statuses to kafka in {t}".format(t=tree_status_t2 - tree_status_t1))
 
     # node status
     logging.info("Start to send node status to kafka")
@@ -351,5 +281,5 @@ def save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_
         message_string = json.dumps(message, default=json_default)
         response = processor_producer.send_messages(kafka_topic, message_string.encode('utf-8'))
     node_status_t2 = datetime.datetime.now()
-    logging.info("[2/2] Finish to send node statues to kafka in {t}".format(t=node_status_t2-node_status_t1))
+    logging.info("[2/2] Finish to send node statues to kafka in {t}".format(t=node_status_t2 - node_status_t1))
     logging.info("Finish send to mongodb.")
