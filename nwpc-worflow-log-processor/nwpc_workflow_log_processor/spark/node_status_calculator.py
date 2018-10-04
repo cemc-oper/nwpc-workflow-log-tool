@@ -2,7 +2,6 @@
 import datetime
 from operator import attrgetter
 
-from nwpc_log_model.rdbms_model.models import Record
 from nwpc_log_model.util.node_situation_util import NodeSituationUtil
 from nwpc_work_flow_model.sms import Bunch
 
@@ -205,8 +204,8 @@ def calculate_node_status(spark, record_rdd, owner, repo, begin_date, end_date):
     date_node_status_list = date_node_status_rdd.collect()
 
     # test for data node status rdd
-    for a in date_node_status_list:
-        print(a)
+    # for a in date_node_status_list:
+    #     print(a)
         # return
 
     return bunch_map, date_node_status_list
