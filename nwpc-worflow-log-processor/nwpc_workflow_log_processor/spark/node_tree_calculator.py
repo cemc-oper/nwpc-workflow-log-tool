@@ -2,7 +2,7 @@
 from nwpc_work_flow_model.sms import Bunch
 
 
-def calculate_node_tree(config, record_rdd, spark):
+def calculate_node_tree(config: dict, record_rdd, spark) -> dict:
     # record object => (record_date, record_fullname)  distinct
     def node_path_map(record):
         return record.record_date, record.record_fullname

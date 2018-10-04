@@ -15,7 +15,9 @@ import click
 import yaml
 from pyspark.sql import SparkSession
 
-from nwpc_workflow_log_processor.spark.node_status_io import get_from_hive, save_to_mongodb, save_to_kafka
+from nwpc_workflow_log_processor.spark.data_source.hive import get_from_hive
+from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
+from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
 from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
 
 

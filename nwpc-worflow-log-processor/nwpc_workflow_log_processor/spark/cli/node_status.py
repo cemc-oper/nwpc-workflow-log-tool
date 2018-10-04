@@ -9,9 +9,10 @@ import yaml
 import findspark
 from pyspark.sql import SparkSession
 
-from nwpc_workflow_log_processor.spark.node_status_io import save_to_mongodb, save_to_kafka
-from nwpc_workflow_log_processor.spark.io.file import get_from_file
-from nwpc_workflow_log_processor.spark.io.rmdb import get_from_mysql
+from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
+from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
+from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
+from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
 
 
@@ -58,13 +59,9 @@ def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
     spark.sparkContext.setLogLevel('INFO')
 
     record_rdd = get_from_file(None, owner, repo, begin_date, end_date, log_file, spark)
-    bunch_map, data_node_status_list = calculate_node_status(spark, record_rdd, owner, repo, begin_date, end_date)
+    bunch_map, data_node_status_list = calculate_node_status(owner, repo, begin_date, end_date, record_rdd, spark)
 
     spark.stop()
-
-    ##########
-    # 存储结果
-    ##########
 
     # 保存 bunch_map 和 data_node_status_list
     # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
@@ -83,7 +80,7 @@ def generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date):
     spark.sparkContext.setLogLevel('INFO')
 
     record_rdd = get_from_mysql(config, owner, repo, begin_date, end_date, spark)
-    bunch_map, data_node_status_list = calculate_node_status(spark, record_rdd, owner, repo, begin_date, end_date)
+    bunch_map, data_node_status_list = calculate_node_status(owner, repo, begin_date, end_date, record_rdd, spark)
 
     spark.stop()
 

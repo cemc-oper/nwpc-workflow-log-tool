@@ -8,8 +8,8 @@ from pyspark.sql import SparkSession
 
 
 from nwpc_workflow_log_processor.spark.node_tree_calculator import calculate_node_tree
-from nwpc_workflow_log_processor.spark.io.rmdb import get_from_mysql
-from nwpc_workflow_log_processor.spark.io.file import get_from_file
+from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
+from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
 from nwpc_work_flow_model.sms.visitor import SimplePrintVisitor, pre_order_travel
 
 
