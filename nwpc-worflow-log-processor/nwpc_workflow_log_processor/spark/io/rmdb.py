@@ -1,6 +1,5 @@
+# coding: utf-8
 import datetime
-
-import yaml
 
 from nwpc_log_model import Record
 
@@ -30,7 +29,7 @@ def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, sp
     ).option("dbtable", "`{db}`.`{table_name}`".format(
         db=mysql_config['database'],
         table_name=table_name
-    )).option("user", "windroc").option("password", "shenyang").load()
+    )).option("user", mysql_config['user']).option("password", mysql_config['password']).load()
 
     df.registerTempTable("record")
 
