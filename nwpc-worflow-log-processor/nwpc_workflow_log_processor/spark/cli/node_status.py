@@ -65,7 +65,7 @@ def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
 
     # 保存 bunch_map 和 data_node_status_list
     # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
-    # save_to_mongodb(owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
+    save_to_mongodb(config, owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
 
 
 def generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date):

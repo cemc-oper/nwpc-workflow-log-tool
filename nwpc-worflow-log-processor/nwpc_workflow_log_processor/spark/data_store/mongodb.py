@@ -1,36 +1,44 @@
 import datetime
 import logging
 
-from pymongo import MongoClient
+from mongoengine import connect
 
-MONGODB_HOST = '192.168.99.100'
-MONGODB_PORT = 32808
+from nwpc_workflow_log_model.mongodb.node_tree import NodeTreeBlobData, NodeTreeBlob
+from nwpc_workflow_log_model.mongodb.node_status import NodeStatusBlobData, NodeStatusBlob
 
 
-def save_to_mongodb(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date):
+def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_node_status_list: dict,
+                    start_date, end_date):
     """
     数据流程：Spark Driver => MongoDB
-    :param user_name:
-    :param repo_name:
+    :param config:
+    :param owner:
+    :param repo:
     :param bunch_map:
     :param date_node_status_list:
+    :param start_date:
+    :param end_date:
     :return:
     """
     update_type = "insert"  # "update" or "insert"
 
-    mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
-    smslog_mongodb = mongodb_client.smslog
-    daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
-    daily_node_status_collection = smslog_mongodb.daily_node_status_collection
+    mongodb_database = config['datastore']['mongodb']['database']
+    mongodb_host = config['datastore']['mongodb']['host']
+    mongodb_port = config['datastore']['mongodb']['port']
+
+    mongodb_client = connect(mongodb_database, host=mongodb_host, port=mongodb_port)
 
     # saving results to mongodb
     if update_type == "insert":
         # delete previous data
-        daily_tree_status_collection.remove({
-            'owner': user_name,
-            'repo': repo_name,
-            'date': {'$gte': start_date - datetime.timedelta(days=1), '$lte': end_date}
-        })
+        results = NodeTreeBlob.objects(
+            owner=owner,
+            repo=repo,
+            data__date__gte=start_date - datetime.timedelta(days=1),
+            data__date__lte=end_date
+        )
+        for a_node_tree_blob in results:
+            a_node_tree_blob.delete()
 
     total_count = len(bunch_map)
     logging.info("Adding {total_count} tree status to mongodb".format(total_count=total_count))
@@ -45,33 +53,36 @@ def save_to_mongodb(user_name, repo_name, bunch_map, date_node_status_list, star
             cur_percent = percent
         cur_query_datetime = datetime.datetime.combine(cur_query_date, datetime.time())
         cur_bunch = bunch_map[cur_query_date]
-        tree_status_key = {
-            'owner': user_name,
-            'repo': repo_name,
-            'date': cur_query_datetime
-        }
-        tree_status = {
-            'owner': user_name,
-            'repo': repo_name,
-            'date': cur_query_datetime,
-            'tree': cur_bunch.to_dict()
-        }
-        print(tree_status['owner'], tree_status['repo'], tree_status['date'])
+
+        node_tree = NodeTreeBlob(
+            owner=owner,
+            repo=repo,
+            data=NodeTreeBlobData(
+                date=cur_query_datetime,
+                tree=cur_bunch.to_dict()
+            )
+        )
+
+        print(node_tree.owner, node_tree.repo, node_tree.data.date)
         if update_type == "upsert":
-            daily_tree_status_collection.update(tree_status_key, tree_status, upsert=True)
+            NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
+                .update_one(set__tree=cur_bunch.to_dict(), upsert=True)
         else:
-            daily_tree_status_collection.insert(tree_status)
+            node_tree.save()
 
     total_count = len(date_node_status_list)
     logging.info("Add {total_count} node status to mongodb...".format(total_count=total_count))
 
     if update_type == "insert":
         # delete previous data
-        daily_node_status_collection.remove({
-            'owner': user_name,
-            'repo': repo_name,
-            'date': {'$gte': start_date, '$lt': end_date}
-        })
+        results = NodeStatusBlob.objects(
+            owner=owner,
+            repo=repo,
+            data__date__gte=start_date,
+            data__date__lte=end_date
+        )
+        for a_node_status_blob in results:
+            a_node_status_blob.delete()
 
     cur_count = 0
     cur_percent = 0
@@ -86,7 +97,27 @@ def save_to_mongodb(user_name, repo_name, bunch_map, date_node_status_list, star
         a_node_status_key, a_node_status = status
         if a_node_status['type'] == 'family' or a_node_status['type'] == 'task':
             if update_type == "upsert":
-                daily_node_status_collection.update(a_node_status_key, a_node_status, upsert=True)
+                NodeStatusBlob.objects(
+                    owner=owner,
+                    repo=repo,
+                    data__date=a_node_status['date'],
+                    data__node=a_node_status['node']
+                ).update_one(
+                    set__type=a_node_status['type'],
+                    set__time_point=a_node_status['time_point'],
+                    set__time_period=a_node_status['time_period'],
+                    upsert=True)
             else:
-                daily_node_status_collection.insert(a_node_status)
+                node_status = NodeStatusBlob(
+                    owner=owner,
+                    repo=repo,
+                    data=NodeStatusBlobData(
+                        node=a_node_status['node'],
+                        date=a_node_status['date'],
+                        type=a_node_status['type'],
+                        time_point=a_node_status['time_point'],
+                        time_period=a_node_status['time_period']
+                    )
+                )
+                node_status.save()
     logging.info("Saving to mongodb is done.")
