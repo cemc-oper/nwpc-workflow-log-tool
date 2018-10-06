@@ -7,6 +7,9 @@ from nwpc_workflow_log_model.mongodb.node_tree import NodeTreeBlobData, NodeTree
 from nwpc_workflow_log_model.mongodb.node_status import NodeStatusBlobData, NodeStatusBlob
 
 
+MAX_INSERT_COUNT = 100
+
+
 def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_node_status_list: dict,
                     start_date, end_date):
     """
@@ -36,9 +39,9 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
             repo=repo,
             data__date__gte=start_date - datetime.timedelta(days=1),
             data__date__lte=end_date
-        )
-        for a_node_tree_blob in results:
-            a_node_tree_blob.delete()
+        ).delete()
+        # for a_node_tree_blob in results:
+        #     a_node_tree_blob.delete()
 
     total_count = len(bunch_map)
     logging.info("Adding {total_count} tree status to mongodb".format(total_count=total_count))
@@ -80,12 +83,15 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
             repo=repo,
             data__date__gte=start_date,
             data__date__lte=end_date
-        )
-        for a_node_status_blob in results:
-            a_node_status_blob.delete()
+        ).delete()
+        # for a_node_status_blob in results:
+        #     a_node_status_blob.delete()
 
     cur_count = 0
     cur_percent = 0
+
+    status_list_to_be_inserted = []
+
     for status in date_node_status_list:
         cur_count += 1
         percent = int(cur_count * 100.0 / total_count)
@@ -120,4 +126,13 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
                     )
                 )
                 node_status.save()
+                # status_list_to_be_inserted.append(node_status)
+                # if len(status_list_to_be_inserted) >= MAX_INSERT_COUNT:
+                #     print("Saving documents into mongodb...")
+                #     NodeStatusBlob.objects.insert(status_list_to_be_inserted)
+                #     status_list_to_be_inserted = []
+
+        # if len(status_list_to_be_inserted) > 0:
+        #     NodeStatusBlob.objects.insert(status_list_to_be_inserted)
+
     logging.info("Saving to mongodb is done.")
