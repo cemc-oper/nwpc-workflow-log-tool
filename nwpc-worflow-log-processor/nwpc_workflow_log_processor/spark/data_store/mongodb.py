@@ -1,3 +1,4 @@
+# coding: utf-8
 import datetime
 import logging
 
@@ -10,7 +11,8 @@ from nwpc_workflow_log_model.mongodb.node_status import NodeStatusBlobData, Node
 MAX_INSERT_COUNT = 100
 
 
-def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_node_status_list: dict,
+def save_to_mongodb(config: dict, owner: str, repo: str,
+                    bunch_map: dict, date_node_status_list: dict,
                     start_date, end_date):
     """
     数据流程：Spark Driver => MongoDB
@@ -31,6 +33,13 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
 
     mongodb_client = connect(mongodb_database, host=mongodb_host, port=mongodb_port)
 
+    save_bunch_map(owner, repo, bunch_map, start_date, end_date, update_type)
+    save_node_status(owner, repo, date_node_status_list, start_date, end_date, update_type)
+
+    logging.info("Saving to mongodb is done.")
+
+
+def save_bunch_map(owner: str, repo: str, bunch_map: dict, start_date, end_date, update_type='insert'):
     # saving results to mongodb
     if update_type == "insert":
         # delete previous data
@@ -40,8 +49,6 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
             data__date__gte=start_date - datetime.timedelta(days=1),
             data__date__lte=end_date
         ).delete()
-        # for a_node_tree_blob in results:
-        #     a_node_tree_blob.delete()
 
     total_count = len(bunch_map)
     logging.info("Adding {total_count} tree status to mongodb".format(total_count=total_count))
@@ -73,24 +80,24 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
         else:
             node_tree.save()
 
+
+def save_node_status(owner: str, repo: str, date_node_status_list: dict, start_date, end_date, update_type='insert'):
     total_count = len(date_node_status_list)
     logging.info("Add {total_count} node status to mongodb...".format(total_count=total_count))
 
     if update_type == "insert":
         # delete previous data
-        results = NodeStatusBlob.objects(
+        NodeStatusBlob.objects(
             owner=owner,
             repo=repo,
             data__date__gte=start_date,
             data__date__lte=end_date
         ).delete()
-        # for a_node_status_blob in results:
-        #     a_node_status_blob.delete()
 
     cur_count = 0
     cur_percent = 0
 
-    status_list_to_be_inserted = []
+    # status_list_to_be_inserted = []
 
     for status in date_node_status_list:
         cur_count += 1
@@ -134,5 +141,3 @@ def save_to_mongodb(config: dict, owner: str, repo: str, bunch_map: dict, date_n
 
         # if len(status_list_to_be_inserted) > 0:
         #     NodeStatusBlob.objects.insert(status_list_to_be_inserted)
-
-    logging.info("Saving to mongodb is done.")

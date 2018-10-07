@@ -1,9 +1,7 @@
+# coding: utf-8
 import datetime
 import json
 import logging
-
-KAFKA_HOST = '10.28.32.175'
-KAFKA_PORT = '59092'
 
 
 def json_default(obj):
@@ -19,13 +17,14 @@ def json_default(obj):
         raise TypeError('%r is not JSON serializable' % obj)
 
 
-def save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date):
+def save_to_kafka(config, user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date):
     """
     将 bunch_map 和 data_node_status_list 发送到 Kafka 中，由 Kafka 消费者存储到 MongoDB 中，加快 spark 程序运行速度，
     但这样似乎会增加存储到 mongodb 的时间（可能因为需要从网络中接收数据，并需要多次序列化和反序列化）
 
     数据流程：Spark Driver => Kafka => Consumer => MongoDB
 
+    :param config:
     :param user_name:
     :param repo_name:
     :param bunch_map:

@@ -48,17 +48,11 @@ def create_session(config):
 
 
 def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
-    # 日期范围 [ start_date - 1, end_date ]，这是日志条目收集的范围
-    query_date_list = []
-    i = begin_date - datetime.timedelta(days=1)
-    while i <= end_date:
-        query_date_list.append(i.date())
-        i = i + datetime.timedelta(days=1)
-
     spark = create_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
-    record_rdd = get_from_file(None, owner, repo, begin_date, end_date, log_file, spark)
+    record_rdd = get_from_file(config, owner, repo, begin_date, end_date, log_file, spark)
+
     bunch_map, data_node_status_list = calculate_node_status(owner, repo, begin_date, end_date, record_rdd, spark)
 
     spark.stop()
@@ -69,24 +63,18 @@ def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
 
 
 def generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date):
-    # 日期范围 [ start_date - 1, end_date ]，这是日志条目收集的范围
-    query_date_list = []
-    i = begin_date - datetime.timedelta(days=1)
-    while i <= end_date:
-        query_date_list.append(i.date())
-        i = i + datetime.timedelta(days=1)
-
     spark = create_mysql_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
     record_rdd = get_from_mysql(config, owner, repo, begin_date, end_date, spark)
+
     bunch_map, data_node_status_list = calculate_node_status(owner, repo, begin_date, end_date, record_rdd, spark)
 
     spark.stop()
 
     # 保存 bunch_map 和 data_node_status_list
     # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
-    # save_to_mongodb(owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
+    save_to_mongodb(config, owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
 
 
 @click.group()

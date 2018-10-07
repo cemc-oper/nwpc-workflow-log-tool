@@ -13,33 +13,35 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
         query_date_list.append(i.date())
         i = i + datetime.timedelta(days=1)
 
-    # 此步骤不需要
+    ###############
+    # STEP: check record_date, not necessary for mysql.
+    ###############
     # record object => record object
     def filter_node(record):
-        if record.record_date in query_date_list:  # \
-            # and record.record_fullname == "/grapes_meso_v4_0/cold/00/model/fcst":
+        if record.record_date in query_date_list:
             return True
         else:
             return False
 
     some_date_record_rdd = record_rdd.filter(filter_node).cache()
 
-    ##############
-    # 映射为不同的(日期，节点路径)
-    ##############
+    #####################
+    # STEP: map to (date, node path)
+    ######################
     # record object => (record_date, record_fullname)  distinct
     def node_path_map(record):
         return record.record_date, record.record_fullname
 
     date_node_path_rdd = some_date_record_rdd.map(node_path_map).distinct()
 
+    ##########################
+    # STEP: group by date
+    #########################
     # (record_date, list of record_fullname)
     date_node_path_list_rdd = date_node_path_rdd.groupByKey()
-
     date_with_node_path_list = date_node_path_list_rdd.collect()
 
     print("Generating bunch...",)
-    # 日期 [ start_date - 1, end_date ]
     bunch_map = {}
     for i in date_with_node_path_list:
         day = i[0]
@@ -51,13 +53,10 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
         print("Done")
         bunch_map[day] = bunch
 
-    # for i in bunch_map:
-    #     print i, bunch_map[i].to_dict()
-
     print("Begin to generate node status...")
 
     ##############
-    # 从Record对象映射为(节点路径，记录列表)
+    # STEP: Record to (node path, record list)
     ##############
     # record object => (record_fullname, record) => (record_fullname, list of record)
     # NODE:
@@ -68,13 +67,8 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
 
     node_record_rdd = some_date_record_rdd.map(get_node_records).groupByKey()
 
-    # test code for one node
-    # node_record_rdd = some_date_record_rdd.filter(
-    #     lambda record: record.record_fullname == "/gda_gsi_v1r5/T639/06/post/postp_006") \
-    #     .map(get_node_records).groupByKey()
-
     ##############
-    # 按日期分开（节点路径，记录列表）
+    # STEP: date, node_path, record list
     ##############
     # (record_fullname, list of record) => [(date, record_fullname, list of record), ...]
     def date_path_list_map(pair):
@@ -128,9 +122,9 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     #     for i in a_date_node_record[2]:
     #         print "\t", i.record_string
 
-    ##############
-    # 生成节点状态
-    ##############
+    ##############################
+    # STEP: generate node status
+    #############################
     # (date, record_fullname, list of record) => (node_status_key, node_status)
     def get_node_status(o):
         local_date = o[0]
@@ -142,11 +136,6 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
         for record in local_node_list:
             record_list.append(record)
         record_list = sorted(record_list, key=attrgetter('version_id', 'line_no'))
-
-        # test
-        # print local_date, local_node_path
-        # for i in record_list:
-        #     print '\t', i
 
         if local_node_path is None:
             return
@@ -173,8 +162,6 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
         }
 
         if node_type == "task":
-            # test
-            # print "task:", local_node_path
             node_status = NodeSituationUtil.get_task_node_situation_from_record_list(
                 node_status, local_node_path, local_date, record_list)
         elif node_type == "family":
@@ -200,12 +187,6 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     # date_node_status_rdd.foreachPartition(send_to_kafka_for_each_partition)
     # return
 
-    # 日期 [ start_date, end_date - 1 ]
     date_node_status_list = date_node_status_rdd.collect()
-
-    # test for data node status rdd
-    # for a in date_node_status_list:
-    #     print(a)
-        # return
 
     return bunch_map, date_node_status_list

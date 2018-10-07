@@ -3,18 +3,20 @@ from nwpc_work_flow_model.sms import Bunch
 
 
 def calculate_node_tree(config: dict, record_rdd, spark) -> dict:
+    # STEP: map to (date, node_path)
     # record object => (record_date, record_fullname)  distinct
     def node_path_map(record):
         return record.record_date, record.record_fullname
     date_node_path_rdd = record_rdd.map(node_path_map).distinct()
 
+    # STEP: group by date
     # (record_date, list of record_fullname)
     date_node_path_list_rdd = date_node_path_rdd.groupByKey()
 
+    # STEP: collect and generate bunch
     date_with_node_path_list = date_node_path_list_rdd.collect()
 
     print("Generating bunch...",)
-    # date range: [ start_date - 1, end_date ]
     bunch_map = {}
     for i in date_with_node_path_list:
         day = i[0]

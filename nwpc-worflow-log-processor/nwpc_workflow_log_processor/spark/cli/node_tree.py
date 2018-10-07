@@ -52,7 +52,7 @@ def generate_node_tree_from_rmdb(config, owner, repo, begin_date, end_date):
 
     record_rdd = get_from_mysql(config, owner, repo, begin_date, end_date, spark)
 
-    bunch_map = calculate_node_tree(None, record_rdd, spark)
+    bunch_map = calculate_node_tree(config, record_rdd, spark)
 
     t2 = datetime.datetime.now()
     print(t2 - t1)

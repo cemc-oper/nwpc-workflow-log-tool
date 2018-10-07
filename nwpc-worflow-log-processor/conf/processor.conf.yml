@@ -1,0 +1,18 @@
+datastore:
+  mysql:
+    host: mysql ip
+    port: mysql port
+    user: user name
+    password: password
+    database: database name
+    charset: charset
+    driver: mysql java driver jar file path
+
+  mongodb:
+    host: mongodb host
+    port: mongodb port
+    database: mongodb database name
+
+engine:
+  spark:
+    base: SPARK_HOME, Spark directory
