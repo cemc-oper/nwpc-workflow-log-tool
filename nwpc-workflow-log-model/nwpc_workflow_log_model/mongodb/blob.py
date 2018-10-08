@@ -1,7 +1,7 @@
 # coding: utf-8
 import datetime
 
-from mongoengine import Document, StringField, DateTimeField, EmbeddedDocumentField, GenericEmbeddedDocumentField
+from mongoengine import Document, StringField, DateTimeField, GenericEmbeddedDocumentField
 
 
 class Blob(Document):

@@ -1,7 +1,5 @@
 # coding: utf-8
-
 from mongoengine import DateTimeField, DictField, EmbeddedDocument, EmbeddedDocumentField
-
 
 from .blob import Blob
 
