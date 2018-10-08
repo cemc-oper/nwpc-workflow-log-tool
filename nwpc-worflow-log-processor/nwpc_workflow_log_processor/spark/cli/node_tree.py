@@ -6,10 +6,9 @@ import yaml
 
 
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
-from nwpc_workflow_log_processor.spark.node_tree_calculator import calculate_node_tree
+from nwpc_workflow_log_processor.spark.calculator.node_tree_calculator import calculate_node_tree
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
-from nwpc_work_flow_model.sms.visitor import SimplePrintVisitor, pre_order_travel
 
 
 def load_config(config_file):

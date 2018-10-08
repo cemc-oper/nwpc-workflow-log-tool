@@ -10,7 +10,7 @@ import yaml
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
 from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
-from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
+from nwpc_workflow_log_processor.spark.calculator.node_status_calculator import calculate_node_status
 # from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
 from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
 

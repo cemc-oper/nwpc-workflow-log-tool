@@ -12,13 +12,10 @@ And run this script using Spark like this:
 import datetime
 
 import click
-import yaml
 from pyspark.sql import SparkSession
 
 from nwpc_workflow_log_processor.spark.data_source.hive import get_from_hive
-from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
-from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
-from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
+from nwpc_workflow_log_processor.spark.calculator.node_status_calculator import calculate_node_status
 
 
 def generate_node_status(config, owner, repo, begin_date, end_date):
