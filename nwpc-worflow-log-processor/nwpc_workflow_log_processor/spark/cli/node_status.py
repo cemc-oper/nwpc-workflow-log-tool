@@ -6,14 +6,13 @@ import datetime
 
 import click
 import yaml
-import findspark
-from pyspark.sql import SparkSession
 
-from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
-from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
+from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
 from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.node_status_calculator import calculate_node_status
+# from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
+from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
 
 
 def load_config(config_file):
@@ -22,33 +21,8 @@ def load_config(config_file):
         return config
 
 
-def create_mysql_session(config):
-    findspark.init(config['engine']['spark']['base'])
-    spark = SparkSession \
-        .builder \
-        .appName("sms.spark.nwpc-workflow-log-processor") \
-        .master("local[4]") \
-        .config("spark.driver.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.memory", '4g') \
-        .config("spark.driver.memory", '4g') \
-        .getOrCreate()
-    return spark
-
-
-def create_session(config):
-    findspark.init(config['engine']['spark']['base'])
-    spark = SparkSession \
-        .builder \
-        .appName("sms.spark.nwpc-workflow-log-processor") \
-        .master("local[4]") \
-        .config("spark.executor.memory", '4g') \
-        .getOrCreate()
-    return spark
-
-
 def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
-    spark = create_session(config)
+    spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
     record_rdd = get_from_file(config, owner, repo, begin_date, end_date, log_file, spark)
@@ -58,11 +32,11 @@ def generate_node_status(config, owner, repo, begin_date, end_date, log_file):
     spark.stop()
 
     # 保存 bunch_map 和 data_node_status_list
-    # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
     save_to_mongodb(config, owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
+    # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
 
 
-def generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date):
+def generate_node_status_from_database(config, owner, repo, begin_date, end_date):
     spark = create_mysql_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
@@ -73,8 +47,8 @@ def generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date):
     spark.stop()
 
     # 保存 bunch_map 和 data_node_status_list
-    # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
     save_to_mongodb(config, owner, repo, bunch_map, data_node_status_list, begin_date, end_date)
+    # save_to_kafka(user_name, repo_name, bunch_map, date_node_status_list, start_date, end_date)
 
 
 @click.group()
@@ -100,7 +74,7 @@ DESCRIPTION
     generate_node_status(config, owner, repo, begin_date, end_date, log_file)
 
 
-@cli.command('rmdb')
+@cli.command('database')
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)", required=True)
@@ -114,7 +88,7 @@ DESCRIPTION
     config = load_config(config_file)
     begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
     end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    generate_node_status_from_rmdb(config, owner, repo, begin_date, end_date)
+    generate_node_status_from_database(config, owner, repo, begin_date, end_date)
 
 
 if __name__ == "__main__":

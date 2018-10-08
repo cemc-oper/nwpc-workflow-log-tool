@@ -3,10 +3,9 @@ import datetime
 
 import click
 import yaml
-import findspark
-from pyspark.sql import SparkSession
 
 
+from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
 from nwpc_workflow_log_processor.spark.node_tree_calculator import calculate_node_tree
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
@@ -19,32 +18,7 @@ def load_config(config_file):
         return config
 
 
-def create_mysql_session(config):
-    findspark.init(config['engine']['spark']['base'])
-    spark = SparkSession \
-        .builder \
-        .appName("sms.spark.nwpc-workflow-log-processor") \
-        .master("local[4]") \
-        .config("spark.driver.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.memory", '4g') \
-        .config("spark.driver.memory", '4g') \
-        .getOrCreate()
-    return spark
-
-
-def create_session(config):
-    findspark.init(config['engine']['spark']['base'])
-    spark = SparkSession \
-        .builder \
-        .appName("sms.spark.nwpc-workflow-log-processor") \
-        .master("local[4]") \
-        .config("spark.executor.memory", '4g') \
-        .getOrCreate()
-    return spark
-
-
-def generate_node_tree_from_rmdb(config, owner, repo, begin_date, end_date):
+def generate_node_tree_from_database(config, owner, repo, begin_date, end_date):
     t1 = datetime.datetime.now()
 
     spark = create_mysql_session(config)
@@ -66,12 +40,12 @@ def generate_node_tree_from_rmdb(config, owner, repo, begin_date, end_date):
 def generate_node_tree_from_file(config, owner, repo, begin_date, end_date, log_file):
     t1 = datetime.datetime.now()
 
-    spark = create_mysql_session(config)
+    spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
     record_rdd = get_from_file(config, owner, repo, begin_date, end_date, log_file, spark)
 
-    bunch_map = calculate_node_tree(None, record_rdd, spark)
+    bunch_map = calculate_node_tree(config, record_rdd, spark)
 
     t2 = datetime.datetime.now()
     print(t2 - t1)
@@ -87,13 +61,13 @@ def cli():
     pass
 
 
-@cli.command('rmdb')
+@cli.command('database')
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("-c", "--config", "config_file", help="config file path", required=True)
-def cli_rmdb(owner, repo, begin_date, end_date, config_file):
+def database(owner, repo, begin_date, end_date, config_file):
     if begin_date:
         begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
     if end_date:
@@ -101,7 +75,7 @@ def cli_rmdb(owner, repo, begin_date, end_date, config_file):
 
     config = load_config(config_file)
 
-    generate_node_tree_from_rmdb(config, owner, repo, begin_date, end_date)
+    generate_node_tree_from_database(config, owner, repo, begin_date, end_date)
 
 
 @cli.command('file')
