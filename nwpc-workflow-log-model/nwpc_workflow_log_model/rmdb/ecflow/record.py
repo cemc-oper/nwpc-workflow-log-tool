@@ -37,22 +37,21 @@ class EcflowRecord(object):
 
         start_pos = end_pos + 2
         if line[start_pos: start_pos+1] == " ":
-            # node status
             record.command_type = "status"
             start_pos += 1
             record.parse_status_record(line[start_pos:])
         elif line[start_pos: start_pos+2] == "--":
-            # client command
-            print("[client command]", line)
             record.command_type = "client"
+            # print("[client command]", line)
         elif line[start_pos: start_pos+4] == "chd:":
             # child
-            print("[child command]", line)
             record.command_type = "child"
-        elif line[start_pos: start_pos+4] == "srv:":
+            start_pos += 4
+            record.parse_client_record(line[start_pos:])
+        elif line[start_pos: start_pos+4] == "svr:":
             # server
-            print("[server command]", line)
-            record.command_type = "srv"
+            # print("[server command]", line)
+            record.command_type = "server"
         else:
             # not supported
             print("[not supported]", line)
@@ -143,6 +142,7 @@ class EcflowRecord(object):
             print("[ERROR] status record: command not found =>", self.log_record)
             return
         command = status_line[start_pos:end_pos]
+
         if command in ('submitted', 'active', 'queued', 'complete', 'aborted'):
             self.command = command
             start_pos = end_pos + 2
@@ -163,3 +163,38 @@ class EcflowRecord(object):
             else:
                 self.command = command
                 print("[ERROR] status record: command not supported =>", self.log_record)
+
+    def parse_client_record(self, client_line):
+        start_pos = 0
+        end_pos = client_line.find(" ", start_pos)
+        if end_pos == -1:
+            print("[ERROR] client record: command not found =>", self.log_record)
+            return
+        command = client_line[start_pos:end_pos]
+
+        if command in ('init', 'complete', 'abort'):
+            self.command = command
+            start_pos = end_pos + 2
+            end_pos = client_line.find(' ', start_pos)
+            if end_pos == -1:
+                # MSG:[08:17:04 29.6.2018] chd:complete /gmf_grapes_025L60_v2.2_post/18/typhoon/post/tc_post
+                self.node_path = client_line[start_pos:].strip()
+            else:
+                # MSG:[12:22:53 19.10.2018] chd:abort /3km_post/06/3km_togrib2/grib2WORK/030/after_data2grib2_030  trap
+                self.node_path = client_line[start_pos:end_pos]
+                self.additional_information = client_line[end_pos + 1:]
+        elif command in ('meter', 'label', 'event'):
+            self.command = command
+            # MSG:[09:24:06 29.6.2018] chd:event transmissiondone /gmf_grapes_025L60_v2.2_post/00/tograph/base/015/AN_AEA/QFLXDIV_P700_AN_AEA_sep_015
+            self.command = command
+            start_pos = end_pos + 1
+            line = client_line[start_pos:]
+            node_path_start_pos = line.rfind(' ')
+            if node_path_start_pos != -1:
+                self.node_path = line[node_path_start_pos+1:]
+                self.additional_information = line[:node_path_start_pos]
+            else:
+                print("[ERROR] client record: parse error =>", self.log_record)
+        else:
+            self.command = command
+            print("[ERROR] client record: command not supported =>", self.log_record)
