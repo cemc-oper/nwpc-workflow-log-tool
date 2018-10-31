@@ -54,7 +54,8 @@ class EcflowRecord(object):
             # print("[server command]", line)
             record.command_type = "server"
         elif line[start_pos:].strip()[0].isupper():
-            # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
+            # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso
+            #  took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
             pass
         else:
             # not supported
@@ -84,7 +85,8 @@ class EcflowRecord(object):
                 # LOG:[23:12:00 9.10.2018] queued: /grapes_meso_3km_post/18/tograph/1h/prep_1h_10mw
                 self.node_path = status_line[start_pos:].strip()
             else:
-                # LOG:[11:09:31 20.9.2018]  aborted: /grapes_meso_3km_post/06/tograph/3h/prep_3h_10mw/plot_hour_030 try-no: 1 reason: trap
+                # LOG:[11:09:31 20.9.2018]  aborted: /grapes_meso_3km_post/06/tograph/3h/prep_3h_10mw/plot_hour_030
+                #  try-no: 1 reason: trap
                 self.node_path = status_line[start_pos:end_pos]
                 self.additional_information = status_line[end_pos+1:]
         else:
@@ -94,7 +96,8 @@ class EcflowRecord(object):
             elif command.strip()[0].isupper():
                 pass
             elif command[0] == '[':
-                # WAR:[09:16:14 8.8.2018]  [ overloaded || --abort*2 ] (pid & password match) : chd:abort : /grapes_emer_v1_1/12/plot/plot_wind : already aborted : action(fob)
+                # WAR:[09:16:14 8.8.2018]  [ overloaded || --abort*2 ] (pid & password match) : chd:abort
+                #  : /grapes_emer_v1_1/12/plot/plot_wind : already aborted : action(fob)
                 pass
             else:
                 self.command = command
@@ -116,12 +119,14 @@ class EcflowRecord(object):
                 # MSG:[08:17:04 29.6.2018] chd:complete /gmf_grapes_025L60_v2.2_post/18/typhoon/post/tc_post
                 self.node_path = child_line[start_pos:].strip()
             else:
-                # MSG:[12:22:53 19.10.2018] chd:abort /3km_post/06/3km_togrib2/grib2WORK/030/after_data2grib2_030  trap
+                # MSG:[12:22:53 19.10.2018] chd:abort
+                #  /3km_post/06/3km_togrib2/grib2WORK/030/after_data2grib2_030  trap
                 self.node_path = child_line[start_pos:end_pos]
                 self.additional_information = child_line[end_pos + 1:]
         elif command in ('meter', 'label', 'event'):
             self.command = command
-            # MSG:[09:24:06 29.6.2018] chd:event transmissiondone /gmf_grapes_025L60_v2.2_post/00/tograph/base/015/AN_AEA/QFLXDIV_P700_AN_AEA_sep_015
+            # MSG:[09:24:06 29.6.2018] chd:event transmissiondone
+            #  /gmf_grapes_025L60_v2.2_post/00/tograph/base/015/AN_AEA/QFLXDIV_P700_AN_AEA_sep_015
             self.command = command
             start_pos = end_pos + 1
             line = child_line[start_pos:]
