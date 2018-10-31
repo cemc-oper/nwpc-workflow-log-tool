@@ -53,6 +53,9 @@ class EcflowRecord(object):
             # server
             # print("[server command]", line)
             record.command_type = "server"
+        elif line[start_pos:].strip()[0].isupper():
+            # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
+            pass
         else:
             # not supported
             print("[not supported]", line)
@@ -66,7 +69,10 @@ class EcflowRecord(object):
         start_pos = 0
         end_pos = status_line.find(":", start_pos)
         if end_pos == -1:
-            print("[ERROR] status record: command not found =>", self.log_record)
+            if status_line.strip()[0].isupper():
+                pass
+            else:
+                print("[ERROR] status record: command not found =>", self.log_record)
             return
         command = status_line[start_pos:end_pos]
 
@@ -85,8 +91,11 @@ class EcflowRecord(object):
             if command in ('unknown', ):
                 # just ignore
                 pass
-            elif ' ' in command:
-                print("[ERROR] status record: is not a valid command =>", self.log_record)
+            elif command.strip()[0].isupper():
+                pass
+            elif command[0] == '[':
+                # WAR:[09:16:14 8.8.2018]  [ overloaded || --abort*2 ] (pid & password match) : chd:abort : /grapes_emer_v1_1/12/plot/plot_wind : already aborted : action(fob)
+                pass
             else:
                 self.command = command
                 print("[ERROR] status record: command not supported =>", self.log_record)
