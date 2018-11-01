@@ -1,24 +1,17 @@
 # coding: utf-8
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Date, Time, Text
+
+from sqlalchemy import Column, String, Index
+from nwpc_workflow_log_model.rmdb.base.model import Model
+from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 
 
-class EcflowRecord(object):
-    repo_id = Column(Integer, primary_key=True)
-    version_id = Column(Integer, primary_key=True)
-    line_no = Column(Integer, primary_key=True)
-    log_type = Column(String(10))
-    date = Column(Date())
-    time = Column(Time())
+class EcflowRecordBase(RecordBase):
     command_type = Column(String(10))
-    command = Column(String(100))
-    node_path = Column(String(200))
-    additional_information = Column(Text())
-    log_record = Column(Text())
 
     @classmethod
     def parse(cls, line):
-        record = EcflowRecord()
+        record = EcflowRecordBase()
         record.log_record = line
 
         start_pos = 0
@@ -229,3 +222,52 @@ class EcflowRecord(object):
         else:
             self.command = command
             print("[ERROR] client record: command not supported =>", self.log_record)
+
+
+class EcflowRecord(EcflowRecordBase, Model):
+    __table__ = "ecflow_record"
+    owner = 'owner'
+    repo = 'repo'
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def prepare(cls, owner, repo):
+        """
+        为 owner/repo 准备 Record 对象。当前需要修改 __tablename__ 为特定的表名。
+        :param owner:
+        :param repo:
+        :return:
+        """
+        table_name = 'ecflow_record.{owner}.{repo}'.format(owner=owner, repo=repo)
+        cls.__table__.name = table_name
+        cls.owner = owner
+        cls.repo = repo
+
+        cls.__table_args__ = (
+            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'date', 'time'),
+            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'command'),
+            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'node_path'),
+            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'log_type')
+        )
+
+    @classmethod
+    def init(cls):
+        cls.__table__.name = 'ecflow_record'
+
+        cls.owner = "owner"
+        cls.repo = "repo"
+
+        cls.__table_args__ = (
+            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'date', 'time'),
+            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'command'),
+            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'node_path'),
+            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'log_type')
+        )
+
+    @classmethod
+    def create_record_table(cls, owner, repo, session):
+        EcflowRecord.prepare(owner, repo)
+        EcflowRecord.__table__.create(bind=session.get_bind(), checkfirst=True)
+        EcflowRecord.init()
