@@ -31,8 +31,8 @@ class NodeSituationUtil(object):
         # test
         # print "TASK_NODE_STATUS:", query_date_object
         # for i in record_list:
-        #     print i.record_date, i.record_string
-        records = list(filter(lambda record: record.record_date == query_date_object, record_list))
+        #     print i.date, i.log_record
+        records = list(filter(lambda record: record.date == query_date_object, record_list))
         # print "TASK_NODE_STATUS: after filter"
         # print records
 
@@ -40,7 +40,7 @@ class NodeSituationUtil(object):
         error_found = False
         error_command = ['aborted']
         for a_record in records:
-            if a_record.record_command in error_command:
+            if a_record.command in error_command:
                 error_found = True
                 break
         if error_found:
@@ -51,7 +51,7 @@ class NodeSituationUtil(object):
         # find submitted
         submitted_index = -1
         while i < len(records):
-            if records[i].record_command == 'submitted':
+            if records[i].command == 'submitted':
                 submitted_index = i
                 break
             i += 1
@@ -68,13 +68,13 @@ class NodeSituationUtil(object):
             complete_index = -1
             cur_index = 0
             while cur_index < len(records):
-                if records[cur_index].record_command == 'complete':
+                if records[cur_index].command == 'complete':
                     complete_index = cur_index
                     break
                 cur_index += 1
             if complete_index != -1 and (complete_index+1) < len(records) \
-                    and records[complete_index+1].record_command == "complete" \
-                    and records[complete_index+1].record_additional_information == "by rule":
+                    and records[complete_index+1].command == "complete" \
+                    and records[complete_index+1].additional_information == "by rule":
                 node_situation['situation'] = 'complete by rule'
             return node_situation
 
@@ -82,7 +82,7 @@ class NodeSituationUtil(object):
         active_index = -1
         i += 1
         while i < len(records):
-            if records[i].record_command == 'active':
+            if records[i].command == 'active':
                 active_index = i
                 break
             i += 1
@@ -95,7 +95,7 @@ class NodeSituationUtil(object):
         complete_index = -1
         i += 1
         while i < len(records):
-            if records[i].record_command == 'complete':
+            if records[i].command == 'complete':
                 complete_index = i
                 break
             i += 1
@@ -107,12 +107,12 @@ class NodeSituationUtil(object):
         # the simplest situation.
         node_situation['situation'] = 'normal'
 
-        submitted_time = datetime.datetime.combine(records[submitted_index].record_date,
-                                                   records[submitted_index].record_time)
-        active_time = datetime.datetime.combine(records[active_index].record_date,
-                                                records[active_index].record_time)
-        complete_time = datetime.datetime.combine(records[complete_index].record_date,
-                                                  records[complete_index].record_time)
+        submitted_time = datetime.datetime.combine(records[submitted_index].date,
+                                                   records[submitted_index].time)
+        active_time = datetime.datetime.combine(records[active_index].date,
+                                                records[active_index].time)
+        complete_time = datetime.datetime.combine(records[complete_index].date,
+                                                  records[complete_index].time)
 
         if 'time_point' not in node_situation:
             node_situation['time_point'] = {}
@@ -185,7 +185,7 @@ class NodeSituationUtil(object):
         error_found = False
         error_command = ['aborted']
         for a_record in records:
-            if a_record.record_command in error_command:
+            if a_record.command in error_command:
                 error_found = True
                 break
         if error_found:
@@ -193,14 +193,14 @@ class NodeSituationUtil(object):
             return node_situation
 
         # normal family which don't cross 0:00
-        if records[-1].record_command == "complete":
-            if records[0].record_command == "submitted":
+        if records[-1].command == "complete":
+            if records[0].command == "submitted":
                 submitted_index = 0
-                submitted_time = datetime.datetime.combine(records[submitted_index].record_date,
-                                                           records[submitted_index].record_time)
+                submitted_time = datetime.datetime.combine(records[submitted_index].date,
+                                                           records[submitted_index].time)
                 complete_index = -1
-                complete_time = datetime.datetime.combine(records[complete_index].record_date,
-                                                          records[complete_index].record_time)
+                complete_time = datetime.datetime.combine(records[complete_index].date,
+                                                          records[complete_index].time)
 
                 if 'time_point' not in node_situation:
                     node_situation['time_point'] = {}
@@ -224,18 +224,18 @@ class NodeSituationUtil(object):
             last_day_complete_command_index = -1
             for i in range(0, len(records)):
                 a_record = records[i]
-                if a_record.record_command in command_to_found:
+                if a_record.command in command_to_found:
                     last_day_complete_command_index = i
                     break
             if last_day_complete_command_index == -1:
                 # unknown
                 return node_situation
             submitted_index = last_day_complete_command_index + 1
-            if records[submitted_index].record_command != 'submitted':
+            if records[submitted_index].command != 'submitted':
                 # unknown
                 return node_situation
-            submitted_time = datetime.datetime.combine(records[submitted_index].record_date,
-                                                       records[submitted_index].record_time)
+            submitted_time = datetime.datetime.combine(records[submitted_index].date,
+                                                       records[submitted_index].time)
 
             # find this day complete
             next_date = date_object + datetime.timedelta(days=1)
@@ -251,7 +251,7 @@ class NodeSituationUtil(object):
             this_day_command_index = -1
             for i in range(0, len(next_date_records)):
                 a_record = next_date_records[i]
-                if a_record.record_command in command_to_found:
+                if a_record.command in command_to_found:
                     this_day_command_index = i
                     break
             if this_day_command_index == -1:
@@ -259,14 +259,14 @@ class NodeSituationUtil(object):
                 return node_situation
 
             # error
-            if next_date_records[this_day_command_index].record_command == "aborted":
+            if next_date_records[this_day_command_index].command == "aborted":
                 node_situation['situation'] = 'error'
                 return node_situation
 
             # normal
             complete_index = this_day_command_index
-            complete_time = datetime.datetime.combine(next_date_records[complete_index].record_date,
-                                                      next_date_records[complete_index].record_time)
+            complete_time = datetime.datetime.combine(next_date_records[complete_index].date,
+                                                      next_date_records[complete_index].time)
 
             if 'time_point' not in node_situation:
                     node_situation['time_point'] = {}
@@ -284,10 +284,10 @@ class NodeSituationUtil(object):
 
     @staticmethod
     def get_family_node_situation_from_record_list(node_situation, node_path, query_date_object, record_list):
-        cur_date_records = list(filter(lambda record: record.record_date == query_date_object, record_list))
+        cur_date_records = list(filter(lambda record: record.date == query_date_object, record_list))
 
         next_date = query_date_object + datetime.timedelta(days=1)
-        next_date_records = list(filter(lambda record: record.record_date == next_date, record_list))
+        next_date_records = list(filter(lambda record: record.date == next_date, record_list))
 
         if len(cur_date_records) == 0:
             return node_situation
@@ -296,7 +296,7 @@ class NodeSituationUtil(object):
         error_found = False
         error_command = ['aborted']
         for a_record in cur_date_records:
-            if a_record.record_command in error_command:
+            if a_record.command in error_command:
                 error_found = True
                 break
         if error_found:
@@ -304,14 +304,14 @@ class NodeSituationUtil(object):
             return node_situation
 
         # normal family which don't cross 0:00
-        if cur_date_records[-1].record_command == "complete":
-            if cur_date_records[0].record_command == "submitted":
+        if cur_date_records[-1].command == "complete":
+            if cur_date_records[0].command == "submitted":
                 submitted_index = 0
-                submitted_time = datetime.datetime.combine(cur_date_records[submitted_index].record_date,
-                                                           cur_date_records[submitted_index].record_time)
+                submitted_time = datetime.datetime.combine(cur_date_records[submitted_index].date,
+                                                           cur_date_records[submitted_index].time)
                 complete_index = -1
-                complete_time = datetime.datetime.combine(cur_date_records[complete_index].record_date,
-                                                          cur_date_records[complete_index].record_time)
+                complete_time = datetime.datetime.combine(cur_date_records[complete_index].date,
+                                                          cur_date_records[complete_index].time)
 
                 if 'time_point' not in node_situation:
                     node_situation['time_point'] = {}
@@ -335,18 +335,18 @@ class NodeSituationUtil(object):
             last_day_complete_command_index = -1
             for i in range(0, len(cur_date_records)):
                 a_record = cur_date_records[i]
-                if a_record.record_command in command_to_found:
+                if a_record.command in command_to_found:
                     last_day_complete_command_index = i
                     break
             if last_day_complete_command_index == -1:
                 # unknown
                 return node_situation
             submitted_index = last_day_complete_command_index + 1
-            if cur_date_records[submitted_index].record_command != 'submitted':
+            if cur_date_records[submitted_index].command != 'submitted':
                 # unknown
                 return node_situation
-            submitted_time = datetime.datetime.combine(cur_date_records[submitted_index].record_date,
-                                                       cur_date_records[submitted_index].record_time)
+            submitted_time = datetime.datetime.combine(cur_date_records[submitted_index].date,
+                                                       cur_date_records[submitted_index].time)
 
             # find this day complete
             # we should have next date records in record list.
@@ -358,7 +358,7 @@ class NodeSituationUtil(object):
             this_day_command_index = -1
             for i in range(0, len(next_date_records)):
                 a_record = next_date_records[i]
-                if a_record.record_command in command_to_found:
+                if a_record.command in command_to_found:
                     this_day_command_index = i
                     break
             if this_day_command_index == -1:
@@ -366,14 +366,14 @@ class NodeSituationUtil(object):
                 return node_situation
 
             # error
-            if next_date_records[this_day_command_index].record_command == "aborted":
+            if next_date_records[this_day_command_index].command == "aborted":
                 node_situation['situation'] = 'error'
                 return node_situation
 
             # normal
             complete_index = this_day_command_index
-            complete_time = datetime.datetime.combine(next_date_records[complete_index].record_date,
-                                                      next_date_records[complete_index].record_time)
+            complete_time = datetime.datetime.combine(next_date_records[complete_index].date,
+                                                      next_date_records[complete_index].time)
 
             if 'time_point' not in node_situation:
                     node_situation['time_point'] = {}

@@ -1,17 +1,17 @@
 # coding: utf-8
 import datetime
 
-from nwpc_log_model import Record
+from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
 
 
 def get_from_file(config, owner, repo, begin_date, end_date, log_file, spark):
-    Record.prepare(owner, repo)
+    SmsRecord.prepare(owner, repo)
 
     log_data = spark.read.text(log_file).rdd
 
     # record line => record object
     def parse_sms_log(line):
-        record = Record()
+        record = SmsRecord()
         record.parse(line.value)
         return record
 
@@ -24,17 +24,17 @@ def get_from_file(config, owner, repo, begin_date, end_date, log_file, spark):
 
     def filter_node(record):
         if begin_date is not None:
-            if record.record_date < start_date.date():
+            if record.date < start_date.date():
                 return False
 
         if end_date is not None:
-            if record.record_date >= end_date.date():
+            if record.date >= end_date.date():
                 return False
 
         return True
 
     record_rdd = log_data.filter(filter_node)
 
-    Record.init()
+    SmsRecord.init()
 
     return record_rdd

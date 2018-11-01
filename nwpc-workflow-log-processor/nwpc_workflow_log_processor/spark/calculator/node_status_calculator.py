@@ -2,7 +2,7 @@
 import datetime
 from operator import attrgetter
 
-from nwpc_log_model.util.node_situation_util import NodeSituationUtil
+from nwpc_workflow_log_model.rmdb.sms.util.node_situation_util import NodeSituationUtil
 from nwpc_work_flow_model.sms import Bunch
 
 
@@ -18,7 +18,7 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     ###############
     # record object => record object
     def filter_node(record):
-        if record.record_date in query_date_list:
+        if record.date in query_date_list:
             return True
         else:
             return False
@@ -28,16 +28,16 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     #####################
     # STEP: map to (date, node path)
     ######################
-    # record object => (record_date, record_fullname)  distinct
+    # record object => (date, node_path)  distinct
     def node_path_map(record):
-        return record.record_date, record.record_fullname
+        return record.date, record.node_path
 
     date_node_path_rdd = some_date_record_rdd.map(node_path_map).distinct()
 
     ##########################
     # STEP: group by date
     #########################
-    # (record_date, list of record_fullname)
+    # (record_date, list of node_path)
     date_node_path_list_rdd = date_node_path_rdd.groupByKey()
     date_with_node_path_list = date_node_path_list_rdd.collect()
 
@@ -58,23 +58,23 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     ##############
     # STEP: Record to (node path, record list)
     ##############
-    # record object => (record_fullname, record) => (record_fullname, list of record)
+    # record object => (node_path, record) => (node_path, list of record)
     # NODE:
-    #       When there are duplicate records in Hive, we need to distinct (record_fullname, record) or
+    #       When there are duplicate records in Hive, we need to distinct (node_path, record) or
     #       do something like it somewhere.
     def get_node_records(record):
-        return record.record_fullname, record
+        return record.node_path, record
 
     node_record_rdd = some_date_record_rdd.map(get_node_records).groupByKey()
 
     ##############
     # STEP: date, node_path, record list
     ##############
-    # (record_fullname, list of record) => [(date, record_fullname, list of record), ...]
+    # (node_path, list of record) => [(date, node_path, list of record), ...]
     def date_path_list_map(pair):
         start_date_object = begin_date.date()
         end_date_object = end_date.date()
-        record_fullname = pair[0]
+        node_path = pair[0]
         record_list = pair[1]
 
         date_map = {}
@@ -84,26 +84,26 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
             cur_date = cur_date + datetime.timedelta(days=1)
 
         for record in record_list:
-            if record_fullname is None:
+            if node_path is None:
                 continue
-            cur_date = record.record_date
+            cur_date = record.date
             prev_date = cur_date - datetime.timedelta(days=1)
             next_date = cur_date + datetime.timedelta(days=1)
             if start_date_object <= prev_date < end_date_object:
-                if record.record_fullname in date_map[prev_date]:
-                    date_map[prev_date][record.record_fullname].append(record)
+                if record.node_path in date_map[prev_date]:
+                    date_map[prev_date][record.node_path].append(record)
                 else:
-                    date_map[prev_date][record.record_fullname] = [record]
+                    date_map[prev_date][record.node_path] = [record]
             if start_date_object <= cur_date < end_date_object:
-                if record.record_fullname in date_map[cur_date]:
-                    date_map[cur_date][record.record_fullname].append(record)
+                if record.node_path in date_map[cur_date]:
+                    date_map[cur_date][record.node_path].append(record)
                 else:
-                    date_map[cur_date][record.record_fullname] = [record]
+                    date_map[cur_date][record.node_path] = [record]
             if start_date_object <= next_date < end_date_object:
-                if record.record_fullname in date_map[next_date]:
-                    date_map[next_date][record.record_fullname].append(record)
+                if record.node_path in date_map[next_date]:
+                    date_map[next_date][record.node_path].append(record)
                 else:
-                    date_map[next_date][record.record_fullname] = [record]
+                    date_map[next_date][record.node_path] = [record]
 
         result_list = []
 
@@ -115,7 +115,7 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
 
     date_node_record_rdd = node_record_rdd.flatMap(date_path_list_map)
 
-    # test for [(date, record_fullname, list of record), ...] rdd
+    # test for [(date, node_path, list of record), ...] rdd
     # date_node_record = date_node_record_rdd.collect()
     # for a_date_node_record in date_node_record:
     #     print a_date_node_record[0], a_date_node_record[1]
@@ -125,7 +125,7 @@ def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rd
     ##############################
     # STEP: generate node status
     #############################
-    # (date, record_fullname, list of record) => (node_status_key, node_status)
+    # (date, node_path, list of record) => (node_status_key, node_status)
     def get_node_status(o):
         local_date = o[0]
         local_datetime = datetime.datetime.combine(local_date, datetime.time())

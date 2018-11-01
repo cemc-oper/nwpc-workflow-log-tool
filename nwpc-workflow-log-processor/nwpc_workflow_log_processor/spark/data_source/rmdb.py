@@ -1,12 +1,12 @@
 # coding: utf-8
 import datetime
 
-from nwpc_log_model import Record
+from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
 
 
 def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, spark):
-    Record.prepare(owner, repo)
-    table_name = Record.__table__.name
+    SmsRecord.prepare(owner, repo)
+    table_name = SmsRecord.__table__.name
 
     spark_config = config['engine']['spark']
     mysql_config = config['datastore']['mysql']
@@ -33,9 +33,9 @@ def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, sp
 
     df.registerTempTable("record")
 
-    sql = ("SELECT repo_id, version_id, line_no, record_date, record_time, record_string "
+    sql = ("SELECT repo_id, version_id, line_no, date, time, log_record "
            "FROM record "
-           "WHERE record_date>='{start_date}' AND record_date<='{end_date}' ").format(
+           "WHERE date>='{start_date}' AND date<='{end_date}' ").format(
         start_date=query_date_list[0].strftime("%Y-%m-%d"),
         end_date=query_date_list[-1].strftime("%Y-%m-%d")
     )
@@ -53,7 +53,7 @@ def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, sp
     ##############
     # record row => record object
     def parse_sms_log(row):
-        record = Record()
+        record = SmsRecord()
         record.version_id = row[0]
         record.line_no = row[1]
         record.parse(row[5])

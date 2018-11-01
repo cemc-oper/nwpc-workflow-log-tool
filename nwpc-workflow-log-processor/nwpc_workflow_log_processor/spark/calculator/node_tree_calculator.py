@@ -4,9 +4,9 @@ from nwpc_work_flow_model.sms import Bunch
 
 def calculate_node_tree(config: dict, record_rdd, spark) -> dict:
     # STEP: map to (date, node_path)
-    # record object => (record_date, record_fullname)  distinct
+    # record object => (date, node_path)  distinct
     def node_path_map(record):
-        return record.record_date, record.record_fullname
+        return record.date, record.node_path
     date_node_path_rdd = record_rdd.map(node_path_map).distinct()
 
     # STEP: group by date

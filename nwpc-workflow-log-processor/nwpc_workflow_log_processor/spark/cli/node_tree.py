@@ -51,8 +51,9 @@ def generate_node_tree_from_file(config, owner, repo, begin_date, end_date, log_
 
     spark.stop()
 
-    # for date, bunch in bunch_map.items():
-    #     pre_order_travel(bunch, SimplePrintVisitor())
+    from nwpc_work_flow_model.sms.visitor import pre_order_travel, SimplePrintVisitor
+    for date, bunch in bunch_map.items():
+        pre_order_travel(bunch, SimplePrintVisitor())
 
 
 @click.group()
