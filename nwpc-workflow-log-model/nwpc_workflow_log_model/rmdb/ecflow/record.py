@@ -225,7 +225,7 @@ class EcflowRecordBase(RecordBase):
 
 
 class EcflowRecord(EcflowRecordBase, Model):
-    __table__ = "ecflow_record"
+    __tablename__ = "ecflow_record"
     owner = 'owner'
     repo = 'repo'
 
