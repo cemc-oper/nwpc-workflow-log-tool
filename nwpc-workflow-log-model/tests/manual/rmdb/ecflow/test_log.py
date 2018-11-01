@@ -8,7 +8,8 @@ from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecordBase
 def cli(log_file):
     with open(log_file) as f:
         for line in f:
-            record = EcflowRecordBase.parse(line.strip())
+            record = EcflowRecordBase()
+            record.parse(line.strip())
 
 
 if __name__ == "__main__":

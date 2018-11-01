@@ -9,14 +9,12 @@ from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 class EcflowRecordBase(RecordBase):
     command_type = Column(String(10))
 
-    @classmethod
-    def parse(cls, line):
-        record = EcflowRecordBase()
-        record.log_record = line
+    def parse(self, line):
+        self.log_record = line
 
         start_pos = 0
         end_pos = line.find(':')
-        record.log_type = line[start_pos:end_pos]
+        self.log_type = line[start_pos:end_pos]
 
         start_pos = end_pos + 2
         end_pos = line.find(']', start_pos)
@@ -25,27 +23,27 @@ class EcflowRecordBase(RecordBase):
             return
         record_time_string = line[start_pos:end_pos]
         date_time = datetime.strptime(record_time_string, '%H:%M:%S %d.%m.%Y')
-        record.date = date_time.date()
-        record.time = date_time.time()
+        self.date = date_time.date()
+        self.time = date_time.time()
 
         start_pos = end_pos + 2
         if line[start_pos: start_pos+1] == " ":
-            record.command_type = "status"
+            self.command_type = "status"
             start_pos += 1
-            record.parse_status_record(line[start_pos:])
+            self.__parse_status_record(line[start_pos:])
         elif line[start_pos: start_pos+2] == "--":
-            record.command_type = "client"
+            self.command_type = "client"
             start_pos += 2
-            record.parse_client_record(line[start_pos:])
+            self.__parse_client_record(line[start_pos:])
         elif line[start_pos: start_pos+4] == "chd:":
             # child
-            record.command_type = "child"
+            self.command_type = "child"
             start_pos += 4
-            record.parse_child_record(line[start_pos:])
+            self.__parse_child_record(line[start_pos:])
         elif line[start_pos: start_pos+4] == "svr:":
             # server
             # print("[server command]", line)
-            record.command_type = "server"
+            self.command_type = "server"
         elif line[start_pos:].strip()[0].isupper():
             # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso
             #  took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
@@ -54,9 +52,9 @@ class EcflowRecordBase(RecordBase):
             # not supported
             print("[not supported]", line)
 
-        return record
+        return self
 
-    def parse_status_record(self, status_line):
+    def __parse_status_record(self, status_line):
         """
         active: /swfdp/00/deterministic/base/024/SWFDP_CA/CIN_SWFDP_CA_sep_024
         """
@@ -96,7 +94,7 @@ class EcflowRecordBase(RecordBase):
                 self.command = command
                 print("[ERROR] status record: command not supported =>", self.log_record)
 
-    def parse_child_record(self, child_line):
+    def __parse_child_record(self, child_line):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
@@ -133,7 +131,7 @@ class EcflowRecordBase(RecordBase):
             self.command = command
             print("[ERROR] child record: command not supported =>", self.log_record)
 
-    def parse_client_record(self, child_line):
+    def __parse_client_record(self, child_line):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
