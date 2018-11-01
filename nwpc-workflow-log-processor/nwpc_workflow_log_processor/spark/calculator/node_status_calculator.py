@@ -6,7 +6,7 @@ from nwpc_workflow_log_model.rmdb.util.node_situation_util import NodeSituationU
 from nwpc_work_flow_model.sms import Bunch
 
 
-def calculate_node_status(owner: str, repo: str, begin_date, end_date, record_rdd, spark):
+def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end_date, record_rdd, spark):
     query_date_list = []
     i = begin_date - datetime.timedelta(days=1)
     while i <= end_date:
