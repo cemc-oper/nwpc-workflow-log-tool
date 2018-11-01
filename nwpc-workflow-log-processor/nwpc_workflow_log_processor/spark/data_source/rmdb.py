@@ -2,11 +2,19 @@
 import datetime
 
 from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
+from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 
 
-def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, spark):
-    SmsRecord.prepare(owner, repo)
-    table_name = SmsRecord.__table__.name
+def get_from_mysql(config: dict, owner: str, repo: str, repo_type: str, begin_date, end_date, spark):
+    if repo_type == "sms":
+        record_class = SmsRecord
+    elif repo_type == "ecflow":
+        record_class = EcflowRecord
+    else:
+        raise ValueError("repo type is not supported: " + repo_type)
+
+    record_class.prepare(owner, repo)
+    table_name = record_class.__table__.name
 
     spark_config = config['engine']['spark']
     mysql_config = config['datastore']['mysql']
@@ -53,7 +61,7 @@ def get_from_mysql(config: dict, owner: str, repo: str, begin_date, end_date, sp
     ##############
     # record row => record object
     def parse_sms_log(row):
-        record = SmsRecord()
+        record = record_class()
         record.version_id = row[0]
         record.line_no = row[1]
         record.parse(row[5])

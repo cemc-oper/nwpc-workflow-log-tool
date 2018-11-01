@@ -2,16 +2,24 @@
 import datetime
 
 from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
+from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 
 
-def get_from_file(config, owner, repo, begin_date, end_date, log_file, spark):
-    SmsRecord.prepare(owner, repo)
+def get_from_file(config, owner, repo, repo_type, begin_date, end_date, log_file, spark):
+    if repo_type == "sms":
+        record_class = SmsRecord
+    elif repo_type == "ecflow":
+        record_class = EcflowRecord
+    else:
+        raise ValueError("repo type is not supported: " + repo_type)
+
+    record_class.prepare(owner, repo)
 
     log_data = spark.read.text(log_file).rdd
 
     # record line => record object
     def parse_sms_log(line):
-        record = SmsRecord()
+        record = record_class()
         record.parse(line.value)
         return record
 
@@ -35,6 +43,6 @@ def get_from_file(config, owner, repo, begin_date, end_date, log_file, spark):
 
     record_rdd = log_data.filter(filter_node)
 
-    SmsRecord.init()
+    record_class.init()
 
     return record_rdd

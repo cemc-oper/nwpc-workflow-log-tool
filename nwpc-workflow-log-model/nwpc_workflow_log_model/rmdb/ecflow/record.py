@@ -50,7 +50,8 @@ class EcflowRecordBase(RecordBase):
             pass
         else:
             # not supported
-            print("[not supported]", line)
+            # print("[not supported]", line)
+            pass
 
         return self
 
@@ -64,7 +65,8 @@ class EcflowRecordBase(RecordBase):
             if status_line.strip()[0].isupper():
                 pass
             else:
-                print("[ERROR] status record: command not found =>", self.log_record)
+                # print("[ERROR] status record: command not found =>", self.log_record)
+                pass
             return
         command = status_line[start_pos:end_pos]
 
@@ -92,13 +94,13 @@ class EcflowRecordBase(RecordBase):
                 pass
             else:
                 self.command = command
-                print("[ERROR] status record: command not supported =>", self.log_record)
+                # print("[ERROR] status record: command not supported =>", self.log_record)
 
     def __parse_child_record(self, child_line):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
-            print("[ERROR] child record: command not found =>", self.log_record)
+            # print("[ERROR] child record: command not found =>", self.log_record)
             return
         command = child_line[start_pos:end_pos]
 
@@ -126,7 +128,8 @@ class EcflowRecordBase(RecordBase):
                 self.node_path = line[node_path_start_pos+1:]
                 self.additional_information = line[:node_path_start_pos]
             else:
-                print("[ERROR] child record: parse error =>", self.log_record)
+                # print("[ERROR] child record: parse error =>", self.log_record)
+                pass
         else:
             self.command = command
             print("[ERROR] child record: command not supported =>", self.log_record)
@@ -135,7 +138,7 @@ class EcflowRecordBase(RecordBase):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
-            print("[ERROR] client record: command not found =>", self.log_record)
+            # print("[ERROR] client record: command not found =>", self.log_record)
             return
         command = child_line[start_pos:end_pos]
 
@@ -150,7 +153,7 @@ class EcflowRecordBase(RecordBase):
                 self.node_path = node_path
                 self.additional_information = requeue_option + ' ' + user
             else:
-                print("[ERROR] client record: requeue parse error =>", self.log_record)
+                # print("[ERROR] client record: requeue parse error =>", self.log_record)
                 return
         elif command in ('alter', 'free-dep', 'kill', 'delete', 'suspend', 'resume', 'run', 'status'):
             self.command = command
@@ -219,7 +222,7 @@ class EcflowRecordBase(RecordBase):
             self.command = command[:command.find('=')]
         else:
             self.command = command
-            print("[ERROR] client record: command not supported =>", self.log_record)
+            # print("[ERROR] client record: command not supported =>", self.log_record)
 
 
 class EcflowRecord(EcflowRecordBase, Model):

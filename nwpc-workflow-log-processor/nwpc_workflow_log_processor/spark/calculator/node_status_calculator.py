@@ -2,7 +2,7 @@
 import datetime
 from operator import attrgetter
 
-from nwpc_workflow_log_model.rmdb.sms.util.node_situation_util import NodeSituationUtil
+from nwpc_workflow_log_model.rmdb.util.node_situation_util import NodeSituationUtil
 from nwpc_work_flow_model.sms import Bunch
 
 
