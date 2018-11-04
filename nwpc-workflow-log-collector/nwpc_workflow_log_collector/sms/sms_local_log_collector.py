@@ -4,11 +4,11 @@ import json
 
 import click
 import yaml
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-from nwpc_log_model.rdbms_model import Record
-from nwpc_log_model.util.version_util import VersionUtil
+from nwpc_workflow_log_model.rmdb.util.session import get_session
+from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
+from nwpc_workflow_log_model.rmdb.util.version_util import VersionUtil
+
 from nwpc_workflow_log_collector.sms.util.log_file_util import SmsLogFileUtil
 
 
@@ -19,14 +19,7 @@ def load_config(config_file_path):
     return config
 
 
-def get_session(database_uri):
-    engine = create_engine(database_uri)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
-
-
-def get_log_info_from_local_file(config_object, owner, repo, log_file, output_type):
+def get_log_info_from_local_file(config_object: dict, owner: str, repo: str, log_file: str, output_type):
     with open(log_file) as f:
         first_line = f.readline()
         if first_line is None:
@@ -34,7 +27,7 @@ def get_log_info_from_local_file(config_object, owner, repo, log_file, output_ty
                 'file_path': log_file,
                 'line_count': 0
             }
-        first_record = Record()
+        first_record = SmsRecord()
         first_record.parse(first_line)
 
         cur_line_no = 1
@@ -42,35 +35,35 @@ def get_log_info_from_local_file(config_object, owner, repo, log_file, output_ty
         for line in f:
             cur_line = line
             cur_line_no += 1
-        last_record = Record()
+        last_record = SmsRecord()
         last_record.parse(cur_line)
         return {
             'file_path': log_file,
             'line_count': cur_line_no,
             'range': {
                 'start': {
-                    'date': first_record.record_date.strftime('%Y-%m-%d'),
-                    'time': first_record.record_time.strftime('%H:%M:%S')
+                    'date': first_record.date.strftime('%Y-%m-%d'),
+                    'time': first_record.time.strftime('%H:%M:%S')
                 },
                 'end': {
-                    'date': last_record.record_date.strftime('%Y-%m-%d'),
-                    'time': last_record.record_time.strftime('%H:%M:%S')
+                    'date': last_record.date.strftime('%Y-%m-%d'),
+                    'time': last_record.time.strftime('%H:%M:%S')
                 }
             }
         }
 
 
-def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose):
+def collect_log_from_local_file(config: dict, owner_name: str, repo_name: str, file_path: str, verbose):
     session = get_session(config['smslog_local_collector']['rdbms']['database_uri'])
 
     with open(file_path) as f:
         first_line = f.readline().strip()
-        version = VersionUtil.get_version(user_name, repo_name, file_path, first_line, session)
-        Record.prepare(user_name, repo_name)
+        version = VersionUtil.get_version(session, owner_name, repo_name, file_path, first_line, SmsRecord)
+        SmsRecord.prepare(owner_name, repo_name)
 
-        query = session.query(Record).filter(Record.repo_id == version.repo_id) \
-            .filter(Record.version_id == version.version_id) \
-            .order_by(Record.line_no.desc()) \
+        query = session.query(SmsRecord).filter(SmsRecord.repo_id == version.repo_id) \
+            .filter(SmsRecord.version_id == version.version_id) \
+            .order_by(SmsRecord.line_no.desc()) \
             .limit(1)
 
         latest_record = query.first()
@@ -80,7 +73,7 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose
             start_line_no = latest_record.line_no + 1
 
         if start_line_no == 0:
-            record = Record()
+            record = SmsRecord()
             record.parse(first_line)
             record.repo_id = version.repo_id
             record.version_id = version.version_id
@@ -100,7 +93,7 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose
             if line[0] != '#':
                 cur_line_no += 1
                 continue
-            record = Record()
+            record = SmsRecord()
             if verbose > 1:
                 print(cur_line_no, line)
             record.parse(line)
@@ -127,13 +120,14 @@ def collect_log_from_local_file(config, user_name, repo_name, file_path, verbose
             click.echo('commit session, last lines.')
 
 
-def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path, start_date, end_date, verbose):
-    session = get_session(config['smslog_local_collector']['rdbms']['database_uri'])
+def collect_log_from_local_file_by_range(config: dict, owner_name: str, repo_name: str, file_path: str,
+                                         start_date, end_date, verbose):
+    session = get_session(config['sms_local_log_collector']['rdbms']['database_uri'])
 
     with open(file_path) as f:
         first_line = f.readline().strip()
-        version = VersionUtil.get_version(user_name, repo_name, file_path, first_line, session)
-        Record.prepare(user_name, repo_name)
+        version = VersionUtil.get_version(session, owner_name, repo_name, file_path, first_line, SmsRecord)
+        SmsRecord.prepare(owner_name, repo_name)
 
         print("Finding line no in range:", start_date, end_date)
         begin_line_no, end_line_no = SmsLogFileUtil.get_line_no_range(
@@ -160,7 +154,7 @@ def collect_log_from_local_file_by_range(config, user_name, repo_name, file_path
             if len(line) == 0 or line[0] != '#':
                 cur_line_no += 1
                 continue
-            record = Record()
+            record = SmsRecord()
             if verbose > 1:
                 print(cur_line_no, line)
             record.parse(line)
