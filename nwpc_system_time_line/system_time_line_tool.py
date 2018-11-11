@@ -18,8 +18,8 @@ from nwpc_workflow_log_tool_legacy.nwpc_log_collector import (
     load_config as load_collector_config,
     get_log_info_from_local_file
 )
-from nwpc_log_processor.run_time_line.time_line_processor import load_processor_config, time_line_processor
-from nwpc_log_processor.run_time_line.time_line_chart_data_generator import generate_chart_data
+from nwpc_workflow_log_processor.rmdb.run_time_line.time_line_processor import load_processor_config, time_line_processor
+from nwpc_workflow_log_processor.rmdb.run_time_line.time_line_chart_data_generator import generate_chart_data
 
 
 def load_config(config_file_path):

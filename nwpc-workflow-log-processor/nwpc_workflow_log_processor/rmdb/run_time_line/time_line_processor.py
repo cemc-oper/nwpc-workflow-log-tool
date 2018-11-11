@@ -466,16 +466,16 @@ def time_line_processor(config, owner, repo, query_date, output_file, save_to_db
     if result is None:
         return
 
-    # output section
+    # print result
     if print_flag:
         click.echo(json.dumps(result, indent=4))
 
-    # 保存到 MongoDB
+    # store data to MongoDB
     if save_to_db:
         click.echo("Save results to database")
         save_time_line_to_db(config, result)
 
-    # 保存到文件
+    # output to file
     if output_file:
         click.echo("Write results to output file: {output_file_path}".format(output_file_path=output_file))
         save_time_line_to_file(config, result, output_file)
@@ -502,7 +502,6 @@ DESCRIPTION
 
     time_line_processor(config, owner, repo, query_date, output_file, save_to_db, print_flag)
 
-    # 时间统计
     end_time = datetime.datetime.now()
     click.echo(end_time - start_time)
     return

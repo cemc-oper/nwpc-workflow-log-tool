@@ -5,9 +5,9 @@ import datetime
 import csv
 from pymongo import MongoClient
 
-from nwpc_log_processor.run_time_line.conf.config import MONGODB_HOST, MONGODB_PORT
+from nwpc_workflow_log_processor.rmdb.run_time_line import MONGODB_HOST, MONGODB_PORT
 
-from nwpc_log_processor.run_time_line.time_line_chart_data_generator import load_schema
+from nwpc_workflow_log_processor.rmdb.run_time_line.time_line_chart_data_generator import load_schema
 
 mongodb_client = MongoClient(MONGODB_HOST, MONGODB_PORT)
 smslog_mongodb = mongodb_client.smslog
