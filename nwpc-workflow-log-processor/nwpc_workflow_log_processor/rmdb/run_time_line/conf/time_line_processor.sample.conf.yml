@@ -1,21 +1,14 @@
-time_line_processor:
+datastore:
   log_dbms:
-    # database uri, using in sqlalchemy
     database_uri: mysql+mysqlconnector://user:password@host/dbname
 
   statistic_dbms:
-    # db type, currently supported: mongodb
     type: mongodb
+    host: mongodb host
+    port: mongodb port
+    database: mongodb database name
 
-    # db host
-    host: host
-
-    # db port
-    port: port
-
-    # db schema
-    schema: schema name
-
+processor:
   system_schema:
     # dir for system schemas
     dir: ./system_shcema

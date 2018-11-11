@@ -8,10 +8,10 @@ type: timeline
 #   repo: repo name
 series:
   - owner: nwp_xp
-    repo: nwpc_op
+    repo: aix_nwpc_op
   - owner: nwp_xp
-    repo: nwpc_qu
+    repo: aix_nwpc_qu
   - owner: nwp_xp
-    repo: eps_nwpc_qu
+    repo: aix_eps_nwpc_qu
   - owner: nwp_xp
-    repo: nwpc_pd
+    repo: aix_nwpc_pd

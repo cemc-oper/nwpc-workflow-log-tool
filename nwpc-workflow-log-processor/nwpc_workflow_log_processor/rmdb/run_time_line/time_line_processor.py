@@ -5,43 +5,46 @@ import pathlib
 
 import click
 import yaml
+from mongoengine import connect
 from pymongo import MongoClient
-from sqlalchemy import create_engine, asc, or_
-from sqlalchemy.orm import sessionmaker
 
 
-from nwpc_log_model.rdbms_model import Record
-from nwpc_log_model.util.bunch_util import BunchUtil
+from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
+from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
+from nwpc_workflow_log_model.rmdb.util.bunch_util import BunchUtil
+from nwpc_workflow_log_processor.rmdb.run_time_line.calculator import calculate_time_line
 
 
-def get_bunch(owner_name, repo_name, query_date, session, daily_tree_status_collection):
+def get_record_class(repo_type):
+    if repo_type == "sms":
+        record_class = SmsRecord
+    elif repo_type == "ecflow":
+        record_class = EcflowRecord
+    else:
+        raise ValueError("repo type is not supported: " + repo_type)
+    return record_class
+
+
+def get_bunch(owner_name, repo_name, repo_type, query_date, rmdb_session, mongodb_client):
     """
     从 MySQL 中生成某个项目的树形结构，保存到 MongoDB 中。
 
     :param owner_name:
     :param repo_name:
     :param query_date:
-    :param session:
-    :param daily_tree_status_collection:
+    :param rmdb_session:
+    :param mongodb_client:
     :return: Bunch
     """
 
-    # generate tree
-    tree = BunchUtil.generate_repo_tree_from_session(owner_name, repo_name, query_date, session)
+    record_class = get_record_class(repo_type)
 
-    # add daily tree structure to mongodb
-    tree_status_key = {
-        'owner': owner_name,
-        'repo': repo_name,
-        'date': query_date
-    }
-    tree_status = {
-        'owner': owner_name,
-        'repo': repo_name,
-        'date': query_date,
-        'tree': tree.to_dict()
-    }
-    daily_tree_status_collection.update(tree_status_key, tree_status, upsert=True)
+    # generate tree
+    tree = BunchUtil.generate_repo_tree_from_session(rmdb_session, owner_name, repo_name, query_date, record_class)
+
+    from nwpc_workflow_log_model.mongodb.node_tree import save_bunch
+    save_bunch(owner_name, repo_name, query_date, tree, update_type='insert')
+
     return tree
 
 
@@ -53,12 +56,12 @@ def load_processor_config(config_file_path):
         return config
 
 
-def load_schema(config, owner, repo):
-    schema_dir = config['time_line_processor']['system_schema']['dir']
+def load_schema(config: dict, owner: str, repo: str):
+    schema_dir = config['processor']['system_schema']['dir']
     if schema_dir.startswith('.'):
         schema_dir = pathlib.Path(pathlib.Path(config['_file_path']).parent, schema_dir)
 
-    config_file_name = "{owner}.{repo}.schema.json".format(
+    config_file_name = "{owner}.{repo}.schema.yml".format(
         owner=owner, repo=repo
     )
 
@@ -67,368 +70,31 @@ def load_schema(config, owner, repo):
         click.echo("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
         return None
     with open(config_file_path, 'r') as config_file:
-        schema = json.load(config_file)
+        schema = yaml.load(config_file)
         return schema
 
 
-def calculate_time_line(owner, repo, query_date, schema, bunch, session):
-    """
-    sms服务器
-    :param owner:
-    :param repo:
-    :param query_date:
-    :param schema:
-    :param bunch:
-    :param session:
-    :return:
-    """
-    suites = schema["suites"]
+def process_time_line(config, owner_name, repo_name, repo_type, query_date):
+    from nwpc_workflow_log_model.rmdb.util.session import get_session
 
-    result = {
-        "owner": owner,
-        "repo": repo,
-        "query_date": query_date.strftime("%Y-%m-%d"),
-        "suites": []
-    }
+    log_dbms_config = config['datastore']['log_dbms']
+    mysql_session = get_session(log_dbms_config['database_uri'])
 
-    for a_suite in suites:
-        suite_time_line = calculate_suite_time_line(owner, repo, query_date, a_suite, bunch, session)
-        result["suites"].append(suite_time_line)
+    mongodb_database = config['datastore']['statistic_dbms']['database']
+    mongodb_host = config['datastore']['statistic_dbms']['host']
+    mongodb_port = config['datastore']['statistic_dbms']['port']
+    mongodb_client = connect(mongodb_database, host=mongodb_host, port=mongodb_port)
 
-    return result
-
-
-def calculate_suite_time_line(owner, repo, query_date, suite_schema, bunch, session):
-    """
-    每个suite
-    :param owner:
-    :param repo:
-    :param query_date:
-    :param suite_schema:
-    :param bunch:
-    :param session:
-    :return:
-    """
-    result = {
-        'name': suite_schema['name'],
-        'label': suite_schema['name'],
-        'times': []
-    }
-    click.echo("{owner}/{repo}/{suite}".format(
-        owner=owner,
-        repo=repo,
-        suite=suite_schema['name']
-    ))
-
-    for a_run_time in suite_schema["times"]:
-        run_time_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
-        if run_time_result is not None:
-            result["times"].extend(run_time_result)
-
-    return result
-
-
-def calculate_run_time_line(owner, repo, query_date, run_time_line_schema, bunch, session):
-    """
-    每个 run_time 项目，用在两个地方：
-        每个时次
-        每个时次中的并行作业
-
-    :param owner:
-    :param repo:
-    :param query_date:
-    :param run_time_line_schema:
-    :param bunch:
-    :param session:
-    :return:
-    """
-    result = {
-        'name': run_time_line_schema['name'],
-        'label': run_time_line_schema['label'],
-        'start_time': None,
-        'end_time': None,
-        'class': run_time_line_schema['class'],
-    }
-
-    start_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['start_time'], bunch, session)
-    end_time = calculate_run_time_point(owner, repo, query_date, run_time_line_schema['end_time'], bunch, session)
-
-    if start_time is None or end_time is None:
-        print("[calculate_run_time_line] some time is None:")
-        print("\trun_time_line_schema:", run_time_line_schema)
-        return None
-
-    if len(start_time) == 1 and len(end_time) == 1:
-        result["start_time"] = start_time[0]
-        result["end_time"] = end_time[0]
-
-        if 'times' in run_time_line_schema:
-            run_times_result = []
-            for a_run_time in run_time_line_schema['times']:
-                run_times_result = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
-            result["times"] = run_times_result
-
-        return [result]
-
-    elif len(start_time) == 2 and len(end_time) == 2:
-        result_pre_day = {
-            'name': run_time_line_schema['name'],
-            'label': run_time_line_schema['label'],
-            'start_time': start_time[0],
-            'end_time': end_time[0],
-            'class': run_time_line_schema['class'],
-        }
-
-        result["start_time"] = start_time[1]
-        result["end_time"] = end_time[1]
-
-        if 'times' in run_time_line_schema:
-            run_times_result = []
-            run_times_result_pre_day = []
-            for a_run_time in run_time_line_schema['times']:
-                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
-
-                if len(children_run_time_line) == 1:
-                    child_run_time_line = children_run_time_line[0]
-                    if result["start_time"] <= child_run_time_line["start_time"] <= result["end_time"]:
-                        run_times_result.append(child_run_time_line)
-                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] \
-                            <= result_pre_day["end_time"]:
-                        run_times_result_pre_day.append(child_run_time_line)
-                    else:
-                        print("Fatal Error: children_run_time_line error")
-                        print("\tchild_run_time_line:", child_run_time_line)
-                        print("\tresult:", result)
-                        return None
-
-                elif len(children_run_time_line) == 2:
-                    run_times_result.append(children_run_time_line[1])
-                    run_times_result_pre_day.append(children_run_time_line[0])
-
-            result["times"] = run_times_result
-            result_pre_day["times"] = run_times_result_pre_day
-
-        return [result_pre_day, result]
-    elif len(start_time) == 1 and len(end_time) == 2:
-        start_time.insert(0, "00:00:00")
-        result_pre_day = {
-            'name': run_time_line_schema['name'],
-            'label': run_time_line_schema['label'],
-            'start_time': start_time[0],
-            'end_time': end_time[0],
-            'class': run_time_line_schema['class'],
-        }
-
-        result["start_time"] = start_time[1]
-        result["end_time"] = end_time[1]
-
-        if 'times' in run_time_line_schema:
-            run_times_result = []
-            run_times_result_pre_day = []
-            for a_run_time in run_time_line_schema['times']:
-                children_run_time_line = calculate_run_time_line(owner, repo, query_date, a_run_time, bunch, session)
-
-                if len(children_run_time_line) == 1:
-                    child_run_time_line = children_run_time_line[0]
-                    if result["start_time"] <= child_run_time_line["start_time"] <= result["end_time"]:
-                        run_times_result.append(child_run_time_line)
-                    elif result_pre_day["start_time"] <= child_run_time_line["start_time"] \
-                            <= result_pre_day["end_time"]:
-                        run_times_result_pre_day.append(child_run_time_line)
-                    else:
-                        print("Fatal Error: children_run_time_line error")
-                        print("\tchild_run_time_line:", child_run_time_line)
-                        print("\tresult:", result)
-                        return None
-
-                elif len(children_run_time_line) == 2:
-                    run_times_result.append(children_run_time_line[1])
-                    run_times_result_pre_day.append(children_run_time_line[0])
-
-            result["times"] = run_times_result
-            result_pre_day["times"] = run_times_result_pre_day
-
-        return [result_pre_day, result]
-    else:
-        print('Fatal Error: start time and end time not fit')
-        print('\trun_time_line_schema:', run_time_line_schema)
-        return None
-
-
-def calculate_run_time_point(owner, repo, query_date, run_time_schema, bunch, session):
-    """
-    计算单个时间，用于以下两项：
-        start_time
-        end_time
-
-    :param owner:
-    :param repo:
-    :param query_date:
-    :param run_time_schema:
-        {
-            "operator": "start",
-            "command": "submitted",
-            "paths": [
-                {
-                    "operator": "equal", # or like
-                    "node_type": "family" # or node
-                    "node_path": "/gda_gsi_v1r5/T639/00"
-                }
-            ]
-        }
-    :param bunch:
-    :param session:
-    :return:
-    """
-    Record.prepare(owner, repo)
-    operator = run_time_schema["operator"]
-    command = run_time_schema["command"]
-    paths = run_time_schema["paths"]
-
-    query = session.query(Record)
-
-    if len(paths) == 1:
-        node_path_object = paths[0]
-        if node_path_object['operator'] == 'equal':
-            query = query.filter(Record.record_fullname.like(node_path_object['node_path']))
-        elif node_path_object['operator'] == 'like':
-            query = query.filter(Record.record_fullname.like(node_path_object['node_path']))
-        else:
-            print("Fatal Error: paths operator is unknown")
-            print("\tnode path:", node_path_object)
-            return None
-
-    elif len(paths) > 1:
-        path_filters = []
-        for node_path_object in paths:
-            if node_path_object['operator'] == 'equal':
-                path_filters.append(Record.record_fullname.like(node_path_object['node_path']))
-            elif node_path_object['operator'] == 'like':
-                path_filters.append(Record.record_fullname.like(node_path_object['node_path']))
-            else:
-                print("Fatal Error: paths operator is unknown")
-                print("\tnode path:", node_path_object)
-                return None
-        query = query.filter(or_(*path_filters))
-
-    else:
-        print("Fatal Error: paths is empty")
-        print("\trun time schema:", run_time_schema)
-        return None
-
-    query = query.filter(Record.record_date == query_date.date()) \
-        .filter(Record.record_command.in_(['submitted', 'complete'])) \
-        .order_by(asc(Record.record_time)) \
-        .order_by(asc(Record.line_no))
-
-    records = query.all()
-    record_length = len(records)
-
-    if record_length == 0:
-        print("There is no record")
-        print("\trun time schema:", run_time_schema)
-        return None
-
-    if records[-1].record_command == 'complete':
-        # 任务在当天内结束, submitted -> complete
-
-        if operator == "end":
-            return [records[-1].record_time.strftime("%H:%M:%S")]
-
-        elif operator == 'start':
-            current_index = 0
-            while current_index < record_length:
-                if records[current_index].record_command == 'complete':
-                    break
-                current_index += 1
-
-            if current_index != record_length - 1:
-                # 之前有complete
-                if records[current_index].record_fullname == records[-1].record_fullname:
-                    # 单个node情况，之前有complete，寻找之后的submitted
-                    pass
-                else:
-                    # 多个node情况，第一个submitted为start时间
-                    current_index = 0
-
-                while current_index < record_length:
-                    if records[current_index].record_command == 'submitted':
-                        break
-                    current_index += 1
-
-                if current_index == record_length:
-                    return [records[-1].record_time.strftime("%H:%M:%S")]
-                else:
-                    return [records[current_index].record_time.strftime("%H:%M:%S")]
-
-            else:
-                # 之前没有complete，正常情况，第一个submitted为start时间
-                current_index = 0
-
-                while current_index < record_length:
-                    if records[current_index].record_command == 'submitted':
-                        break
-                    current_index += 1
-                if current_index == record_length:
-                    return [records[-1].record_time.strftime("%H:%M:%S")]
-                else:
-                    return [records[current_index].record_time.strftime("%H:%M:%S")]
-
-    else:
-        # 任务时间跨过零点，需要分裂为两个项目
-        current_index = 0
-        while current_index < record_length:
-            if records[current_index].record_command == 'complete':
-                break
-            current_index += 1
-
-        if current_index == record_length:
-            print("Fatal Error: command parser failed to find complete")
-            print("\trun_time_schema:", run_time_schema)
-            return None
-
-        if operator == "end":
-            return [records[current_index].record_time.strftime("%H:%M:%S"), "23:59:00"]
-
-        elif operator == "start":
-            # 第一个complete
-
-            # 第一个submitted
-            while current_index < record_length:
-                if records[current_index].record_command == 'submitted':
-                    break
-                current_index += 1
-            if current_index == record_length:
-                print("Fatal Error: command parser failed to find submitted")
-                print("\trun_time_schema:", run_time_schema)
-                return None
-            return ["00:00:00", records[current_index].record_time.strftime("%H:%M:%S")]
-
-    return None
-
-
-def process_time_line(config, owner_name, repo_name, query_date):
-
-    engine = create_engine(config['time_line_processor']['log_dbms']['database_uri'])
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
-    mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
-    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
-
-    daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
-    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-    repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-
-    bunch = get_bunch(owner_name, repo_name, query_date, session, daily_tree_status_collection)
+    bunch = get_bunch(owner_name, repo_name, repo_type, query_date, mysql_session, mongodb_client)
 
     schema = load_schema(config, owner_name, repo_name)
     if schema is None:
         click.echo("Fatal Error: load schema failed.")
         return None
 
-    result = calculate_time_line(owner_name, repo_name, query_date, schema, bunch, session)
+    record_class = get_record_class(repo_type)
+
+    result = calculate_time_line(owner_name, repo_name, record_class, query_date, schema, bunch, mysql_session)
     return result
 
 
@@ -440,14 +106,11 @@ def save_time_line_to_db(config, time_line_result):
     }
     value = time_line_result
 
-    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
+    statistic_dbms_config = config['datastore']['statistic_dbms']
     mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
-    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
+    mongodb_database = mongodb_client[statistic_dbms_config['database']]
 
-    daily_tree_status_collection = smslog_mongodb.daily_tree_status_collection
-    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-    repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
-
+    daily_repo_time_line_collection = mongodb_database.daily_repo_time_line_collection
     daily_repo_time_line_collection.replace_one(key, value, upsert=True)
 
 
@@ -457,12 +120,12 @@ def save_time_line_to_file(config, time_line_result, output_file_path):
         output_file.write(output_file_content)
 
 
-def time_line_processor(config, owner, repo, query_date, output_file, save_to_db, print_flag):
+def time_line_processor(config, owner, repo, repo_type, query_date, output_file, save_to_db, print_flag):
     click.echo('owner name: {owner}'.format(owner=owner))
     click.echo('repo name: {repo}'.format(repo=repo))
     click.echo('query date: {query_date}'.format(query_date=query_date))
 
-    result = process_time_line(config, owner, repo, query_date)
+    result = process_time_line(config, owner, repo, repo_type, query_date)
     if result is None:
         return
 
@@ -483,14 +146,15 @@ def time_line_processor(config, owner, repo, query_date, output_file, save_to_db
 
 
 @click.command()
-@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
+@click.option("--repo-type", type=click.Choice(["sms", "ecflow"]), help="repo type", required=True)
 @click.option("-d", "--date", help="query date (%Y-%m-%d)", required=True)
 @click.option("--output-file", help="output file path")
 @click.option("--save-to-db", is_flag=True, default=False, help="save result to database")
 @click.option("-p", "--print", "print_flag", is_flag=True, default=False, help="print result to console.")
-def cli(config_file_path, owner, repo, date, output_file, save_to_db, print_flag):
+@click.option("-c", "--config", "config_file_path", help="config file path", required=True)
+def cli(owner, repo, repo_type, date, output_file, save_to_db, print_flag, config_file_path):
     """\
 DESCRIPTION
     Calculate time line for owner/repo on query date according to config file."""
@@ -500,7 +164,7 @@ DESCRIPTION
     query_date = datetime.datetime.strptime(date, "%Y-%m-%d")
     config = load_processor_config(config_file_path)
 
-    time_line_processor(config, owner, repo, query_date, output_file, save_to_db, print_flag)
+    time_line_processor(config, owner, repo, repo_type, query_date, output_file, save_to_db, print_flag)
 
     end_time = datetime.datetime.now()
     click.echo(end_time - start_time)

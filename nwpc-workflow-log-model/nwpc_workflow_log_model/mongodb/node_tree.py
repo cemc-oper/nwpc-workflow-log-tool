@@ -54,7 +54,7 @@ def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch, update_t
     print(node_tree.owner, node_tree.repo, node_tree.data.date)
     if update_type == "upsert":
         NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
-            .update_one(set__tree=bunch.to_dict(), upsert=True)
+            .update_one(set__data__tree=bunch.to_dict(), upsert=True)
     else:
         node_tree.save()
 
