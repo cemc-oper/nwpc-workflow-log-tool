@@ -1,4 +1,4 @@
-from nwpc_log_collector.smslog_local_collector import collect_log_from_local_file
+from nwpc_workflow_log_tool_legacy.nwpc_log_collector import collect_log_from_local_file
 
 import datetime
 import argparse

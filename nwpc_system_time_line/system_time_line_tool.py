@@ -13,7 +13,7 @@ from sqlalchemy.orm import sessionmaker
 from nwpc_log_model.rdbms_model.models import Model
 from nwpc_log_model.util.repo_util import RepoUtil
 
-from nwpc_log_collector.smslog_local_collector import (
+from nwpc_workflow_log_tool_legacy.nwpc_log_collector import (
     collect_log_from_local_file_by_range,
     load_config as load_collector_config,
     get_log_info_from_local_file

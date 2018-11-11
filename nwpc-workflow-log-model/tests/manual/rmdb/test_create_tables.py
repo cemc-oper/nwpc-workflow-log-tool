@@ -25,6 +25,7 @@ def cli(db_uri):
 
     SmsRepo.create_repo('nwp_xp', 'aix_nwpc_op', session)
     SmsRepo.create_repo('nwp_xp', 'aix_nwpc_qu', session)
+    SmsRepo.create_repo('nwp_xp', 'aix_eps_nwpc_qu', session)
     SmsRepo.create_repo('nwp_xp', 'aix_nwpc_pd', session)
 
 
