@@ -12,7 +12,7 @@ from pymongo import MongoClient
 from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
 from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 from nwpc_workflow_log_model.rmdb.util.bunch_util import BunchUtil
-from nwpc_workflow_log_processor.rmdb.run_time_line.calculator import calculate_time_line
+from nwpc_workflow_log_processor.rmdb.run_time_line.calculator.time_line import calculate_time_line
 
 
 def get_record_class(repo_type):

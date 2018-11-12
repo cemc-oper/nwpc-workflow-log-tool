@@ -15,4 +15,4 @@ processor:
 
   chart_schema:
     # file path of chart schema
-    path: ./chart_data.schema.sample.yaml
+    path: ./chart_data.schema.sample.yml

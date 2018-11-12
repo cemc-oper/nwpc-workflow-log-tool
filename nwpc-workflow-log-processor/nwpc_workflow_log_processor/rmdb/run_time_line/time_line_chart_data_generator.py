@@ -17,7 +17,7 @@ def load_processor_config(config_file_path):
 
 
 def load_schema(config):
-    schema_path = config['time_line_processor']['chart_schema']['path']
+    schema_path = config['processor']['chart_schema']['path']
     if schema_path.startswith('.'):
         schema_path = pathlib.Path(pathlib.Path(config['_file_path']).parent, schema_path)
 
@@ -30,11 +30,11 @@ def load_schema(config):
 
 
 def load_data(config, schema, query_date):
-    statistic_dbms_config = config['time_line_processor']['statistic_dbms']
+    statistic_dbms_config = config['datastore']['statistic_dbms']
     mongodb_client = MongoClient(statistic_dbms_config['host'], statistic_dbms_config['port'])
-    smslog_mongodb = mongodb_client[statistic_dbms_config['schema']]
+    mongodb_database = mongodb_client[statistic_dbms_config['database']]
 
-    daily_repo_time_line_collection = smslog_mongodb.daily_repo_time_line_collection
+    daily_repo_time_line_collection = mongodb_database.daily_repo_time_line_collection
 
     series = schema['series']
     chart_data = []
