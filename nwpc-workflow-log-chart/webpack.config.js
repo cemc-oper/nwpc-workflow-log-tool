@@ -1,7 +1,7 @@
 'use strict';
-let path = require('path');
+const path = require('path');
 
-let module_config= {
+const module_config= {
   rules: [
     {
       test: /\.js$/,
@@ -27,6 +27,7 @@ let module_config= {
 };
 
 module.exports = {
+  mode: 'development',
   entry: './src/index.js',
   output: {
     path: path.join(__dirname, 'dist'),
