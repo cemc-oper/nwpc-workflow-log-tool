@@ -7,13 +7,7 @@ import click
 import yaml
 from pymongo import MongoClient
 
-
-def load_processor_config(config_file_path):
-    with open(config_file_path, 'r') as f:
-        config = yaml.load(f)
-        f.close()
-        config['_file_path'] = config_file_path
-        return config
+from nwpc_workflow_log_processor.rmdb.run_time_line.config import load_processor_config
 
 
 def load_schema(config):

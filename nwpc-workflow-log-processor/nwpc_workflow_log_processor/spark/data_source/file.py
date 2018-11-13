@@ -1,17 +1,11 @@
 # coding: utf-8
 import datetime
 
-from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
-from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
+from nwpc_workflow_log_processor.common.util import get_record_class
 
 
 def get_from_file(config, owner, repo, repo_type, begin_date, end_date, log_file, spark):
-    if repo_type == "sms":
-        record_class = SmsRecord
-    elif repo_type == "ecflow":
-        record_class = EcflowRecord
-    else:
-        raise ValueError("repo type is not supported: " + repo_type)
+    record_class = get_record_class(repo_type)
 
     record_class.prepare(owner, repo)
 

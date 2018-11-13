@@ -8,21 +8,11 @@ import yaml
 from mongoengine import connect
 from pymongo import MongoClient
 
-
-from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
-from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 from nwpc_workflow_log_model.rmdb.util.bunch_util import BunchUtil
+
+from nwpc_workflow_log_processor.rmdb.run_time_line.config import load_processor_config
+from nwpc_workflow_log_processor.common.util import get_record_class
 from nwpc_workflow_log_processor.rmdb.run_time_line.calculator.time_line import calculate_time_line
-
-
-def get_record_class(repo_type):
-    if repo_type == "sms":
-        record_class = SmsRecord
-    elif repo_type == "ecflow":
-        record_class = EcflowRecord
-    else:
-        raise ValueError("repo type is not supported: " + repo_type)
-    return record_class
 
 
 def get_bunch(owner_name, repo_name, repo_type, query_date, rmdb_session, mongodb_client):
@@ -46,14 +36,6 @@ def get_bunch(owner_name, repo_name, repo_type, query_date, rmdb_session, mongod
     save_bunch(owner_name, repo_name, query_date, tree, update_type='insert')
 
     return tree
-
-
-def load_processor_config(config_file_path):
-    with open(config_file_path, 'r') as f:
-        config = yaml.load(f)
-        f.close()
-        config['_file_path'] = config_file_path
-        return config
 
 
 def load_schema(config: dict, owner: str, repo: str):
