@@ -21,6 +21,7 @@ def cli(db_uri):
     session = get_session(db_uri)
     EcflowRepo.create_repo('nwp_xp', 'pi_nwpc_op', session)
     EcflowRepo.create_repo('nwp_xp', 'pi_nwpc_qu', session)
+    EcflowRepo.create_repo('nwp_xp', 'pi_nwpc_qu_eps', session)
     EcflowRepo.create_repo('nwp_xp', 'pi_nwpc_pd', session)
 
     SmsRepo.create_repo('nwp_xp', 'aix_nwpc_op', session)

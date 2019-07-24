@@ -52,7 +52,7 @@ def load_schema(config: dict, owner: str, repo: str):
         click.echo("{config_file_path} doesn't exist".format(config_file_path=config_file_path))
         return None
     with open(config_file_path, 'r') as config_file:
-        schema = yaml.load(config_file)
+        schema = yaml.safe_load(config_file)
         return schema
 
 
