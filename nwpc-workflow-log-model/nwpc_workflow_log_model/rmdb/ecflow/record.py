@@ -1,9 +1,12 @@
 # coding: utf-8
 from datetime import datetime
+import logging
 
 from sqlalchemy import Column, String
 from nwpc_workflow_log_model.rmdb.base.model import Model
 from nwpc_workflow_log_model.rmdb.base.record import RecordBase
+
+logger = logging.getLogger()
 
 
 class EcflowRecordBase(RecordBase):
@@ -19,7 +22,7 @@ class EcflowRecordBase(RecordBase):
         start_pos = end_pos + 2
         end_pos = line.find(']', start_pos)
         if end_pos == -1:
-            print("can't find date and time => ", line)
+            logger.warning("can't find date and time => ", line)
             return
         record_time_string = line[start_pos:end_pos]
         date_time = datetime.strptime(record_time_string, '%H:%M:%S %d.%m.%Y')
@@ -129,7 +132,7 @@ class EcflowRecordBase(RecordBase):
                 # print("[ERROR] child record: parse error =>", self.log_record)
                 pass
         else:
-            print("[ERROR] child record: command not supported =>", self.log_record)
+            logger.error("[ERROR] child record: command not supported =>", self.log_record)
 
     def __parse_client_record(self, child_line):
         start_pos = 0

@@ -4,8 +4,11 @@ from sqlalchemy import create_engine
 
 
 @click.command()
-@click.option('--db-uri')
+@click.option('--db-uri', help="database uri, used for SQLAlchemy")
 def cli(db_uri):
+    """
+    Create all RMDB tables for NWPC Operation Systems running in HPC-URANUS and HPC-PI.
+    """
     from nwpc_workflow_log_model.rmdb.base.model import Model
     from nwpc_workflow_log_model.rmdb.sms.repo import SmsRepo
     from nwpc_workflow_log_model.rmdb.ecflow.repo import EcflowRepo

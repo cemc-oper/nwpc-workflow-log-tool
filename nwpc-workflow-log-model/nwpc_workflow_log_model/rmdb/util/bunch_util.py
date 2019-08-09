@@ -2,6 +2,7 @@
 from sqlalchemy import distinct
 
 from nwpc_workflow_model.bunch import Bunch
+from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 
 
 class BunchUtil(object):
@@ -9,7 +10,8 @@ class BunchUtil(object):
         pass
 
     @classmethod
-    def generate_repo_tree_from_session(cls, session, owner, repo, query_date, record_class):
+    def generate_repo_tree_from_session(cls, session, owner: str, repo: str, query_date, record_class: RecordBase) \
+            -> Bunch:
         """
         从数据库中某天的日志条目生成Bunch。
 

@@ -1,13 +1,16 @@
 # coding=utf-8
 from nwpc_workflow_model.node_type import NodeType
 
+from nwpc_workflow_log_model.rmdb.base.record import RecordBase
+
 
 class NodeUtil(object):
     def __int__(self):
         pass
 
     @classmethod
-    def node_is_valid_from_session(cls, session, owner, repo, node_path, record_class):
+    def node_is_valid_from_session(
+            cls, session, owner: str, repo: str, node_path: str, record_class: RecordBase) -> bool:
         record_class.prepare(owner, repo)
         query = session.query(record_class).filter(record_class.node_path == node_path).limit(1).all()
         if len(query) == 0:
@@ -16,7 +19,8 @@ class NodeUtil(object):
             return True
 
     @classmethod
-    def sub_node_is_valid_from_session(cls, session, owner, repo, node_path, record_class):
+    def sub_node_is_valid_from_session(
+            cls, session, owner: str, repo: str, node_path: str, record_class: RecordBase) -> bool:
         # NOTE: 花费太长时间，最好由 Spark 任务得到节点树后查找是否有子节点。
         record_class.prepare(owner, repo)
         path = node_path + '/'
@@ -33,7 +37,7 @@ class NodeUtil(object):
             return True
 
     @classmethod
-    def get_node_type_from_session(cls, session, owner, repo, node_path, record_class):
+    def get_node_type_from_session(cls, session, owner: str, repo: str, node_path: str, record_class: RecordBase) -> str:
         # NOTE：花费时间太长，最好由 Spark 任务得到节点树后再确定节点类型。
         # TODO: windroc, 2017.08.28, add support for Trigger, Event and so on.
         node_type = NodeType.get_node_type_string(NodeType.Unknown)
@@ -42,13 +46,13 @@ class NodeUtil(object):
         if not node_path.startswith('/'):
             return node_type
         # test whether the node is exists
-        if not NodeUtil.node_is_valid_from_session(session, owner, repo, node_path, record_class):
+        if not cls.node_is_valid_from_session(session, owner, repo, node_path, record_class):
             return node_type
 
         if node_path.find('/', 1) == -1:
             return NodeType.get_node_type_string(NodeType.Suite)
 
-        if NodeUtil.sub_node_is_valid_from_session(session, owner, repo, node_path, record_class):
+        if cls.sub_node_is_valid_from_session(session, owner, repo, node_path, record_class):
             return NodeType.get_node_type_string(NodeType.Family)
         else:
             if node_path.find(":") != -1:

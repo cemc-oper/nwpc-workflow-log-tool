@@ -10,8 +10,8 @@ class NodeSituationUtil(object):
     def __init__(self):
         pass
 
-    @staticmethod
-    def get_task_node_situation_from_record_list(node_situation, node_path, query_date_object, record_list):
+    @classmethod
+    def get_task_node_situation_from_record_list(cls, node_situation, node_path, query_date_object, record_list):
         """
         :param node_situation:
             {
@@ -140,8 +140,8 @@ class NodeSituationUtil(object):
 
         return node_situation
 
-    @staticmethod
-    def get_task_node_situation_from_session(node_situation, node_path, date_object, session):
+    @classmethod
+    def get_task_node_situation_from_session(cls, node_situation, node_path, date_object, session):
         """
         :param node_situation:
             {
@@ -167,11 +167,11 @@ class NodeSituationUtil(object):
             .order_by(asc(SmsRecord.line_no))
         records = query.all()
 
-        return NodeSituationUtil.get_task_node_situation_from_record_list(node_situation, node_path, date_object,
+        return cls.get_task_node_situation_from_record_list(node_situation, node_path, date_object,
                                                                           records)
 
-    @staticmethod
-    def get_family_node_situation_from_session(node_situation, node_path, date_object, session):
+    @classmethod
+    def get_family_node_situation_from_session(cls, node_situation, node_path, date_object, session):
         query = session.query(SmsRecord) \
             .filter(SmsRecord.node_path == node_path) \
             .filter(SmsRecord.date == date_object) \
@@ -283,8 +283,8 @@ class NodeSituationUtil(object):
 
         return node_situation
 
-    @staticmethod
-    def get_family_node_situation_from_record_list(node_situation, node_path, query_date_object, record_list):
+    @classmethod
+    def get_family_node_situation_from_record_list(cls, node_situation, node_path, query_date_object, record_list):
         cur_date_records = list(filter(lambda record: record.date == query_date_object, record_list))
 
         next_date = query_date_object + datetime.timedelta(days=1)

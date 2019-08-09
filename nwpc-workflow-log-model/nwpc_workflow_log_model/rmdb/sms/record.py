@@ -1,7 +1,12 @@
 # coding: utf-8
 from datetime import datetime
+import logging
+
 from nwpc_workflow_log_model.rmdb.base.model import Model
 from nwpc_workflow_log_model.rmdb.base.record import RecordBase
+
+
+logger = logging.getLogger()
 
 
 class SmsRecordBase(RecordBase):

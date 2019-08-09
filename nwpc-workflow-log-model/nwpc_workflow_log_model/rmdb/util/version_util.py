@@ -1,13 +1,18 @@
 # coding: utf-8
 from sqlalchemy import func
+import logging
 
 from nwpc_workflow_log_model.rmdb.base.owner import Owner
 from nwpc_workflow_log_model.rmdb.base.repo import Repo, RepoVersion
+from nwpc_workflow_log_model.rmdb.base.record import RecordBase
+
+
+logger = logging.getLogger()
 
 
 class VersionUtil(object):
     @classmethod
-    def check_repo(cls, session, owner, repo):
+    def check_repo(cls, session, owner: str, repo: str) -> (Owner, Repo) or None:
         result = session.query(Owner, Repo).filter(Owner.owner_name == owner) \
             .filter(Repo.repo_name == repo) \
             .filter(Owner.owner_id == Repo.owner_id) \
@@ -23,7 +28,8 @@ class VersionUtil(object):
         return owner, repo
 
     @classmethod
-    def add_new_repo_version(cls, session, repo, location, head_line, record_class):
+    def add_new_repo_version(cls, session, repo: Repo, location: str, head_line: str, record_class: RecordBase) \
+            -> RepoVersion:
         version = RepoVersion()
         version.repo_id = repo.repo_id
         r = record_class()
@@ -49,8 +55,9 @@ class VersionUtil(object):
         return version
 
     @classmethod
-    def get_version(cls, session, owner, repo, location, head_line, record_class):
-        c = VersionUtil.check_repo(session, owner, repo)
+    def get_version(cls, session, owner: str, repo: str, location: str, head_line: str, record_class: RecordBase) \
+            -> RepoVersion or None:
+        c = cls.check_repo(session, owner, repo)
         if c is None:
             return None
         (user, repo) = c
@@ -59,8 +66,8 @@ class VersionUtil(object):
             .filter(RepoVersion.repo_id == repo.repo_id) \
             .filter(RepoVersion.head_line == head_line).first()
         if version is None:
-            print("version not found, add a new version")
-            version = VersionUtil.add_new_repo_version(session, repo, location, head_line, record_class)
+            logger.info("version not found, add a new version")
+            version = cls.add_new_repo_version(session, repo, location, head_line, record_class)
         else:
-            print("version found, use existed version")
+            logger.info("version found, use existed version")
         return version
