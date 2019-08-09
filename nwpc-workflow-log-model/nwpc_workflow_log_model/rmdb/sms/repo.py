@@ -56,6 +56,6 @@ class SmsRepo(Model):
             session.add(workflow_repo_object)
             session.commit()
 
-        cls.prepare(owner, repo)
-        if not cls.__table__.exists(bind=session.get_bind()):
-            cls.create_record_table(owner, repo, session)
+        SmsRecord.prepare(owner, repo)
+        if not SmsRecord.__table__.exists(bind=session.get_bind()):
+            SmsRecord.create_record_table(owner, repo, session)

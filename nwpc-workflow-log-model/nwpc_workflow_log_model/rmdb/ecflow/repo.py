@@ -56,6 +56,6 @@ class EcflowRepo(Model):
             session.add(workflow_repo_object)
             session.commit()
 
-        cls.prepare(owner, repo)
-        if not cls.__table__.exists(bind=session.get_bind()):
-            cls.create_record_table(owner, repo, session)
+        EcflowRecord.prepare(owner, repo)
+        if not EcflowRecord.__table__.exists(bind=session.get_bind()):
+            EcflowRecord.create_record_table(owner, repo, session)
