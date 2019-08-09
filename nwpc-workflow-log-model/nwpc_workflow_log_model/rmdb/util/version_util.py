@@ -3,7 +3,6 @@ from sqlalchemy import func
 
 from nwpc_workflow_log_model.rmdb.base.owner import Owner
 from nwpc_workflow_log_model.rmdb.base.repo import Repo, RepoVersion
-from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 
 
 class VersionUtil(object):

@@ -12,11 +12,11 @@ class Owner(Model):
     def __init__(self):
         pass
 
-    @staticmethod
-    def create_owner(owner, session):
-        owner_object = Owner()
+    @classmethod
+    def create_owner(cls, owner, session):
+        owner_object = cls()
         owner_object.owner_name = owner
-        result = session.query(Owner).filter(Owner.owner_name == owner) \
+        result = session.query(cls).filter(cls.owner_name == owner) \
             .first()
         if not result:
             owner_object = session.merge(owner_object)

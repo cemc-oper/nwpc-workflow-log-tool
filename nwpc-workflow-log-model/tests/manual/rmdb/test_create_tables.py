@@ -7,12 +7,8 @@ from sqlalchemy import create_engine
 @click.option('--db-uri')
 def cli(db_uri):
     from nwpc_workflow_log_model.rmdb.base.model import Model
-    from nwpc_workflow_log_model.rmdb.base.owner import Owner
-    from nwpc_workflow_log_model.rmdb.base.repo import Repo, RepoVersion
     from nwpc_workflow_log_model.rmdb.sms.repo import SmsRepo
-    from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
     from nwpc_workflow_log_model.rmdb.ecflow.repo import EcflowRepo
-    from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 
     engine = create_engine(db_uri)
     Model.metadata.create_all(engine)

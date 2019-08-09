@@ -72,9 +72,9 @@ class NodeSituationUtil(object):
                     complete_index = cur_index
                     break
                 cur_index += 1
-            if complete_index != -1 and (complete_index+1) < len(records) \
-                    and records[complete_index+1].command == "complete" \
-                    and records[complete_index+1].additional_information == "by rule":
+            if complete_index != -1 and (complete_index + 1) < len(records) \
+                    and records[complete_index + 1].command == "complete" \
+                    and records[complete_index + 1].additional_information == "by rule":
                 node_situation['situation'] = 'complete by rule'
             return node_situation
 
@@ -167,7 +167,8 @@ class NodeSituationUtil(object):
             .order_by(asc(SmsRecord.line_no))
         records = query.all()
 
-        return NodeSituationUtil.get_task_node_situation_from_record_list(node_situation, node_path, date_object, records)
+        return NodeSituationUtil.get_task_node_situation_from_record_list(node_situation, node_path, date_object,
+                                                                          records)
 
     @staticmethod
     def get_family_node_situation_from_session(node_situation, node_path, date_object, session):
@@ -214,7 +215,7 @@ class NodeSituationUtil(object):
                     node_situation['time_period'] = {}
 
                 node_situation['time_period']['in_all'] = {'days': time_in_all.days,
-                                                        'seconds': time_in_all.seconds}
+                                                           'seconds': time_in_all.seconds}
                 node_situation['situation'] = 'normal'
 
         # normal family which cross 0:00
@@ -269,15 +270,15 @@ class NodeSituationUtil(object):
                                                       next_date_records[complete_index].time)
 
             if 'time_point' not in node_situation:
-                    node_situation['time_point'] = {}
+                node_situation['time_point'] = {}
             node_situation['time_point']['submitted'] = submitted_time
             node_situation['time_point']['complete'] = complete_time
 
             time_in_all = complete_time - submitted_time
             if 'time_period' not in node_situation:
-                    node_situation['time_period'] = {}
+                node_situation['time_period'] = {}
             node_situation['time_period']['in_all'] = {'days': time_in_all.days,
-                                                    'seconds': time_in_all.seconds}
+                                                       'seconds': time_in_all.seconds}
             node_situation['situation'] = 'normal'
 
         return node_situation
@@ -325,7 +326,7 @@ class NodeSituationUtil(object):
                     node_situation['time_period'] = {}
 
                 node_situation['time_period']['in_all'] = {'days': time_in_all.days,
-                                                        'seconds': time_in_all.seconds}
+                                                           'seconds': time_in_all.seconds}
                 node_situation['situation'] = 'normal'
 
         # normal family which cross 0:00
@@ -376,13 +377,13 @@ class NodeSituationUtil(object):
                                                       next_date_records[complete_index].time)
 
             if 'time_point' not in node_situation:
-                    node_situation['time_point'] = {}
+                node_situation['time_point'] = {}
             node_situation['time_point']['submitted'] = submitted_time
             node_situation['time_point']['complete'] = complete_time
 
             time_in_all = complete_time - submitted_time
             if 'time_period' not in node_situation:
-                    node_situation['time_period'] = {}
+                node_situation['time_period'] = {}
             node_situation['time_period']['in_all'] = {
                 'days': time_in_all.days,
                 'seconds': time_in_all.seconds

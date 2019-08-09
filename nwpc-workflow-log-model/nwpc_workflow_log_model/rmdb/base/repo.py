@@ -31,9 +31,9 @@ class RepoVersion(Model):
     head_line = Column(Text())
     collector_id = Column(Text())
 
-    @staticmethod
-    def create_from_dict(repo_version_dict):
-        new_version = RepoVersion()
+    @classmethod
+    def create_from_dict(cls, repo_version_dict):
+        new_version = cls()
         new_version.repo_id = repo_version_dict['repo_id']
         new_version.version_id = repo_version_dict['version_id']
         new_version.version_name = repo_version_dict['version_name']

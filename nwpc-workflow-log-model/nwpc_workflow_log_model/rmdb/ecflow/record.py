@@ -1,7 +1,7 @@
 # coding: utf-8
 from datetime import datetime
 
-from sqlalchemy import Column, String, Index
+from sqlalchemy import Column, String
 from nwpc_workflow_log_model.rmdb.base.model import Model
 from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 
@@ -103,9 +103,9 @@ class EcflowRecordBase(RecordBase):
             # print("[ERROR] child record: command not found =>", self.log_record)
             return
         command = child_line[start_pos:end_pos]
+        self.command = command
 
         if command in ('init', 'complete', 'abort'):
-            self.command = command
             start_pos = end_pos + 2
             end_pos = child_line.find(' ', start_pos)
             if end_pos == -1:
@@ -117,10 +117,8 @@ class EcflowRecordBase(RecordBase):
                 self.node_path = child_line[start_pos:end_pos]
                 self.additional_information = child_line[end_pos + 1:]
         elif command in ('meter', 'label', 'event'):
-            self.command = command
             # MSG:[09:24:06 29.6.2018] chd:event transmissiondone
             #  /gmf_grapes_025L60_v2.2_post/00/tograph/base/015/AN_AEA/QFLXDIV_P700_AN_AEA_sep_015
-            self.command = command
             start_pos = end_pos + 1
             line = child_line[start_pos:]
             node_path_start_pos = line.rfind(' ')
@@ -131,7 +129,6 @@ class EcflowRecordBase(RecordBase):
                 # print("[ERROR] child record: parse error =>", self.log_record)
                 pass
         else:
-            self.command = command
             print("[ERROR] child record: command not supported =>", self.log_record)
 
     def __parse_client_record(self, child_line):
@@ -227,48 +224,6 @@ class EcflowRecordBase(RecordBase):
 
 class EcflowRecord(EcflowRecordBase, Model):
     __tablename__ = "ecflow_record"
-    owner = 'owner'
-    repo = 'repo'
 
     def __init__(self):
         pass
-
-    @classmethod
-    def prepare(cls, owner, repo):
-        """
-        为 owner/repo 准备 Record 对象。当前需要修改 __tablename__ 为特定的表名。
-        :param owner:
-        :param repo:
-        :return:
-        """
-        table_name = 'ecflow_record.{owner}.{repo}'.format(owner=owner, repo=repo)
-        cls.__table__.name = table_name
-        cls.owner = owner
-        cls.repo = repo
-
-        cls.__table_args__ = (
-            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'date', 'time'),
-            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'command'),
-            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'node_path'),
-            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'log_type')
-        )
-
-    @classmethod
-    def init(cls):
-        cls.__table__.name = 'ecflow_record'
-
-        cls.owner = "owner"
-        cls.repo = "repo"
-
-        cls.__table_args__ = (
-            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'date', 'time'),
-            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'command'),
-            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'node_path'),
-            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'log_type')
-        )
-
-    @classmethod
-    def create_record_table(cls, owner, repo, session):
-        EcflowRecord.prepare(owner, repo)
-        EcflowRecord.__table__.create(bind=session.get_bind(), checkfirst=True)
-        EcflowRecord.init()

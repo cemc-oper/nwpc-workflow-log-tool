@@ -35,7 +35,7 @@ class EcflowRepo(Model):
 
         repo_object = Repo()
         repo_object.repo_name = repo
-        repo_object.repo_type = 'sms'
+        repo_object.repo_type = 'ecflow'
         repo_object.owner_id = owner_object.owner_id
 
         result = session.query(Repo).filter(Repo.repo_name == repo) \
@@ -47,15 +47,15 @@ class EcflowRepo(Model):
         else:
             repo_object = result
 
-        result = session.query(EcflowRepo).filter(EcflowRepo.repo_id == repo_object.repo_id).first()
+        result = session.query(cls).filter(cls.repo_id == repo_object.repo_id).first()
         if not result:
-            ecflow_repo_object = EcflowRepo()
-            ecflow_repo_object.repo_name = repo
-            ecflow_repo_object.repo_id = repo_object.repo_id
-            ecflow_repo_object.owner_id = repo_object.owner_id
-            session.add(ecflow_repo_object)
+            workflow_repo_object = cls()
+            workflow_repo_object.repo_name = repo
+            workflow_repo_object.repo_id = repo_object.repo_id
+            workflow_repo_object.owner_id = repo_object.owner_id
+            session.add(workflow_repo_object)
             session.commit()
 
-        EcflowRecord.prepare(owner, repo)
-        if not EcflowRecord.__table__.exists(bind=session.get_bind()):
-            EcflowRecord.create_record_table(owner, repo, session)
+        cls.prepare(owner, repo)
+        if not cls.__table__.exists(bind=session.get_bind()):
+            cls.create_record_table(owner, repo, session)

@@ -1,6 +1,5 @@
 # coding: utf-8
 from datetime import datetime
-from sqlalchemy import Index
 from nwpc_workflow_log_model.rmdb.base.model import Model
 from nwpc_workflow_log_model.rmdb.base.record import RecordBase
 
@@ -151,48 +150,5 @@ class SmsRecordBase(RecordBase):
 class SmsRecord(SmsRecordBase, Model):
     __tablename__ = "sms_record"
 
-    owner = 'owner'
-    repo = 'repo'
-
     def __init__(self):
         pass
-
-    @classmethod
-    def prepare(cls, owner, repo):
-        """
-        为 owner/repo 准备 Record 对象。当前需要修改 __tablename__ 为特定的表名。
-        :param owner:
-        :param repo:
-        :return:
-        """
-        table_name = 'sms_record.{owner}.{repo}'.format(owner=owner, repo=repo)
-        cls.__table__.name = table_name
-        cls.owner = owner
-        cls.repo = repo
-
-        cls.__table_args__ = (
-            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'record_date', 'record_time'),
-            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'record_command'),
-            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'record_fullname'),
-            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'record_type')
-        )
-
-    @classmethod
-    def init(cls):
-        cls.__table__.name = 'sms_record'
-
-        cls.owner = "owner"
-        cls.repo = "repo"
-
-        cls.__table_args__ = (
-            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'record_date', 'record_time'),
-            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'record_command'),
-            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'record_fullname'),
-            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'record_type')
-        )
-
-    @classmethod
-    def create_record_table(cls, owner, repo, session):
-        SmsRecord.prepare(owner, repo)
-        SmsRecord.__table__.create(bind=session.get_bind(), checkfirst=True)
-        SmsRecord.init()

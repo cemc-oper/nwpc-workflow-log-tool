@@ -47,15 +47,15 @@ class SmsRepo(Model):
         else:
             repo_object = result
 
-        result = session.query(SmsRepo).filter(SmsRepo.repo_id == repo_object.repo_id).first()
+        result = session.query(cls).filter(cls.repo_id == repo_object.repo_id).first()
         if not result:
-            sms_repo_object = SmsRepo()
-            sms_repo_object.repo_name = repo
-            sms_repo_object.repo_id = repo_object.repo_id
-            sms_repo_object.owner_id = repo_object.owner_id
-            session.add(sms_repo_object)
+            workflow_repo_object = cls()
+            workflow_repo_object.repo_name = repo
+            workflow_repo_object.repo_id = repo_object.repo_id
+            workflow_repo_object.owner_id = repo_object.owner_id
+            session.add(workflow_repo_object)
             session.commit()
 
-        SmsRecord.prepare(owner, repo)
-        if not SmsRecord.__table__.exists(bind=session.get_bind()):
-            SmsRecord.create_record_table(owner, repo, session)
+        cls.prepare(owner, repo)
+        if not cls.__table__.exists(bind=session.get_bind()):
+            cls.create_record_table(owner, repo, session)

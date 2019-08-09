@@ -1,6 +1,5 @@
 # coding=utf-8
-from nwpc_log_model.rdbms_model.models import Record
-from nwpc_work_flow_model.sms import NodeType
+from nwpc_workflow_model.node_type import NodeType
 
 
 class NodeUtil(object):
