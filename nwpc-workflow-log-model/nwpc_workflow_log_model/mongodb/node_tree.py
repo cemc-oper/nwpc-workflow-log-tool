@@ -2,6 +2,7 @@
 import datetime
 import logging
 from mongoengine import DateTimeField, DictField, EmbeddedDocument, EmbeddedDocumentField
+from nwpc_workflow_model.bunch import Bunch
 
 from .blob import Blob
 
@@ -19,7 +20,7 @@ class NodeTreeBlob(Blob):
     }
 
 
-def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch, update_type='insert'):
+def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch: Bunch, update_type='insert'):
     """
 
     :param owner:
@@ -38,7 +39,7 @@ def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch, update_t
             data__date=query_date
         ).delete()
 
-    print(query_date)
+    logging.info(query_date)
 
     cur_query_datetime = datetime.datetime.combine(query_date, datetime.time())
 
@@ -51,7 +52,7 @@ def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch, update_t
         )
     )
 
-    print(node_tree.owner, node_tree.repo, node_tree.data.date)
+    logging.info(node_tree.owner, node_tree.repo, node_tree.data.date)
     if update_type == "upsert":
         NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
             .update_one(set__data__tree=bunch.to_dict(), upsert=True)
@@ -76,11 +77,11 @@ def save_bunch_map(owner: str, repo: str, start_date: datetime.date, end_date: d
     cur_count = 0
     cur_percent = 0
     for cur_query_date in bunch_map:
-        print(cur_query_date)
+        logging.info(cur_query_date)
         cur_count += 1
         percent = int(cur_count * 100.0 / total_count)
         if percent > cur_percent:
-            print("[{percent}%]".format(percent=percent))
+            logging.info("[{percent}%]".format(percent=percent))
             cur_percent = percent
         cur_query_datetime = datetime.datetime.combine(cur_query_date, datetime.time())
         cur_bunch = bunch_map[cur_query_date]
@@ -94,7 +95,7 @@ def save_bunch_map(owner: str, repo: str, start_date: datetime.date, end_date: d
             )
         )
 
-        print(node_tree.owner, node_tree.repo, node_tree.data.date)
+        logging.info(node_tree.owner, node_tree.repo, node_tree.data.date)
         if update_type == "upsert":
             NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
                 .update_one(set__tree=cur_bunch.to_dict(), upsert=True)
