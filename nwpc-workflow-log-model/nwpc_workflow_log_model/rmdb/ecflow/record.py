@@ -16,34 +16,34 @@ class EcflowRecordBase(RecordBase):
         self.log_record = line
 
         start_pos = 0
-        end_pos = line.find(':')
+        end_pos = line.find(":")
         self.log_type = line[start_pos:end_pos]
 
         start_pos = end_pos + 2
-        end_pos = line.find(']', start_pos)
+        end_pos = line.find("]", start_pos)
         if end_pos == -1:
             logger.warning("can't find date and time => ", line)
             return
         record_time_string = line[start_pos:end_pos]
-        date_time = datetime.strptime(record_time_string, '%H:%M:%S %d.%m.%Y')
+        date_time = datetime.strptime(record_time_string, "%H:%M:%S %d.%m.%Y")
         self.date = date_time.date()
         self.time = date_time.time()
 
         start_pos = end_pos + 2
-        if line[start_pos: start_pos+1] == " ":
+        if line[start_pos : start_pos + 1] == " ":
             self.command_type = "status"
             start_pos += 1
             self.__parse_status_record(line[start_pos:])
-        elif line[start_pos: start_pos+2] == "--":
+        elif line[start_pos : start_pos + 2] == "--":
             self.command_type = "client"
             start_pos += 2
             self.__parse_client_record(line[start_pos:])
-        elif line[start_pos: start_pos+4] == "chd:":
+        elif line[start_pos : start_pos + 4] == "chd:":
             # child
             self.command_type = "child"
             start_pos += 4
             self.__parse_child_record(line[start_pos:])
-        elif line[start_pos: start_pos+4] == "svr:":
+        elif line[start_pos : start_pos + 4] == "svr:":
             # server
             # print("[server command]", line)
             self.command_type = "server"
@@ -73,10 +73,10 @@ class EcflowRecordBase(RecordBase):
             return
         command = status_line[start_pos:end_pos]
 
-        if command in ('submitted', 'active', 'queued', 'complete', 'aborted'):
+        if command in ("submitted", "active", "queued", "complete", "aborted"):
             self.command = command
             start_pos = end_pos + 2
-            end_pos = status_line.find(' ', start_pos)
+            end_pos = status_line.find(" ", start_pos)
             if end_pos == -1:
                 # LOG:[23:12:00 9.10.2018] queued: /grapes_meso_3km_post/18/tograph/1h/prep_1h_10mw
                 self.node_path = status_line[start_pos:].strip()
@@ -84,14 +84,14 @@ class EcflowRecordBase(RecordBase):
                 # LOG:[11:09:31 20.9.2018]  aborted: /grapes_meso_3km_post/06/tograph/3h/prep_3h_10mw/plot_hour_030
                 #  try-no: 1 reason: trap
                 self.node_path = status_line[start_pos:end_pos]
-                self.additional_information = status_line[end_pos+1:]
+                self.additional_information = status_line[end_pos + 1 :]
         else:
-            if command in ('unknown', ):
+            if command in ("unknown",):
                 # just ignore
                 pass
             elif command.strip()[0].isupper():
                 pass
-            elif command[0] == '[':
+            elif command[0] == "[":
                 # WAR:[09:16:14 8.8.2018]  [ overloaded || --abort*2 ] (pid & password match) : chd:abort
                 #  : /grapes_emer_v1_1/12/plot/plot_wind : already aborted : action(fob)
                 pass
@@ -108,9 +108,9 @@ class EcflowRecordBase(RecordBase):
         command = child_line[start_pos:end_pos]
         self.command = command
 
-        if command in ('init', 'complete', 'abort'):
+        if command in ("init", "complete", "abort"):
             start_pos = end_pos + 2
-            end_pos = child_line.find(' ', start_pos)
+            end_pos = child_line.find(" ", start_pos)
             if end_pos == -1:
                 # MSG:[08:17:04 29.6.2018] chd:complete /gmf_grapes_025L60_v2.2_post/18/typhoon/post/tc_post
                 self.node_path = child_line[start_pos:].strip()
@@ -118,21 +118,23 @@ class EcflowRecordBase(RecordBase):
                 # MSG:[12:22:53 19.10.2018] chd:abort
                 #  /3km_post/06/3km_togrib2/grib2WORK/030/after_data2grib2_030  trap
                 self.node_path = child_line[start_pos:end_pos]
-                self.additional_information = child_line[end_pos + 1:]
-        elif command in ('meter', 'label', 'event'):
+                self.additional_information = child_line[end_pos + 1 :]
+        elif command in ("meter", "label", "event"):
             # MSG:[09:24:06 29.6.2018] chd:event transmissiondone
             #  /gmf_grapes_025L60_v2.2_post/00/tograph/base/015/AN_AEA/QFLXDIV_P700_AN_AEA_sep_015
             start_pos = end_pos + 1
             line = child_line[start_pos:]
-            node_path_start_pos = line.rfind(' ')
+            node_path_start_pos = line.rfind(" ")
             if node_path_start_pos != -1:
-                self.node_path = line[node_path_start_pos+1:]
+                self.node_path = line[node_path_start_pos + 1 :]
                 self.additional_information = line[:node_path_start_pos]
             else:
                 # print("[ERROR] child record: parse error =>", self.log_record)
                 pass
         else:
-            logger.error("[ERROR] child record: command not supported =>", self.log_record)
+            logger.error(
+                "[ERROR] child record: command not supported =>", self.log_record
+            )
 
     def __parse_client_record(self, child_line):
         start_pos = 0
@@ -142,7 +144,7 @@ class EcflowRecordBase(RecordBase):
             return
         command = child_line[start_pos:end_pos]
 
-        if command == 'requeue':
+        if command == "requeue":
             self.command = command
             start_pos = end_pos + 1
             tokens = child_line[start_pos:].split()
@@ -151,75 +153,94 @@ class EcflowRecordBase(RecordBase):
                 node_path = tokens[1]
                 user = tokens[2]
                 self.node_path = node_path
-                self.additional_information = requeue_option + ' ' + user
+                self.additional_information = requeue_option + " " + user
             else:
                 # print("[ERROR] client record: requeue parse error =>", self.log_record)
                 return
-        elif command in ('alter', 'free-dep', 'kill', 'delete', 'suspend', 'resume', 'run', 'status'):
+        elif command in (
+            "alter",
+            "free-dep",
+            "kill",
+            "delete",
+            "suspend",
+            "resume",
+            "run",
+            "status",
+        ):
             self.command = command
             start_pos = end_pos + 1
             tokens = child_line[start_pos:].split()
             user = tokens[-1]
             node_path = tokens[-2]
             self.node_path = node_path
-            self.additional_information = ' '.join(tokens[:-2]) + ' ' + user
-        elif command.startswith('force='):
-            self.command = 'force'
+            self.additional_information = " ".join(tokens[:-2]) + " " + user
+        elif command.startswith("force="):
+            self.command = "force"
             start_pos = end_pos + 1
             tokens = child_line[start_pos:].split()
             node_path = tokens[-2]
             user = tokens[-1]
             self.node_path = node_path
-            self.additional_information = ' '.join(tokens[-2:]) + ' ' + user
-        elif command.startswith('file='):
-            self.command = 'file'
+            self.additional_information = " ".join(tokens[-2:]) + " " + user
+        elif command.startswith("file="):
+            self.command = "file"
             node_path = command[5:]
             self.node_path = node_path
             start_pos = end_pos + 1
             self.additional_information = child_line[start_pos:]
-        elif command.startswith('load='):
-            self.command = 'load'
+        elif command.startswith("load="):
+            self.command = "load"
             node_path = command[5:]
             self.node_path = node_path
             start_pos = end_pos + 1
             self.additional_information = child_line[start_pos:]
-        elif command.startswith('begin='):
-            self.command = 'begin'
+        elif command.startswith("begin="):
+            self.command = "begin"
             node_path = command[6:]
             self.node_path = node_path
             start_pos = end_pos + 1
             self.additional_information = child_line[start_pos:]
-        elif command.startswith('replace='):
-            self.command = 'replace'
+        elif command.startswith("replace="):
+            self.command = "replace"
             node_path = command[5:]
             self.node_path = node_path
             start_pos = end_pos + 1
             self.additional_information = child_line[start_pos:]
-        elif command.startswith('order='):
-            self.command = 'order'
+        elif command.startswith("order="):
+            self.command = "order"
             node_path = command[6:]
             self.node_path = node_path
             start_pos = end_pos + 1
             self.additional_information = child_line[start_pos:]
-        elif command in ('restart', 'suites', 'stats', 'edit_history',
-                         'zombie_get', 'server_version', 'ping', 'check_pt'):
+        elif command in (
+            "restart",
+            "suites",
+            "stats",
+            "edit_history",
+            "zombie_get",
+            "server_version",
+            "ping",
+            "check_pt",
+        ):
             self.command = command
-        elif command.startswith('sync_full=') or \
-                command.startswith('news=') or \
-                command.startswith('sync=') or \
-                command.startswith('edit_script=') or \
-                command.startswith('zombie_fail=') or \
-                command.startswith('zombie_kill=') or \
-                command.startswith('zombie_fob=') or \
-                command.startswith('zombie_adopt=') or \
-                command.startswith('zombie_remove=') or \
-                command.startswith('log=') or \
-                command.startswith('halt=') or \
-                command.startswith('terminate=') or \
-                command.startswith('order=') or \
-                command.startswith('ch_register=') or \
-                command.startswith('ch_drop='):
-            self.command = command[:command.find('=')]
+        elif (
+            command.startswith("sync_full=")
+            or command.startswith("news=")
+            or command.startswith("sync=")
+            or command.startswith("edit_script=")
+            or command.startswith("zombie_fail=")
+            or command.startswith("zombie_kill=")
+            or command.startswith("zombie_fob=")
+            or command.startswith("zombie_adopt=")
+            or command.startswith("zombie_remove=")
+            or command.startswith("log=")
+            or command.startswith("halt=")
+            or command.startswith("terminate=")
+            or command.startswith("order=")
+            or command.startswith("ch_register=")
+            or command.startswith("ch_drop=")
+        ):
+            self.command = command[: command.find("=")]
         else:
             self.command = command
             # print("[ERROR] client record: command not supported =>", self.log_record)

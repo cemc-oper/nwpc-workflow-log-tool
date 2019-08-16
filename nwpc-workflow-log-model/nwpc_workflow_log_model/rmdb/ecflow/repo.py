@@ -21,12 +21,12 @@ class EcflowRepo(Model):
         pass
 
     def update_from_dict(self, repo_dict):
-        if self.repo_id != repo_dict['repo_id']:
+        if self.repo_id != repo_dict["repo_id"]:
             return False
         # 只更新一部分内容，后面需要更改
-        self.repo_location = repo_dict['repo_location']
-        self.current_version_id = repo_dict['current_version_id']
-        self.repo_description = repo_dict['repo_description']
+        self.repo_location = repo_dict["repo_location"]
+        self.current_version_id = repo_dict["current_version_id"]
+        self.repo_description = repo_dict["repo_description"]
         return True
 
     @classmethod
@@ -35,12 +35,15 @@ class EcflowRepo(Model):
 
         repo_object = Repo()
         repo_object.repo_name = repo
-        repo_object.repo_type = 'ecflow'
+        repo_object.repo_type = "ecflow"
         repo_object.owner_id = owner_object.owner_id
 
-        result = session.query(Repo).filter(Repo.repo_name == repo) \
-            .filter(owner_object.owner_id == Repo.owner_id) \
+        result = (
+            session.query(Repo)
+            .filter(Repo.repo_name == repo)
+            .filter(owner_object.owner_id == Repo.owner_id)
             .first()
+        )
         if not result:
             session.add(repo_object)
             session.commit()

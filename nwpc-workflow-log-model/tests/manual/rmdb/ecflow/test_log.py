@@ -4,7 +4,7 @@ from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecordBase
 
 
 @click.command()
-@click.option('-f', 'log_file')
+@click.option("-f", "log_file")
 def cli(log_file):
     with open(log_file) as f:
         for line in f:

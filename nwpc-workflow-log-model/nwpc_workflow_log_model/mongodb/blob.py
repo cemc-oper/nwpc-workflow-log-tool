@@ -1,7 +1,12 @@
 # coding: utf-8
 import datetime
 
-from mongoengine import Document, StringField, DateTimeField, GenericEmbeddedDocumentField
+from mongoengine import (
+    Document,
+    StringField,
+    DateTimeField,
+    GenericEmbeddedDocumentField,
+)
 
 
 class Blob(Document):
@@ -10,7 +15,4 @@ class Blob(Document):
     timestamp = DateTimeField(default=datetime.datetime.utcnow)
     data = GenericEmbeddedDocumentField()
 
-    meta = {
-        'allow_inheritance': True,
-        'abstract': True
-    }
+    meta = {"allow_inheritance": True, "abstract": True}

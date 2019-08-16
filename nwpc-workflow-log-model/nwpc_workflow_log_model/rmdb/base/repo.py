@@ -22,7 +22,7 @@ class Repo(Model):
 
 
 class RepoVersion(Model):
-    __tablename__ = 'repo_version'
+    __tablename__ = "repo_version"
 
     repo_id = Column(Integer, primary_key=True)
     version_id = Column(String(20), primary_key=True)
@@ -34,10 +34,10 @@ class RepoVersion(Model):
     @classmethod
     def create_from_dict(cls, repo_version_dict):
         new_version = cls()
-        new_version.repo_id = repo_version_dict['repo_id']
-        new_version.version_id = repo_version_dict['version_id']
-        new_version.version_name = repo_version_dict['version_name']
-        new_version.version_location = repo_version_dict['version_location']
-        new_version.head_line = repo_version_dict['head_line']
+        new_version.repo_id = repo_version_dict["repo_id"]
+        new_version.version_id = repo_version_dict["version_id"]
+        new_version.version_name = repo_version_dict["version_name"]
+        new_version.version_location = repo_version_dict["version_location"]
+        new_version.head_line = repo_version_dict["head_line"]
         new_version.collector_id = None
         return new_version

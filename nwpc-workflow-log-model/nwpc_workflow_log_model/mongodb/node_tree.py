@@ -1,7 +1,12 @@
 # coding: utf-8
 import datetime
 import logging
-from mongoengine import DateTimeField, DictField, EmbeddedDocument, EmbeddedDocumentField
+from mongoengine import (
+    DateTimeField,
+    DictField,
+    EmbeddedDocument,
+    EmbeddedDocumentField,
+)
 from nwpc_workflow_model.bunch import Bunch
 
 from .blob import Blob
@@ -15,12 +20,12 @@ class NodeTreeBlobData(EmbeddedDocument):
 class NodeTreeBlob(Blob):
     data = EmbeddedDocumentField(NodeTreeBlobData)
 
-    meta = {
-        'collection': 'node_tree'
-    }
+    meta = {"collection": "node_tree"}
 
 
-def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch: Bunch, update_type='insert'):
+def save_bunch(
+    owner: str, repo: str, query_date: datetime.date, bunch: Bunch, update_type="insert"
+):
     """
 
     :param owner:
@@ -34,9 +39,7 @@ def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch: Bunch, u
     if update_type == "insert":
         # delete previous data
         results = NodeTreeBlob.objects(
-            owner=owner,
-            repo=repo,
-            data__date=query_date
+            owner=owner, repo=repo, data__date=query_date
         ).delete()
 
     logging.info(query_date)
@@ -46,22 +49,26 @@ def save_bunch(owner: str, repo: str, query_date: datetime.date, bunch: Bunch, u
     node_tree = NodeTreeBlob(
         owner=owner,
         repo=repo,
-        data=NodeTreeBlobData(
-            date=cur_query_datetime,
-            tree=bunch.to_dict()
-        )
+        data=NodeTreeBlobData(date=cur_query_datetime, tree=bunch.to_dict()),
     )
 
     logging.info(node_tree.owner, node_tree.repo, node_tree.data.date)
     if update_type == "upsert":
-        NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
-            .update_one(set__data__tree=bunch.to_dict(), upsert=True)
+        NodeTreeBlob.objects(
+            owner=owner, repo=repo, data__date=cur_query_datetime
+        ).update_one(set__data__tree=bunch.to_dict(), upsert=True)
     else:
         node_tree.save()
 
 
-def save_bunch_map(owner: str, repo: str, start_date: datetime.date, end_date: datetime.date,
-                   bunch_map: dict, update_type='insert'):
+def save_bunch_map(
+    owner: str,
+    repo: str,
+    start_date: datetime.date,
+    end_date: datetime.date,
+    bunch_map: dict,
+    update_type="insert",
+):
     # saving results to mongodb
     if update_type == "insert":
         # delete previous data
@@ -69,11 +76,13 @@ def save_bunch_map(owner: str, repo: str, start_date: datetime.date, end_date: d
             owner=owner,
             repo=repo,
             data__date__gte=start_date - datetime.timedelta(days=1),
-            data__date__lte=end_date
+            data__date__lte=end_date,
         ).delete()
 
     total_count = len(bunch_map)
-    logging.info("Adding {total_count} tree status to mongodb".format(total_count=total_count))
+    logging.info(
+        "Adding {total_count} tree status to mongodb".format(total_count=total_count)
+    )
     cur_count = 0
     cur_percent = 0
     for cur_query_date in bunch_map:
@@ -89,15 +98,13 @@ def save_bunch_map(owner: str, repo: str, start_date: datetime.date, end_date: d
         node_tree = NodeTreeBlob(
             owner=owner,
             repo=repo,
-            data=NodeTreeBlobData(
-                date=cur_query_datetime,
-                tree=cur_bunch.to_dict()
-            )
+            data=NodeTreeBlobData(date=cur_query_datetime, tree=cur_bunch.to_dict()),
         )
 
         logging.info(node_tree.owner, node_tree.repo, node_tree.data.date)
         if update_type == "upsert":
-            NodeTreeBlob.objects(owner=owner, repo=repo, data__date=cur_query_datetime) \
-                .update_one(set__tree=cur_bunch.to_dict(), upsert=True)
+            NodeTreeBlob.objects(
+                owner=owner, repo=repo, data__date=cur_query_datetime
+            ).update_one(set__tree=cur_bunch.to_dict(), upsert=True)
         else:
             node_tree.save()

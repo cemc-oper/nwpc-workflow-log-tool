@@ -16,8 +16,7 @@ class Owner(Model):
     def create_owner(cls, owner, session):
         owner_object = cls()
         owner_object.owner_name = owner
-        result = session.query(cls).filter(cls.owner_name == owner) \
-            .first()
+        result = session.query(cls).filter(cls.owner_name == owner).first()
         if not result:
             owner_object = session.merge(owner_object)
             session.commit()

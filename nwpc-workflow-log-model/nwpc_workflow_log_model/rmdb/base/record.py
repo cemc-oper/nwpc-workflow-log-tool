@@ -14,13 +14,12 @@ class RecordBase(object):
     additional_information = Column(Text())
     log_record = Column(Text())
 
-    owner = 'owner'
-    repo = 'repo'
+    owner = "owner"
+    repo = "repo"
 
     def __str__(self):
         return "<{class_name}(string='{record_string}')>".format(
-            class_name=self.__class__.__name__,
-            record_string=self.log_record.strip()
+            class_name=self.__class__.__name__, record_string=self.log_record.strip()
         )
 
     @classmethod
@@ -37,7 +36,9 @@ class RecordBase(object):
         :param repo:
         :return:
         """
-        table_name = '{table_prefix}.{owner}.{repo}'.format(table_prefix=cls.__tablename__, owner=owner, repo=repo)
+        table_name = "{table_prefix}.{owner}.{repo}".format(
+            table_prefix=cls.__tablename__, owner=owner, repo=repo
+        )
         cls.__table__.name = table_name
         cls.owner = owner
         cls.repo = repo
@@ -56,10 +57,23 @@ class RecordBase(object):
     @classmethod
     def __create_index(cls):
         cls.__table_args__ = (
-            Index('{owner}_{repo}_date_time_index'.format(owner=cls.owner, repo=cls.repo), 'date', 'time'),
-            Index('{owner}_{repo}_command_index'.format(owner=cls.owner, repo=cls.repo), 'command'),
-            Index('{owner}_{repo}_fullname_index'.format(owner=cls.owner, repo=cls.repo), 'node_path'),
-            Index('{owner}_{repo}_type_index'.format(owner=cls.owner, repo=cls.repo), 'log_type')
+            Index(
+                "{owner}_{repo}_date_time_index".format(owner=cls.owner, repo=cls.repo),
+                "date",
+                "time",
+            ),
+            Index(
+                "{owner}_{repo}_command_index".format(owner=cls.owner, repo=cls.repo),
+                "command",
+            ),
+            Index(
+                "{owner}_{repo}_fullname_index".format(owner=cls.owner, repo=cls.repo),
+                "node_path",
+            ),
+            Index(
+                "{owner}_{repo}_type_index".format(owner=cls.owner, repo=cls.repo),
+                "log_type",
+            ),
         )
 
     def parse(self, line):

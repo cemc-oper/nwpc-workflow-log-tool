@@ -128,3 +128,5 @@ celerybeat.pid
 
 # project
 /nwpc_workflow_log_processor/rmdb/run_time_line/output/
+
+.vscode
