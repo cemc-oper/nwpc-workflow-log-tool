@@ -3,7 +3,7 @@ import datetime
 from operator import attrgetter
 
 from nwpc_workflow_log_model.rmdb.util.node_situation_util import NodeSituationUtil
-from nwpc_work_flow_model.sms import Bunch
+from nwpc_workflow_model.bunch import Bunch
 
 
 def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end_date, record_rdd, spark):
