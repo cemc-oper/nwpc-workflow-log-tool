@@ -89,6 +89,9 @@ class EcflowRecordBase(RecordBase):
             if command in ("unknown",):
                 # just ignore
                 pass
+            elif command == '':
+                # MSG:[04:39:45 18.7.2019]  :nwp
+                pass
             elif command.strip()[0].isupper():
                 pass
             elif command[0] == "[":
