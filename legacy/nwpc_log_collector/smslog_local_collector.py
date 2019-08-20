@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from nwpc_log_model.rdbms_model import Record
 from nwpc_log_model.util.version_util import VersionUtil
-from nwpc_workflow_log_collector.sms.util.log_file_util import SmsLogFileUtil
+from nwpc_workflow_log_collector.sms.log_file_util import SmsLogFileUtil
 
 
 def load_config(config_file_path):
