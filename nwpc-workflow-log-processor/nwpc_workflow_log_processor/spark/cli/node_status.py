@@ -17,7 +17,7 @@ from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
 
 def load_config(config_file):
     with open(config_file) as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
         return config
 
 

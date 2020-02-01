@@ -13,7 +13,7 @@ from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
 
 def load_config(config_file):
     with open(config_file) as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
         return config
 
 
@@ -32,7 +32,7 @@ def generate_node_tree_from_database(config, owner, repo, repo_type, begin_date,
 
     spark.stop()
 
-    from nwpc_work_flow_model.sms.visitor import pre_order_travel, SimplePrintVisitor
+    from nwpc_workflow_model.visitor import pre_order_travel, SimplePrintVisitor
     for date, bunch in bunch_map.items():
         pre_order_travel(bunch, SimplePrintVisitor())
 
@@ -52,7 +52,7 @@ def generate_node_tree_from_file(config, owner, repo, repo_type, begin_date, end
 
     spark.stop()
 
-    from nwpc_work_flow_model.sms.visitor import pre_order_travel, SimplePrintVisitor
+    from nwpc_workflow_model.visitor import pre_order_travel, SimplePrintVisitor
     for date, bunch in bunch_map.items():
         pre_order_travel(bunch, SimplePrintVisitor())
 

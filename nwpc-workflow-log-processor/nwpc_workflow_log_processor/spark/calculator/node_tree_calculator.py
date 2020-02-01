@@ -1,5 +1,5 @@
 # coding=utf-8
-from nwpc_work_flow_model.sms import Bunch
+from nwpc_workflow_model.ecflow.bunch import Bunch
 
 
 def calculate_node_tree(config: dict, repo_type: str, record_rdd, spark) -> dict:
