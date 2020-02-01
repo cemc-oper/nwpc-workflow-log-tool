@@ -49,10 +49,14 @@ class EcflowLogRecord(LogRecord):
             # server
             # print("[server command]", line)
             self.command_type = "server"
-        elif line[start_pos:].strip()[0].isupper():
-            # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso
-            #  took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
-            pass
+        elif len(line[start_pos].strip()) > 0:
+            # NOTE: line[start_pos].strip() will be empty but I haven't found example line.
+            if line[start_pos:].strip()[0].isupper():
+                # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso
+                #  took 4593ms, Exceeds ECF_TASK_THRESHOLD(4000ms)
+                pass
+            else:
+                pass
         else:
             # not supported
             # print("[not supported]", line)
