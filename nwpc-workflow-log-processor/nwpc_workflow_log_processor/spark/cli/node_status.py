@@ -1,6 +1,6 @@
 # coding=utf-8
 """
-Get record list for each node in some day.
+Get record list for each node in some day range.
 """
 import datetime
 
@@ -21,7 +21,30 @@ def load_config(config_file):
         return config
 
 
-def generate_node_status(config, owner, repo, repo_type, begin_date, end_date, log_file):
+def generate_node_status(
+        config, owner, repo, begin_date, end_date, log_file,
+        repo_type="ecflow"
+):
+    """Generate node status from local file.
+
+    Parameters
+    ----------
+    config: dict
+        config object.
+    owner: str
+        owner name
+    repo: str
+        repo name
+    repo_type: str, ecflow or sms
+        workflow type, ecflow or sms, currently we are focusing on ecFlow.
+        sms is no longer used in NWPC.
+    begin_date: datetime.datetime
+        begin date
+    end_date: datetime.datetime
+        end date
+    log_file: str
+        local log file path
+    """
     spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
@@ -74,7 +97,10 @@ DESCRIPTION
     config = load_config(config_file)
     begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
     end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    generate_node_status(config, owner, repo, repo_type, begin_date, end_date, log_file)
+    generate_node_status(
+        config, owner, repo, begin_date, end_date, log_file,
+        repo_type=repo_type
+    )
 
 
 @cli.command('database')
