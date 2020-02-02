@@ -9,7 +9,7 @@ import yaml
 
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
 from nwpc_workflow_log_processor.spark.data_source.file import load_records_from_file
-from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
+from nwpc_workflow_log_processor.spark.data_source.rmdb import load_records_from_rmdb
 from nwpc_workflow_log_processor.spark.calculator.node_status_calculator import calculate_node_status
 # from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
 from nwpc_workflow_log_processor.spark.data_store.mongodb import save_to_mongodb
@@ -73,7 +73,15 @@ def generate_node_status_from_database(config, owner, repo, repo_type, begin_dat
     spark = create_mysql_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
-    record_rdd = get_from_mysql(config, owner, repo, repo_type, begin_date, end_date, spark)
+    record_rdd = load_records_from_rmdb(
+        config,
+        spark,
+        owner=owner,
+        repo=repo,
+        begin_date=begin_date,
+        end_date=end_date,
+        repo_type=repo_type
+    )
 
     bunch_map, data_node_status_list = calculate_node_status(
         owner, repo, repo_type, begin_date, end_date, record_rdd, spark)

@@ -5,7 +5,7 @@ from operator import attrgetter
 from loguru import logger
 
 from nwpc_workflow_log_model.rmdb.util.node_situation_util import NodeSituationUtil
-from nwpc_workflow_log_processor.spark.calculator.node_tree_calculator import _get_bunch_class
+from nwpc_workflow_log_processor.common.util import get_bunch_class
 
 
 def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end_date, record_rdd, spark):
@@ -44,7 +44,7 @@ def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end
     date_with_node_path_list = date_node_path_list_rdd.collect()
 
     logger.info("Generating bunch...")
-    bunch_class = _get_bunch_class(repo_type)
+    bunch_class = get_bunch_class(repo_type)
     bunch_map = {}
     for i in date_with_node_path_list:
         day = i[0]

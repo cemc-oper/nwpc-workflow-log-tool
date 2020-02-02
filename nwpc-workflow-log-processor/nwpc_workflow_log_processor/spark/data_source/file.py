@@ -11,8 +11,8 @@ def load_records_from_file(
         config: dict,
         log_file: str,
         spark: SparkSession,
-        owner: str = "default_owner",
-        repo: str = "default_repo",
+        owner: str = None,
+        repo: str = None,
         begin_date: datetime.datetime = None,
         end_date: datetime.datetime = None,
         repo_type: str = "ecflow"

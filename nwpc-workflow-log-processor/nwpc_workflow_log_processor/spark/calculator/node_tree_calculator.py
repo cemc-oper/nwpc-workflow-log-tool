@@ -3,8 +3,7 @@ from pyspark.sql import SparkSession
 from pyspark import RDD
 from loguru import logger
 
-from nwpc_workflow_model.sms.bunch import Bunch as SmsBunch
-from nwpc_workflow_model.ecflow.bunch import Bunch as EcflowBunch
+from nwpc_workflow_log_processor.common.util import get_bunch_class
 
 
 def calculate_node_tree(
@@ -13,6 +12,24 @@ def calculate_node_tree(
         spark: SparkSession,
         repo_type: str = "ecflow",
 ) -> dict:
+    """Calculate node tree for each date in record RDDs.
+
+    Parameters
+    ----------
+    config: dict
+        processor's config
+    record_rdd: RDD
+        records RDD
+    spark: SparkSession
+        spark session
+    repo_type: ["ecflow", "sms"]
+        repo type
+
+    Returns
+    -------
+    dict
+        bunch map dict, key: date, value: bunch map
+    """
     # **STEP**: map to (date, node_path)
     #   record object => (date, node_path) distinct
     def node_path_map(record):
@@ -28,25 +45,14 @@ def calculate_node_tree(
 
     # **STEP**: generate bunch
     logger.info("Generating bunch...")
-    bunch_class = _get_bunch_class(repo_type)
+    bunch_class = get_bunch_class(repo_type)
     bunch_map = {}
-    for i in date_with_node_path_list:
-        day = i[0]
-        node_path_list = i[1]
+    for (day, node_path_list) in date_with_node_path_list:
         bunch = bunch_class()
         for node_path in node_path_list:
             if node_path is not None:
                 bunch.add_node(node_path)
-        logger.info("Generated bunch for ", day)
+        logger.info("Generating bunch...done for {day}")
         bunch_map[day] = bunch
 
     return bunch_map
-
-
-def _get_bunch_class(repo_type: str):
-    if repo_type == "ecflow":
-        return EcflowBunch
-    elif repo_type == "sms":
-        return SmsBunch
-    else:
-        raise NotImplemented(f"repo_type is not supported: {repo_type}")

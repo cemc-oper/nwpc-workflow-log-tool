@@ -11,6 +11,7 @@ def create_local_file_session(config: dict) -> SparkSession:
         .master("local[4]") \
         .config("spark.executor.memory", '4g') \
         .getOrCreate()
+    spark.sparkContext.setLogLevel("INFO")
     return spark
 
 
@@ -25,4 +26,5 @@ def create_mysql_session(config: dict) -> SparkSession:
         .config("spark.executor.memory", '4g') \
         .config("spark.driver.memory", '4g') \
         .getOrCreate()
+    spark.sparkContext.setLogLevel("INFO")
     return spark
