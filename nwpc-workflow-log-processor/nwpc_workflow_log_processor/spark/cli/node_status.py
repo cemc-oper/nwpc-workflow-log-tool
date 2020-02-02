@@ -48,7 +48,16 @@ def generate_node_status(
     spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
-    record_rdd = get_from_file(config, owner, repo, repo_type, begin_date, end_date, log_file, spark)
+    record_rdd = get_from_file(
+        config,
+        log_file,
+        spark=spark,
+        owner=owner,
+        repo=repo,
+        begin_date=begin_date,
+        end_date=end_date,
+        repo_type=repo_type
+    )
 
     bunch_map, data_node_status_list = calculate_node_status(
         owner, repo, repo_type, begin_date, end_date, record_rdd, spark)

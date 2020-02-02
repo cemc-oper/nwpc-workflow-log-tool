@@ -30,11 +30,20 @@ class RecordBase(object):
 
     @classmethod
     def prepare(cls, owner, repo):
-        """
-        为 owner/repo 准备 Record 对象。当前需要修改 __tablename__ 为特定的表名。
-        :param owner:
-        :param repo:
-        :return:
+        """为 owner/repo 准备 Record 对象
+
+        当前需要修改 __tablename__ 为特定的表名。
+
+        Parameters
+        ----------
+        owner: str
+            owner name
+        repo: str
+            repo name
+
+        Returns
+        -------
+        None
         """
         table_name = "{table_prefix}.{owner}.{repo}".format(
             table_prefix=cls.__tablename__, owner=owner, repo=repo

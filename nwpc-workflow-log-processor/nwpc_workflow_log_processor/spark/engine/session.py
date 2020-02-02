@@ -3,7 +3,7 @@ import findspark
 from pyspark.sql import SparkSession
 
 
-def create_local_file_session(config):
+def create_local_file_session(config: dict) -> SparkSession:
     findspark.init(config['engine']['spark']['base'])
     spark = SparkSession \
         .builder \
@@ -14,7 +14,7 @@ def create_local_file_session(config):
     return spark
 
 
-def create_mysql_session(config):
+def create_mysql_session(config: dict) -> SparkSession:
     findspark.init(config['engine']['spark']['base'])
     spark = SparkSession \
         .builder \

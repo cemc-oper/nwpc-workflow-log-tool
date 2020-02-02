@@ -20,10 +20,12 @@ def load_config(config_file):
 
 
 def generate_node_tree_from_database(
-        config,
-        owner, repo,
-        begin_date, end_date,
-        repo_type="ecflow"
+        config: dict,
+        owner: str,
+        repo: str,
+        begin_date: datetime.datetime,
+        end_date: datetime.datetime,
+        repo_type: str = "ecflow"
 ):
     run_start_time = datetime.datetime.now()
 
@@ -44,18 +46,29 @@ def generate_node_tree_from_database(
 
 
 def generate_node_tree_from_file(
-        config,
-        log_file,
-        owner, repo,
-        begin_date, end_date,
-        repo_type="ecflow"
+        config: dict,
+        log_file: str,
+        owner: str,
+        repo: str,
+        begin_date: datetime.datetime,
+        end_date: datetime.datetime,
+        repo_type: str = "ecflow"
 ):
     run_start_time = datetime.datetime.now()
 
     spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel("INFO")
 
-    record_rdd = get_from_file(config, owner, repo, repo_type, begin_date, end_date, log_file, spark)
+    record_rdd = get_from_file(
+        config,
+        log_file,
+        spark=spark,
+        owner=owner,
+        repo=repo,
+        begin_date=begin_date,
+        end_date=end_date,
+        repo_type=repo_type
+    )
 
     bunch_map = calculate_node_tree(config, repo_type, record_rdd, spark)
 
@@ -76,7 +89,7 @@ def cli():
 @cli.command('database')
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
-@click.option("--repo-type", type=click.Choice(["sms", "ecflow"]), help="repo type", required=True)
+@click.option("--repo-type", type=click.Choice(["ecflow", "sms"]), help="repo type", required=True)
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("-c", "--config", "config_file", help="config file path", required=True)
@@ -99,7 +112,7 @@ def database(owner, repo, repo_type, begin_date, end_date, config_file):
 @cli.command('file')
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
-@click.option("--repo-type", type=click.Choice(["sms", "ecflow"]), help="repo type", required=True)
+@click.option("--repo-type", type=click.Choice(["ecflow", "sms"]), help="repo type", required=True)
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("-l", "--log", "log_file", help="log file path", required=True)
