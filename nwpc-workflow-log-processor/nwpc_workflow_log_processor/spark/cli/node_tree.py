@@ -8,7 +8,7 @@ from loguru import logger
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
 from nwpc_workflow_log_processor.spark.calculator.node_tree_calculator import calculate_node_tree
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
-from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
+from nwpc_workflow_log_processor.spark.data_source.file import load_records_from_file
 
 from nwpc_workflow_model.visitor import pre_order_travel, SimplePrintVisitor
 
@@ -34,7 +34,7 @@ def generate_node_tree_from_database(
 
     record_rdd = get_from_mysql(config, owner, repo, repo_type, begin_date, end_date, spark)
 
-    bunch_map = calculate_node_tree(config, repo_type, record_rdd, spark)
+    bunch_map = calculate_node_tree(config, record_rdd, spark, repo_type=repo_type)
 
     run_end_time = datetime.datetime.now()
     logger.info(f"step finished, using: {run_end_time - run_start_time}")
@@ -59,7 +59,7 @@ def generate_node_tree_from_file(
     spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel("INFO")
 
-    record_rdd = get_from_file(
+    record_rdd = load_records_from_file(
         config,
         log_file,
         spark=spark,
@@ -70,7 +70,7 @@ def generate_node_tree_from_file(
         repo_type=repo_type
     )
 
-    bunch_map = calculate_node_tree(config, repo_type, record_rdd, spark)
+    bunch_map = calculate_node_tree(config, record_rdd, spark, repo_type=repo_type)
 
     run_end_time = datetime.datetime.now()
     logger.info(f"step finished, using: {run_end_time - run_start_time}")

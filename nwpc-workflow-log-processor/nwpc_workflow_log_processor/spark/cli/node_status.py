@@ -8,7 +8,7 @@ import click
 import yaml
 
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
-from nwpc_workflow_log_processor.spark.data_source.file import get_from_file
+from nwpc_workflow_log_processor.spark.data_source.file import load_records_from_file
 from nwpc_workflow_log_processor.spark.data_source.rmdb import get_from_mysql
 from nwpc_workflow_log_processor.spark.calculator.node_status_calculator import calculate_node_status
 # from nwpc_workflow_log_processor.spark.data_store.kafka import save_to_kafka
@@ -48,7 +48,7 @@ def generate_node_status(
     spark = create_local_file_session(config)
     spark.sparkContext.setLogLevel('INFO')
 
-    record_rdd = get_from_file(
+    record_rdd = load_records_from_file(
         config,
         log_file,
         spark=spark,

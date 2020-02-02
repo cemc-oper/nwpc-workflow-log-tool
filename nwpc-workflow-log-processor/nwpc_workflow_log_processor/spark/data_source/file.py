@@ -7,7 +7,7 @@ from pyspark import RDD
 from nwpc_workflow_log_processor.common.util import get_record_class
 
 
-def get_from_file(
+def load_records_from_file(
         config: dict,
         log_file: str,
         spark: SparkSession,

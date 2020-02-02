@@ -2,8 +2,10 @@
 import datetime
 from operator import attrgetter
 
+from loguru import logger
+
 from nwpc_workflow_log_model.rmdb.util.node_situation_util import NodeSituationUtil
-from nwpc_workflow_model.bunch import Bunch
+from nwpc_workflow_log_processor.spark.calculator.node_tree_calculator import _get_bunch_class
 
 
 def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end_date, record_rdd, spark):
@@ -41,19 +43,20 @@ def calculate_node_status(owner: str, repo: str, repo_type: str, begin_date, end
     date_node_path_list_rdd = date_node_path_rdd.groupByKey()
     date_with_node_path_list = date_node_path_list_rdd.collect()
 
-    print("Generating bunch...",)
+    logger.info("Generating bunch...")
+    bunch_class = _get_bunch_class(repo_type)
     bunch_map = {}
     for i in date_with_node_path_list:
         day = i[0]
         node_path_list = i[1]
-        bunch = Bunch()
+        bunch = bunch_class()
         for node_path in node_path_list:
             if node_path is not None:
                 bunch.add_node(node_path)
-        print("Done")
+        logger.info(f"Generating bunch...Done: {i}")
         bunch_map[day] = bunch
 
-    print("Begin to generate node status...")
+    logger.info("Begin to generate node status...")
 
     ##############
     # STEP: Record to (node path, record list)
