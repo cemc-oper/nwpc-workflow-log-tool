@@ -45,6 +45,11 @@ class RecordBase(object):
         -------
         None
         """
+        if owner is None:
+            owner = "default_owner"
+        if repo is None:
+            repo = "default_repo"
+
         table_name = "{table_prefix}.{owner}.{repo}".format(
             table_prefix=cls.__tablename__, owner=owner, repo=repo
         )
@@ -52,7 +57,7 @@ class RecordBase(object):
         cls.owner = owner
         cls.repo = repo
 
-        cls.__create_index()
+        cls._create_index()
 
     @classmethod
     def init(cls):
@@ -61,10 +66,10 @@ class RecordBase(object):
         cls.owner = "owner"
         cls.repo = "repo"
 
-        cls.__create_index()
+        cls._create_index()
 
     @classmethod
-    def __create_index(cls):
+    def _create_index(cls):
         cls.__table_args__ = (
             Index(
                 "{owner}_{repo}_date_time_index".format(owner=cls.owner, repo=cls.repo),

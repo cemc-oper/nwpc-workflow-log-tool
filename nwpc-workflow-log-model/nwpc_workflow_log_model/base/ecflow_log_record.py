@@ -1,11 +1,8 @@
 # coding: utf-8
 from datetime import datetime
-import logging
+from loguru import logger
 
 from nwpc_workflow_log_model.base.log_record import LogRecord
-
-
-logger = logging.getLogger()
 
 
 class EcflowLogRecord(LogRecord):
@@ -22,14 +19,6 @@ class EcflowLogRecord(LogRecord):
             ERR:[02:23:59 10.1.2020] 22 serialization::archive 17 0 0 0 1 2 8 CSyncCmd 1 0
             ERR:[02:23:59 10.1.2020] 0 0 0 0 0 4 root 2 0 0 0, in server
             ERR:[02:23:59 10.1.2020] Connection::handle_read_data archive version miss-match!, in server
-
-        Parameters
-        ----------
-        line: str
-            record line
-        Returns
-        -------
-        self
         """
         self.log_record = line
 
@@ -51,16 +40,16 @@ class EcflowLogRecord(LogRecord):
         if line[start_pos: start_pos + 1] == " ":
             self.command_type = "status"
             start_pos += 1
-            self.__parse_status_record(line[start_pos:])
+            self._parse_status_record(line[start_pos:])
         elif line[start_pos: start_pos + 2] == "--":
             self.command_type = "client"
             start_pos += 2
-            self.__parse_client_record(line[start_pos:])
+            self._parse_client_record(line[start_pos:])
         elif line[start_pos: start_pos + 4] == "chd:":
             # child
             self.command_type = "child"
             start_pos += 4
-            self.__parse_child_record(line[start_pos:])
+            self._parse_child_record(line[start_pos:])
         elif line[start_pos: start_pos + 4] == "svr:":
             # server
             # print("[server command]", line)
@@ -80,7 +69,7 @@ class EcflowLogRecord(LogRecord):
 
         return self
 
-    def __parse_status_record(self, status_line):
+    def _parse_status_record(self, status_line):
         """
         active: /swfdp/00/deterministic/base/024/SWFDP_CA/CIN_SWFDP_CA_sep_024
         """
@@ -124,7 +113,7 @@ class EcflowLogRecord(LogRecord):
                 self.command = command
                 # print("[ERROR] status record: command not supported =>", self.log_record)
 
-    def __parse_child_record(self, child_line):
+    def _parse_child_record(self, child_line):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
@@ -161,7 +150,7 @@ class EcflowLogRecord(LogRecord):
                 "[ERROR] child record: command not supported =>", self.log_record
             )
 
-    def __parse_client_record(self, child_line):
+    def _parse_client_record(self, child_line):
         start_pos = 0
         end_pos = child_line.find(" ", start_pos)
         if end_pos == -1:
