@@ -1,5 +1,6 @@
 # coding=utf-8
 import datetime
+import json
 
 import click
 import yaml
@@ -25,7 +26,9 @@ def cli():
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("-c", "--config", "config_file", help="config file path", required=True)
-def database(owner, repo, repo_type, begin_date, end_date, config_file):
+@click.option("--output-type", type=click.Choice(["print", "file"]), help="output type", default="print")
+@click.option("--output-file", help="output file path", type=str, default=None)
+def database(owner, repo, repo_type, begin_date, end_date, config_file, output_type, output_file):
     """Generate node tree from records in database.
     """
     if begin_date:
@@ -44,25 +47,42 @@ def database(owner, repo, repo_type, begin_date, end_date, config_file):
         repo_type=repo_type
     )
 
-    for date, bunch in bunch_map.items():
-        pre_order_travel(bunch, SimplePrintVisitor())
+    _sink_result(
+        output_type, bunch_map,
+        output_file=output_file)
 
 
 @cli.command('file')
+@click.option("-c", "--config", "config_file", help="config file path", required=True)
+@click.option("-l", "--log", "log_file", help="log file path", required=True)
+@click.option("--repo-type", type=click.Choice(["ecflow", "sms"]), help="repo type", required=True)
 @click.option("-o", "--owner", help="owner name", required=True)
 @click.option("-r", "--repo", help="repo name", required=True)
-@click.option("--repo-type", type=click.Choice(["ecflow", "sms"]), help="repo type", required=True)
 @click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
 @click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
-@click.option("-l", "--log", "log_file", help="log file path", required=True)
-@click.option("-c", "--config", "config_file", help="config file path", required=True)
-def cli_file(owner, repo, repo_type, begin_date, end_date, log_file, config_file):
+@click.option("--output-type", type=click.Choice(["print", "file"]), help="output type", default="print")
+@click.option("--output-file", help="output file path", type=str, default=None)
+def cli_file(
+        config_file,
+        log_file,
+        repo_type,
+        owner,
+        repo,
+        begin_date,
+        end_date,
+        output_type,
+        output_file,
+):
     """Generate node tree from log file.
     """
     if begin_date:
         begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
     if end_date:
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+
+    if output_type == "file":
+        if output_file is None or output_file == "":
+            raise click.BadArgumentUsage("output_file must be set when output_type is file")
 
     config = _load_config(config_file)
 
@@ -71,19 +91,34 @@ def cli_file(owner, repo, repo_type, begin_date, end_date, log_file, config_file
         log_file,
         owner=owner,
         repo=repo,
-        begin_date=end_date,
+        begin_date=begin_date,
         end_date=end_date,
         repo_type=repo_type
     )
 
-    for date, bunch in bunch_map.items():
-        pre_order_travel(bunch, SimplePrintVisitor())
+    _sink_result(
+        output_type, bunch_map,
+        output_file=output_file)
 
 
 def _load_config(config_file):
     with open(config_file) as f:
         config = yaml.safe_load(f)
         return config
+
+
+def _sink_result(output_type, bunch_map, **kwargs):
+    if output_type == "print":
+        for date, bunch in bunch_map.items():
+            pre_order_travel(bunch, SimplePrintVisitor())
+    elif output_type == "file":
+        output_file = kwargs["output_file"]
+        with open(output_file, "w") as f:
+            result = {}
+            for date, bunch in bunch_map.items():
+                date_string = date.strftime("%Y-%m-%d")
+                result[date_string] = bunch.to_dict()
+            json.dump(result, f)
 
 
 def generate_node_tree_from_database(

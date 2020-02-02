@@ -1,13 +1,24 @@
 # coding: utf-8
+from nwpc_workflow_model.ecflow import Bunch as EcflowBunch
+from nwpc_workflow_model.sms import Bunch as SmsBunch
+
 from nwpc_workflow_log_model.rmdb.sms.record import SmsRecord
 from nwpc_workflow_log_model.rmdb.ecflow.record import EcflowRecord
 
 
 def get_record_class(repo_type):
     if repo_type == "sms":
-        record_class = SmsRecord
+        return SmsRecord
     elif repo_type == "ecflow":
-        record_class = EcflowRecord
+        return EcflowRecord
     else:
-        raise ValueError("repo type is not supported: " + repo_type)
-    return record_class
+        raise ValueError(f"repo type is not supported: {repo_type}")
+
+
+def get_bunch_class(repo_type: str):
+    if repo_type == "ecflow":
+        return EcflowBunch
+    elif repo_type == "sms":
+        return SmsBunch
+    else:
+        raise ValueError(f"repo_type is not supported: {repo_type}")
