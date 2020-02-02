@@ -52,7 +52,7 @@ def calculate_node_tree(
         for node_path in node_path_list:
             if node_path is not None:
                 bunch.add_node(node_path)
-        logger.info("Generating bunch...done for {day}")
+        logger.info(f"Generating bunch...done for {day}")
         bunch_map[day] = bunch
 
     return bunch_map
