@@ -10,6 +10,7 @@ from nwpc_workflow_log_processor.spark.engine.session import create_mysql_sessio
 from nwpc_workflow_log_processor.spark.calculator.node_tree_calculator import calculate_node_tree
 from nwpc_workflow_log_processor.spark.data_source.rmdb import load_records_from_rmdb
 from nwpc_workflow_log_processor.spark.data_source.file import load_records_from_file
+from nwpc_workflow_log_processor.common.util import load_config
 
 from nwpc_workflow_model.visitor import pre_order_travel, SimplePrintVisitor
 
@@ -36,7 +37,7 @@ def database(owner, repo, repo_type, begin_date, end_date, config_file, output_t
     if end_date:
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
 
-    config = _load_config(config_file)
+    config = load_config(config_file)
 
     bunch_map = generate_node_tree_from_database(
         config,
@@ -84,7 +85,7 @@ def cli_file(
         if output_file is None or output_file == "":
             raise click.BadArgumentUsage("output_file must be set when output_type is file")
 
-    config = _load_config(config_file)
+    config = load_config(config_file)
 
     bunch_map = generate_node_tree_from_file(
         config,
@@ -99,12 +100,6 @@ def cli_file(
     _sink_result(
         output_type, bunch_map,
         output_file=output_file)
-
-
-def _load_config(config_file):
-    with open(config_file) as f:
-        config = yaml.safe_load(f)
-        return config
 
 
 def _sink_result(output_type, bunch_map, **kwargs):

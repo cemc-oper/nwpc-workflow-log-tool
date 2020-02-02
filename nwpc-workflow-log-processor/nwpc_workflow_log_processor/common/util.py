@@ -1,4 +1,5 @@
 # coding: utf-8
+import yaml
 from nwpc_workflow_model.ecflow import Bunch as EcflowBunch
 from nwpc_workflow_model.sms import Bunch as SmsBunch
 
@@ -22,3 +23,9 @@ def get_bunch_class(repo_type: str):
         return SmsBunch
     else:
         raise ValueError(f"repo_type is not supported: {repo_type}")
+
+
+def load_config(config_file):
+    with open(config_file) as f:
+        config = yaml.safe_load(f)
+        return config
