@@ -15,6 +15,22 @@ class EcflowLogRecord(LogRecord):
         self.command_type = None
 
     def parse(self, line: str):
+        """
+        NOTE
+        ----
+            ERR:[02:23:59 10.1.2020] Connection::handle_read_data, boost::archive::archive_exception unsupported version, in server
+            ERR:[02:23:59 10.1.2020] 22 serialization::archive 17 0 0 0 1 2 8 CSyncCmd 1 0
+            ERR:[02:23:59 10.1.2020] 0 0 0 0 0 4 root 2 0 0 0, in server
+            ERR:[02:23:59 10.1.2020] Connection::handle_read_data archive version miss-match!, in server
+
+        Parameters
+        ----------
+        line: str
+            record line
+        Returns
+        -------
+        self
+        """
         self.log_record = line
 
         start_pos = 0
@@ -49,7 +65,7 @@ class EcflowLogRecord(LogRecord):
             # server
             # print("[server command]", line)
             self.command_type = "server"
-        elif len(line[start_pos].strip()) > 0:
+        elif len(line[start_pos:].strip()) > 0:
             # NOTE: line[start_pos].strip() will be empty but I haven't found example line.
             if line[start_pos:].strip()[0].isupper():
                 # WAR:[09:00:08 6.8.2018] Job generation for task /grapes_emer_v1_1/00/plot/get_plot/get_plot_meso
