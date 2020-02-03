@@ -3,7 +3,6 @@ import datetime
 import json
 
 import click
-import yaml
 from loguru import logger
 
 from nwpc_workflow_log_processor.spark.engine.session import create_mysql_session, create_local_file_session
@@ -55,37 +54,42 @@ def database(owner, repo, repo_type, begin_date, end_date, config_file, output_t
 
 @cli.command('file')
 @click.option("-c", "--config", "config_file", help="config file path", required=True)
-@click.option("-l", "--log", "log_file", help="log file path", required=True)
-@click.option("--repo-type", type=click.Choice(["ecflow", "sms"]), help="repo type", required=True)
-@click.option("-o", "--owner", help="owner name", required=True)
-@click.option("-r", "--repo", help="repo name", required=True)
-@click.option("--begin-date", help="begin date, YYYY-MM-DD, [begin_date, end_date)")
-@click.option("--end-date", help="end date, YYYY-MM-DD, [begin_date, end_date)")
-@click.option("--output-type", type=click.Choice(["print", "file"]), help="output type", default="print")
-@click.option("--output-file", help="output file path", type=str, default=None)
 def cli_file(
-        config_file,
-        log_file,
-        repo_type,
-        owner,
-        repo,
-        begin_date,
-        end_date,
-        output_type,
-        output_file,
+        config_file
 ):
     """Generate node tree from log file.
     """
+
+    config = load_config(config_file)
+
+    task_config = config["task"]
+    owner = task_config.get("owner", None)
+    repo = task_config.get("repo", None)
+    begin_date = task_config.get("begin_date", None)
+    end_date = task_config.get("end_date", None)
+    repo_type = task_config.get("workflow_type", "ecflow")
+
+    source_config = config["source"]
+
+    current_source_config = source_config[0]
+
+    log_file = current_source_config["file_path"]
+
+    sink_config = config["sink"]
+
+    current_sink_config = sink_config[0]
+    output_type = current_sink_config["type"]
+
     if begin_date:
         begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
     if end_date:
         end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
 
+    output_file = None
     if output_type == "file":
+        output_file = current_sink_config.get("file_path", None)
         if output_file is None or output_file == "":
             raise click.BadArgumentUsage("output_file must be set when output_type is file")
-
-    config = load_config(config_file)
 
     bunch_map = generate_node_tree_from_file(
         config,

@@ -1,30 +1,39 @@
 # coding: utf-8
 import findspark
 from pyspark.sql import SparkSession
+from pyspark import SparkConf
 
 
 def create_local_file_session(config: dict) -> SparkSession:
-    findspark.init(config['engine']['spark']['base'])
+    engine_config = config["engine"]
+
+    findspark.init(engine_config["spark_home"])
+    config_pairs = list(engine_config["spark_config"].items())
+    conf = SparkConf().setAll(config_pairs)
     spark = SparkSession \
         .builder \
-        .appName("nwpc.workflow-log.processor.spark") \
+        .appName(engine_config["app_name"]) \
         .master("local[4]") \
-        .config("spark.executor.memory", '4g') \
+        .config(conf=conf) \
         .getOrCreate()
-    spark.sparkContext.setLogLevel("INFO")
+    spark.sparkContext.setLogLevel(engine_config["log_level"])
     return spark
 
 
 def create_mysql_session(config: dict) -> SparkSession:
-    findspark.init(config['engine']['spark']['base'])
+    engine_config = config["engine"]
+    findspark.init(engine_config["spark_home"])
+    config_pairs = list(engine_config["spark_config"].items())
+    conf = SparkConf().setAll(config_pairs)
     spark = SparkSession \
         .builder \
-        .appName("nwpc.workflow-log.processor.spark") \
+        .appName(engine_config["app_name"]) \
         .master("local[4]") \
-        .config("spark.driver.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.extraClassPath", config['datastore']['mysql']['driver']) \
-        .config("spark.executor.memory", '4g') \
-        .config("spark.driver.memory", '4g') \
+        .config(conf=conf) \
         .getOrCreate()
-    spark.sparkContext.setLogLevel("INFO")
+    # .config("spark.driver.extraClassPath", config['datastore']['mysql']['driver']) \
+    # .config("spark.executor.extraClassPath", config['datastore']['mysql']['driver']) \
+    # .config("spark.executor.memory", '4g') \
+    # .config("spark.driver.memory", '4g') \
+    spark.sparkContext.setLogLevel(engine_config["log_level"])
     return spark
