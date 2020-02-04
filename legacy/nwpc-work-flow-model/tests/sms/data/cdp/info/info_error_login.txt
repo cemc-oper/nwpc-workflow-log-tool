@@ -1,7 +1,0 @@
-Welcome to cdp version 4.4.5 compiled on Tue Oct  8 09:23:20 GMT 2013
-# MSG:IOI-ACTION-C-BREAK:Interrupt handler loaded
-# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/ioi.log (append).
-/-CDP> # ERR:SMS-CLIENT-LOGIN:Permission denied.
-# WAR:match:not logged on
-Goodbye nwp
-# MSG:IOI-FILE-LOG:Closing logfile /cma/u/nwp/cdplog/cdp.log (append).
