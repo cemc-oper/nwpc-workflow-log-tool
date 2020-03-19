@@ -5,7 +5,7 @@ from nwpc_workflow_log_model.log_record.ecflow.status_record import StatusChange
 
 
 from nwpc_workflow_log_model.analytics.node_situation import (
-    SituationType,
+    TaskSituationType,
     NodeStatus,
 )
 from nwpc_workflow_log_model.analytics.node_status_change_dfa import NodeStatusChangeDFA
@@ -40,10 +40,10 @@ def test_node():
                 s.status.value,
                 node_data=s,
             )
-            if dfa.state is SituationType.Complete:
+            if dfa.state is TaskSituationType.Complete:
                 break
 
-        if dfa.state is SituationType.Complete:
+        if dfa.state is TaskSituationType.Complete:
             node_situation = dfa.node_situation
             p = node_situation.time_points[1]
             if p.status != NodeStatus.submitted:
