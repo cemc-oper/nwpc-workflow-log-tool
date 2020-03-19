@@ -4,7 +4,6 @@ import pandas as pd
 from scipy import stats
 
 from nwpc_workflow_log_model.analytics.node_situation import (
-    NodeSituation,
     NodeStatus,
 )
 from nwpc_workflow_log_model.analytics.situation_type import (

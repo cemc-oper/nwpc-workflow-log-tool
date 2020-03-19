@@ -3,7 +3,6 @@ import typing
 
 import pandas as pd
 from loguru import logger
-from scipy import stats
 
 from nwpc_workflow_model.node_status import NodeStatus
 from nwpc_workflow_log_model.log_record.ecflow import StatusLogRecord
@@ -14,7 +13,7 @@ from nwpc_workflow_log_model.analytics.task_status_change_dfa import (
 )
 from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
 
-from nwpc_workflow_log_tool.util import generate_in_date_range, print_records
+from nwpc_workflow_log_tool.util import generate_in_date_range
 from nwpc_workflow_log_tool.presenter import StatusPresenter
 
 from .situation_record import SituationRecord
@@ -64,7 +63,7 @@ def get_task_node_situations(
         if record.node_path == node_path and isinstance(record, StatusLogRecord):
             record_list.append(record)
 
-    logger.info("Calculating node status change using DFA...")
+    logger.info("Calculating task node status change using DFA...")
     situations = []
     for current_date in pd.date_range(start=start_date, end=end_date, closed="left"):
         filter_function = generate_in_date_range(current_date, current_date + pd.Timedelta(days=1))
@@ -72,14 +71,18 @@ def get_task_node_situations(
 
         status_changes = [StatusChangeEntry(r) for r in current_records]
 
-        dfa = TaskStatusChangeDFA(name=current_date)
+        dfa = TaskStatusChangeDFA(
+            name=current_date,
+        )
 
         for s in status_changes:
             dfa.trigger(
                 s.status.value,
                 node_data=s,
             )
-            if dfa.state is TaskSituationType.Complete:
+            if dfa.state in (
+                    TaskSituationType.Complete,
+            ):
                 break
 
         situations.append(SituationRecord(
@@ -89,5 +92,5 @@ def get_task_node_situations(
             records=current_records,
         ))
 
-    logger.info("Calculating node status change using DFA...Done")
+    logger.info("Calculating task node status change using DFA...Done")
     return situations
