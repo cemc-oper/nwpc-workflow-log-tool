@@ -37,7 +37,7 @@ class SituationCalculator(object):
             if record.node_path == node_path and isinstance(record, StatusLogRecord):
                 record_list.append(record)
 
-        logger.info("Calculating family node status change using DFA...")
+        logger.info("Calculating node status change using DFA...")
         situations = []
         for current_date in pd.date_range(start=start_date, end=end_date, closed="left"):
             filter_function = generate_in_date_range(current_date, current_date + pd.Timedelta(days=1))
@@ -65,5 +65,5 @@ class SituationCalculator(object):
                 records=current_records,
             ))
 
-        logger.info("Calculating family node status change using DFA...Done")
+        logger.info("Calculating node status change using DFA...Done")
         return situations
