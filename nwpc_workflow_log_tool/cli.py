@@ -2,7 +2,7 @@ import datetime
 
 import click
 
-from nwpc_workflow_log_tool.analytic import (
+from nwpc_workflow_log_tool.situation import (
     analytics_task_node_log_with_status,
     analytics_family_node_log_with_status,
 )

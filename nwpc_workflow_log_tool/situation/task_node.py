@@ -13,9 +13,9 @@ from nwpc_workflow_log_model.analytics.task_status_change_dfa import (
     TaskStatusChangeDFA,
     TaskSituationType,
 )
-
 from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
-from nwpc_workflow_log_collector.ecflow.util import generate_in_date_range, print_records
+
+from nwpc_workflow_log_tool.util import generate_in_date_range, print_records
 
 
 def analytics_task_node_log_with_status(
