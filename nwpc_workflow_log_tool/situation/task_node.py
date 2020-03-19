@@ -6,7 +6,6 @@ from loguru import logger
 from scipy import stats
 
 from nwpc_workflow_model.node_status import NodeStatus
-
 from nwpc_workflow_log_model.log_record.ecflow import StatusLogRecord
 from nwpc_workflow_log_model.log_record.ecflow.status_record import StatusChangeEntry
 from nwpc_workflow_log_model.analytics.task_status_change_dfa import (
@@ -16,6 +15,9 @@ from nwpc_workflow_log_model.analytics.task_status_change_dfa import (
 from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
 
 from nwpc_workflow_log_tool.util import generate_in_date_range, print_records
+from nwpc_workflow_log_tool.presenter import StatusPresenter
+
+from .situation_record import SituationRecord
 
 
 def analytics_task_node_log_with_status(
@@ -43,10 +45,11 @@ def analytics_task_node_log_with_status(
         end_date=stop_date,
     )
 
-    calculate_for_task_node_status(
-        situations=situations,
-        node_status=node_status
+    presenter = StatusPresenter(
+        target_node_status=node_status,
+        target_state=TaskSituationType.Complete,
     )
+    presenter.present(situations)
 
 
 def get_task_node_situations(
@@ -54,7 +57,7 @@ def get_task_node_situations(
         node_path: str,
         start_date: datetime.datetime,
         end_date: datetime.datetime,
-) -> typing.List:
+) -> typing.List[SituationRecord]:
     logger.info("Finding StatusLogRecord for {}", node_path)
     record_list = []
     for record in records:
@@ -79,48 +82,12 @@ def get_task_node_situations(
             if dfa.state is TaskSituationType.Complete:
                 break
 
-        situations.append({
-            "date": current_date,
-            "state": dfa.state,
-            "situation": dfa.node_situation,
-            "records": current_records,
-        })
+        situations.append(SituationRecord(
+            date=current_date,
+            state=dfa.state,
+            node_situation=dfa.node_situation,
+            records=current_records,
+        ))
 
     logger.info("Calculating node status change using DFA...Done")
     return situations
-
-
-def calculate_for_task_node_status(
-        situations: typing.List,
-        node_status: NodeStatus,
-):
-    time_series = []
-    for a_situation in situations:
-        current_date = a_situation["date"]
-        current_records = a_situation["records"]
-        if a_situation["state"] is TaskSituationType.Complete:
-            node_situation = a_situation["situation"]
-            time_points = node_situation.time_points
-            point = next((i for i in time_points if i.status == node_status), None)
-            if point is None:
-                logger.warning("[{}] skip: no time point {}", current_date.strftime("%Y-%m-%d"), node_status)
-                print_records(current_records)
-            else:
-                time_length = point.time - current_date
-                time_series.append(time_length)
-                logger.info("[{}] {}", current_date.strftime("%Y-%m-%d"), time_length)
-        else:
-            logger.warning("[{}] skip: DFA is not in complete", current_date.strftime("%Y-%m-%d"))
-            print_records(current_records)
-
-    time_series = pd.Series(time_series)
-    time_series_mean = time_series.mean()
-    print()
-    print("Mean:")
-    print(time_series_mean)
-
-    ratio = 0.25
-    time_series_trim_mean = stats.trim_mean(time_series.values, ratio)
-    print()
-    print(f"Trim Mean ({ratio}):")
-    print(pd.to_timedelta(time_series_trim_mean))
