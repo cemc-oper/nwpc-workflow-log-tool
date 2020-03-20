@@ -21,6 +21,58 @@ def analytics_time_point_with_status(
         stop_date: datetime.datetime,
         verbose: int,
 ):
+    """
+    从日志文件中获取一定时间范围([`start_date`, `stop_date`))内某节点进入某状态(`NodeStatus`)的时间点，
+    并计算均值和切尾均值。
+
+    Parameters
+    ----------
+    node_type: str
+        节点类型。
+        - `family`: 容器节点
+        - `task`: 任务节点
+    file_path: str
+        日志文件路径。推荐预先使用`grep`等工具从日志文件中提取与节点路径相关的日志条目，节省解析文件时间。
+    node_path: str
+        节点路径
+    node_status: NodeStatus
+        节点状态，例如 `NodeStatus.complete` 和 `NodeStatus.submitted` 等
+    start_date: datetime.datetime
+        起始时间，[`start_date`, `stop_date`)
+    stop_date: datetime.datetime
+        结束日期，不包括在内 ,[`start_date`, `stop_date`)
+    verbose: int
+        输出级别，尚未实装
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    >>> analytics_time_point_with_status(
+    ...     node_type="task",
+    ...     file_path="ecflow.log",
+    ...     node_path="/grapes_meso_3km_v4_4/00/model/fcst",
+    ...     node_status=NodeStatus.complete,
+    ...     start_date=datetime.datetime(2020, 3, 10),
+    ...     end_date=datetime.datetime(2020, 3, 17),
+    ...     verbose=1,
+    ... )
+    # 省略部分输出
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-10] 0 days 05:50:38
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-11] 0 days 06:00:40
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-12] 0 days 05:50:06
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-13] 0 days 06:22:54
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-14] 0 days 05:44:59
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-15] 0 days 06:15:17
+    2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-16] 0 days 06:18:29
+
+    Mean:
+    0 days 06:03:17.571428
+
+    Trim Mean (0.25):
+    0 days 06:03:02
+    """
     logger.info(f"Analytic time points for {node_type} node")
     logger.info(f"\tnode_path: {node_path}")
     logger.info(f"\tnode_status: {node_status}")

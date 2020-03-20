@@ -12,6 +12,18 @@ from .situation_record import SituationRecord
 
 
 class SituationCalculator(object):
+    """
+    计算节点的运行状态 `NodeSituation`
+
+    Attributes
+    ----------
+    _dfa_engine:
+        用于计算节点运行状态的DFA类
+    _stop_states: typing.Tuple
+        停止计算DFA的运行状态
+    _dfa_kwargs: dict
+        创建DFA时的附加参数
+    """
     def __init__(
             self,
             dfa_engine,
