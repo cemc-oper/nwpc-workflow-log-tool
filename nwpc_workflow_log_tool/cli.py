@@ -2,7 +2,7 @@ import datetime
 
 import click
 
-from nwpc_workflow_log_tool.situation.analytics import analytics_node_log_with_status
+from nwpc_workflow_log_tool.situation.analytics import analytics_time_point_with_status
 from nwpc_workflow_model.node_status import NodeStatus
 
 
@@ -43,7 +43,7 @@ def analytics_node(
     stop_date = datetime.datetime.strptime(stop_date, "%Y-%m-%d")
     node_status = NodeStatus[node_status]
 
-    analytics_node_log_with_status(
+    analytics_time_point_with_status(
         node_type,
         log_file,
         node_path,

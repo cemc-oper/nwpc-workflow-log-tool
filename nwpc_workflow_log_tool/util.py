@@ -1,6 +1,6 @@
 from typing import List
 
-from nwpc_workflow_log_model.log_record.log_record import LogRecord
+from nwpc_workflow_log_model.log_record import LogRecord
 
 
 def generate_in_date_range(start_date, end_date):

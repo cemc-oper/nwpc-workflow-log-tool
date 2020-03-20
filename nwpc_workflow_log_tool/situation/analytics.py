@@ -1,17 +1,18 @@
 import datetime
 
 from loguru import logger
-from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
-from nwpc_workflow_log_model.analytics.family_status_change_dfa import FamilyStatusChangeDFA
+
+from nwpc_workflow_model.node_status import NodeStatus
 from nwpc_workflow_log_model.analytics.situation_type import FamilySituationType, TaskSituationType
 from nwpc_workflow_log_model.analytics.task_status_change_dfa import TaskStatusChangeDFA
-from nwpc_workflow_model.node_status import NodeStatus
+from nwpc_workflow_log_model.analytics.family_status_change_dfa import FamilyStatusChangeDFA
+from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
 
-from nwpc_workflow_log_tool.presenter import StatusPresenter
+from nwpc_workflow_log_tool.presenter import TimePointPresenter
 from nwpc_workflow_log_tool.situation import SituationCalculator
 
 
-def analytics_node_log_with_status(
+def analytics_time_point_with_status(
         node_type: str,
         file_path: str,
         node_path: str,
@@ -63,7 +64,7 @@ def analytics_node_log_with_status(
         end_date=stop_date,
     )
 
-    presenter = StatusPresenter(
+    presenter = TimePointPresenter(
         target_node_status=node_status,
         target_state=target_state,
     )

@@ -16,13 +16,13 @@ from nwpc_workflow_log_tool.situation.situation_record import SituationRecord
 from .presenter import Presenter
 
 
-class StatusPresenter(Presenter):
+class TimePointPresenter(Presenter):
     def __init__(
             self,
             target_node_status: NodeStatus,
             target_state: FamilySituationType or TaskSituationType
     ):
-        super(StatusPresenter, self).__init__()
+        super(TimePointPresenter, self).__init__()
         self.target_node_status = target_node_status
         self.target_state = target_state
 
