@@ -11,7 +11,7 @@ def cli():
     pass
 
 
-@cli.command("node")
+@cli.command("time-point")
 @click.option("-l", "--log-file", help="log file path")
 @click.option("-n", "--node-path", required=True, help="node path")
 @click.option(
@@ -30,7 +30,7 @@ def cli():
 @click.option("--start-date", default=None, help="start date, date range: [start_date, stop_date), YYYY-MM-dd")
 @click.option("--stop-date", default=None, help="stop date, date range: [start_date, stop_date), YYYY-MM-dd")
 @click.option("-v", "--verbose", count=True, help="verbose level")
-def analytics_node(
+def analytics_time_point(
         log_file: str,
         node_path: str,
         node_type: str,
