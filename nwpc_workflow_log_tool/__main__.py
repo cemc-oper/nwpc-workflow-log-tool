@@ -1,4 +1,4 @@
-from .node import cli as node_cli
+from nwpc_workflow_log_tool.node import cli as node_cli
 
 
 import click
