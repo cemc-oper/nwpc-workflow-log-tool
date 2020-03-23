@@ -1,1 +1,2 @@
+from .situation_record import SituationRecord
 from .situation_calculator import SituationCalculator
