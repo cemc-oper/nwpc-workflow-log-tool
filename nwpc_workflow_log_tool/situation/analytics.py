@@ -19,7 +19,7 @@ def analytics_time_point_with_status(
         node_status: NodeStatus,
         start_date: datetime.datetime,
         stop_date: datetime.datetime,
-        verbose: int,
+        verbose: int = 1,
 ):
     """
     从日志文件中获取一定时间范围([`start_date`, `stop_date`))内某节点进入某状态(`NodeStatus`)的时间点，
@@ -56,7 +56,6 @@ def analytics_time_point_with_status(
     ...     node_status=NodeStatus.complete,
     ...     start_date=datetime.datetime(2020, 3, 10),
     ...     end_date=datetime.datetime(2020, 3, 17),
-    ...     verbose=1,
     ... )
     # 省略部分输出
     2020-03-20 01:22:45.849 | INFO     | nwpc_workflow_log_tool.presenter.time_point_presenter:present:61 - [2020-03-10] 0 days 05:50:38
