@@ -10,6 +10,7 @@ from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
 
 from nwpc_workflow_log_tool.presenter import TimePointPresenter
 from nwpc_workflow_log_tool.situation import SituationCalculator
+from nwpc_workflow_log_tool.processor import NodeTableProcessor
 
 
 def analytics_time_point_with_status(
@@ -115,8 +116,14 @@ def analytics_time_point_with_status(
         end_date=stop_date,
     )
 
+    processor = NodeTableProcessor(
+        node_path=node_path,
+        target_state=target_state,
+    )
+    table_data = processor.process(situations)
+
     presenter = TimePointPresenter(
         target_node_status=node_status,
         target_state=target_state,
     )
-    presenter.present(situations)
+    presenter.present(table_data)

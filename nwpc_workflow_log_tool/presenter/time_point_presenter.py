@@ -41,29 +41,12 @@ class TimePointPresenter(Presenter):
         self.target_node_status = target_node_status
         self.target_state = target_state
 
-    def present(self, situations: typing.Iterable[SituationRecord]):
-        time_series = []
-        for a_situation in situations:
-            current_date = a_situation.date
-            current_records = a_situation.records
-            if a_situation.state is self.target_state:
-                node_situation = a_situation.node_situation
-                time_points = node_situation.time_points
-                point = next((i for i in time_points if i.status == self.target_node_status), None)
-                if point is None:
-                    logger.warning("[{}] skip: no time point {}",
-                                   current_date.strftime("%Y-%m-%d"),
-                                   self.target_node_status)
-                    # print_records(current_records)
-                else:
-                    time_length = point.time - current_date
-                    time_series.append(time_length)
-                    logger.info("[{}] {}", current_date.strftime("%Y-%m-%d"), time_length)
-            else:
-                logger.warning("[{}] skip: DFA is not in complete", current_date.strftime("%Y-%m-%d"))
-                # print_records(current_records)
+    def present(self, table_data: pd.DataFrame):
+        key = f"time_point_{self.target_node_status.name}"
+        if key not in table_data:
+            raise ValueError(f"{key} is not in table data")
 
-        time_series = pd.Series(time_series)
+        time_series = table_data[key] - table_data.start_time
         time_series_mean = time_series.mean()
         print()
         print("Mean:")
