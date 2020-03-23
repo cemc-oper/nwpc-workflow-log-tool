@@ -7,11 +7,11 @@ from nwpc_workflow_model.node_status import NodeStatus
 
 
 @click.group()
-def cli():
+def node_cli():
     pass
 
 
-@cli.command("time-point")
+@node_cli.command("time-point")
 @click.option("-l", "--log-file", help="log file path")
 @click.option("-n", "--node-path", required=True, help="node path")
 @click.option(
@@ -55,4 +55,4 @@ def analytics_time_point(
 
 
 if __name__ == "__main__":
-    cli()
+    node_cli()

@@ -1,4 +1,4 @@
-from nwpc_workflow_log_tool.node import cli as node_cli
+from nwpc_workflow_log_tool.cli.node import node_cli
 
 
 import click
@@ -9,8 +9,10 @@ def cli():
     pass
 
 
-cli.add_command(node_cli, name="node")
+def main():
+    cli.add_command(node_cli, name="node")
+    cli()
 
 
 if __name__ == "__main__":
-    cli()
+    main()
