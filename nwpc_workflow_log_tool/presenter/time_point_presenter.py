@@ -1,5 +1,3 @@
-import typing
-from loguru import logger
 import pandas as pd
 from scipy import stats
 
@@ -11,14 +9,16 @@ from nwpc_workflow_log_model.analytics.situation_type import (
     TaskSituationType
 )
 
-from nwpc_workflow_log_tool.situation.situation_record import SituationRecord
-
 from .presenter import Presenter
 
 
 class TimePointPresenter(Presenter):
     """
     输出时间段内给定的节点状态（NodeStatus）时间点，并计算均值和切尾均值（0.25）
+
+    Notes
+    -----
+    因为DFA算法无法识别某些特殊情况，平均值一般不具有实际意义，请使用切尾均值。
 
     Attributes
     ----------

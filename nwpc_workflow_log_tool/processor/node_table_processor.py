@@ -13,6 +13,18 @@ from .processor import Processor, SituationRecord
 
 
 class NodeTableProcessor(Processor):
+    """
+    将节点运行状态转成 ``pandas.DataFrame`` 表格数据
+
+    Attributes
+    ----------
+    node_path: str
+        节点路径
+    target_state: TaskSituationType or FamilySituationType
+        有效记录对应的运行状态
+    columns:
+        表格列名称
+    """
     def __init__(
             self,
             node_path: str,
