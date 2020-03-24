@@ -38,7 +38,8 @@ class TimePeriodPresenter(Presenter):
             "time_period_in_all": "duration"
         }, inplace=True)
 
-        print(table_data[["start_time", "start_clock", "end_clock", "duration"]])
+        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+            print(table_data[["start_time", "start_clock", "end_clock", "duration"]])
 
         ratio = 0.25
 

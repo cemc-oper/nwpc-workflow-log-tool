@@ -48,6 +48,10 @@ class TimePointPresenter(Presenter):
 
         time_series = table_data[key] - table_data.start_time
         time_series_mean = time_series.mean()
+
+        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+            print(time_series)
+
         print()
         print("Mean:")
         print(time_series_mean)
