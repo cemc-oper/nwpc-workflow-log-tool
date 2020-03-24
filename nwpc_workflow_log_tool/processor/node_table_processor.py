@@ -73,7 +73,7 @@ class NodeTableProcessor(Processor):
                     if key in self.columns:
                         current_columns[key] = [pd.Timedelta(time_period.end_time - time_period.start_time)]
                         current_columns[key + "_start"] = [pd.Timestamp(time_period.start_time)]
-                        current_columns[key + "_end"] = [pd.Timestamp(time_period.start_time)]
+                        current_columns[key + "_end"] = [pd.Timestamp(time_period.end_time)]
 
                 current_df = pd.DataFrame(
                     current_columns,
