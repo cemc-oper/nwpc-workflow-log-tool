@@ -8,7 +8,10 @@ from nwpc_workflow_log_model.analytics.task_status_change_dfa import TaskStatusC
 from nwpc_workflow_log_model.analytics.family_status_change_dfa import FamilyStatusChangeDFA
 from nwpc_workflow_log_collector.ecflow.log_file_util import get_record_list
 
-from nwpc_workflow_log_tool.presenter import TimePointPresenter
+from nwpc_workflow_log_tool.presenter import (
+    TimePointPresenter,
+    TimePeriodPresenter,
+)
 from nwpc_workflow_log_tool.situation import SituationCalculator
 from nwpc_workflow_log_tool.processor import NodeTableProcessor
 
@@ -125,6 +128,68 @@ def analytics_time_point_with_status(
 
     presenter = TimePointPresenter(
         target_node_status=node_status,
+        target_state=target_state,
+    )
+    presenter.present(table_data)
+
+
+def analytics_time_period(
+        node_type: str,
+        file_path: str,
+        node_path: str,
+        start_date: datetime.datetime,
+        stop_date: datetime.datetime,
+        verbose: int = 1,
+):
+    logger.info(f"Analytic time peroid for {node_type} node")
+    logger.info(f"\tnode_path: {node_path}")
+    logger.info(f"\tstart_date: {start_date}")
+    logger.info(f"\tstop_date: {stop_date}")
+
+    if node_type == "family":
+        dfa_engine = FamilyStatusChangeDFA
+        stop_states = (
+            FamilySituationType.Complete,
+            FamilySituationType.Error,
+        )
+        dfa_kwargs = {
+            "ignore_aborted": True
+        }
+        target_state = FamilySituationType.Complete
+    elif node_type == "task":
+        dfa_engine = TaskStatusChangeDFA
+        stop_states = (
+            TaskSituationType.Complete,
+        )
+        dfa_kwargs = None
+        target_state = TaskSituationType.Complete
+    else:
+        raise NotImplemented(f"node type is not supported: {node_type}")
+
+    logger.info(f"Getting log lines...")
+    records = get_record_list(file_path, node_path, start_date, stop_date)
+    logger.info(f"Getting log lines...Done, {len(records)} lines")
+
+    calculator = SituationCalculator(
+        dfa_engine=dfa_engine,
+        stop_states=stop_states,
+        dfa_kwargs=dfa_kwargs,
+    )
+
+    situations = calculator.get_situations(
+        records=records,
+        node_path=node_path,
+        start_date=start_date,
+        end_date=stop_date,
+    )
+
+    processor = NodeTableProcessor(
+        node_path=node_path,
+        target_state=target_state,
+    )
+    table_data = processor.process(situations)
+
+    presenter = TimePeriodPresenter(
         target_state=target_state,
     )
     presenter.present(table_data)
