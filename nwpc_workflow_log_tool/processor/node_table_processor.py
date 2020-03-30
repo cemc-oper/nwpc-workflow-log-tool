@@ -11,6 +11,8 @@ from nwpc_workflow_log_model.analytics.situation_type import (
 
 from .processor import Processor, SituationRecord
 
+from nwpc_workflow_log_tool.util import print_records
+
 
 class NodeTableProcessor(Processor):
     """
@@ -89,5 +91,7 @@ class NodeTableProcessor(Processor):
                 )
                 df = df.append(current_df)
                 logger.warning("[{}] skip: DFA is not in complete", current_date.strftime("%Y-%m-%d"))
+                # print_records(a_situation.records)
+
         df.sort_index(inplace=True)
         return df

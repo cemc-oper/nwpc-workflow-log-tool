@@ -7,7 +7,7 @@ import pandas as pd
 from nwpc_workflow_log_model.log_record.ecflow import StatusLogRecord
 from nwpc_workflow_log_model.log_record.ecflow.status_record import StatusChangeEntry
 
-from nwpc_workflow_log_tool.util import generate_in_date_range
+from nwpc_workflow_log_tool.util import generate_in_date_range, generate_later_than_time, print_records
 from .situation_record import SituationRecord
 
 
@@ -42,6 +42,7 @@ class SituationCalculator(object):
             node_path: str,
             start_date: datetime.datetime,
             end_date: datetime.datetime,
+            earliest_time: datetime.time = None,
     ) -> typing.List[SituationRecord]:
         logger.info("Finding StatusLogRecord for {}", node_path)
         record_list = []
@@ -54,6 +55,9 @@ class SituationCalculator(object):
         for current_date in pd.date_range(start=start_date, end=end_date, closed="left"):
             filter_function = generate_in_date_range(current_date, current_date + pd.Timedelta(days=1))
             current_records = list(filter(lambda x: filter_function(x), record_list))
+            if earliest_time is not None:
+                filter_function = generate_later_than_time(current_date, earliest_time)
+                current_records = list(filter(lambda x: filter_function(x), current_records))
 
             status_changes = [StatusChangeEntry(r) for r in current_records]
 
