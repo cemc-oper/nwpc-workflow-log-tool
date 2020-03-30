@@ -44,6 +44,24 @@ class SituationCalculator(object):
             end_date: datetime.datetime,
             earliest_time: datetime.time = None,
     ) -> typing.List[SituationRecord]:
+        """
+        Get situations for some node in date range [start_date, end_date).
+
+        Parameters
+        ----------
+        records
+        node_path
+        start_date
+        end_date
+        earliest_time: datetime.time
+            If ``earliest_time`` is set, only records after earliest_time for some date is used.
+            This options is mainly for nodes which run over midnight.
+
+        Returns
+        -------
+        typing.List[SituationRecord]
+
+        """
         logger.info("Finding StatusLogRecord for {}", node_path)
         record_list = []
         for record in records:
