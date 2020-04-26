@@ -11,8 +11,6 @@ from nwpc_workflow_log_model.analytics.situation_type import (
 
 from .processor import Processor, SituationRecord
 
-from nwpc_workflow_log_tool.util import print_records
-
 
 class NodeTableProcessor(Processor):
     """
