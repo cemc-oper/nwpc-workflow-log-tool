@@ -46,7 +46,7 @@ setup(
         "loguru",
         "click",
         "nwpc-workflow-log-model>=3.0.0a2,<3.0.1",
-        "nwpc-workflow-log-collector>=3.0.0a0,<3.0.1",
+        "nwpc-workflow-log-collector>=3.0.0a1,<3.0.1",
         "pandas",
         "numpy",
         "scipy",
